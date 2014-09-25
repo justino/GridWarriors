@@ -7,7 +7,7 @@ function Sprite(name, gameGrid, width, height, color, location) {
     this.location = Vector.Clone(location);
     
     this.canvas = this.gameGrid.canvas;
-    this.context = this.canvas.getContext('2d');
+    this.context = this.gameGrid.context;
     this.buildBoundingBox();
     
     // Filled in by child class

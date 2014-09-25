@@ -15,6 +15,7 @@ Disc.prototype = Object.create(Sprite.prototype);
 Disc.prototype.Update = function() {
     switch(this.status) {
         case 'held':
+            // Follow owner around
             this.location = Vector.Clone(this.owner.location);
             break;
         case 'returning':
@@ -22,6 +23,7 @@ Disc.prototype.Update = function() {
             break;
         case 'deadly':
         case 'bouncing':
+            // Basic Straight Lines
             this.location.Add(this.velocity);
             break;
     }
@@ -33,26 +35,23 @@ Disc.prototype.Update = function() {
         
         if (this.status != 'bouncing') {
             this.status = 'bouncing';
-            window.setTimeout(this.Return.bind(this), 1000);
+            window.setTimeout(this.Return.bind(this), config.discReturnTime);
         }
     }
 }
 
 Disc.prototype.Draw = function() {
-    context = this.canvas.getContext('2d');
-    context.fillStyle = this.color;
-    
     switch(this.status) {
         case 'held':
         case 'bouncing':
         case 'returning':
             // Square
-            this.changeHeight(config.discSize);
+            if (this.height != config.discSize) { this.changeHeight(config.discSize); }
             this.DrawSprite();
             break;
         case 'deadly':
             // Flat
-            this.changeHeight(config.discSize / 2);
+            if (this.height != config.discSize / 2) { this.changeHeight(config.discSize / 2); }
             this.DrawSprite();
             break;
         case 'blocking':

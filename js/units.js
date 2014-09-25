@@ -55,13 +55,13 @@ Unit.prototype.Throw = function(direction) {
 // -------------------------------------------------------------------------- //
 
 function Warrior(gameGrid, location) { 
-    Unit.call(this, 'Warrior', gameGrid, 'rgba(0, 255, 255, 1)', location);
+    Unit.call(this, 'Warrior', gameGrid, config.warriorColor, location);
     this.disc = new DarkBlue(gameGrid, this);
 }
 Warrior.prototype = Object.create(Unit.prototype);
 
 function Bulldog(gameGrid, location) {
-    Unit.call(this, 'Bulldog', gameGrid, 'rgba(255, 0, 255, 1)', location);
+    Unit.call(this, 'Bulldog', gameGrid, config.bulldogColor, location);
     this.speed = .5;
     this.regenerates = true;
     this.maxHits = 2;
@@ -71,7 +71,7 @@ function Bulldog(gameGrid, location) {
 Bulldog.prototype = Object.create(Unit.prototype);
 
 function Leader(gameGrid, location) {
-    Unit.call(this, 'Leader', gameGrid, 'rgba(0, 127, 255, 1)', location);
+    Unit.call(this, 'Leader', gameGrid, config.leaderColor, location);
     this.speed = 1.5;
     this.baseAccuracy = 7;
     
@@ -85,7 +85,7 @@ function Leader(gameGrid, location) {
 Leader.prototype = Object.create(Unit.prototype);
 
 function Guard(gameGrid, location) {
-    Unit.call(this, 'Guard', gameGrid, 'rgba(255, 255, 127, 1)', location);
+    Unit.call(this, 'Guard', gameGrid, config.guardColor, location);
     this.speed = 2;
     this.regenerates = true;
     this.maxHits = 4;

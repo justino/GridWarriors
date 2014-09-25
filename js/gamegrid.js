@@ -1,6 +1,7 @@
 function GameGrid(canvas) {
     console.log("Grid: Rezzing");
     this.canvas = canvas;
+    this.context = this.canvas.getContext('2d');
     this.init();
 }
 
@@ -10,22 +11,16 @@ GameGrid.prototype.init = function() {
 }
 
 GameGrid.prototype.Draw = function() {
-    context = this.canvas.getContext('2d');
-    
     this.DrawBackground();
     this.player.Draw();
 }
 
 GameGrid.prototype.DrawBackground = function() {
-    context = this.canvas.getContext('2d');
-    context.fillStyle = config.gridColor;
-    context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = config.gridColor;
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 }
 
 GameGrid.prototype.Update = function() {
-    // Discs
-    // TODO
-    
     // Movement
     this.player.Update();
     for (var i = 0; i < this.enemies.length; i++) {
