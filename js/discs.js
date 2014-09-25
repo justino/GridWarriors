@@ -69,19 +69,12 @@ Disc.prototype.Return = function() {
     
     var ownerForce = Vector.SubFactory(this.owner.location, this.location);
     ownerForce.Normalize();
-    ownerForce.Mul(this.baseSpeed);
+    ownerForce.Mul(this.baseSpeed + this.speedModifier);
     
     this.velocity.Add(ownerForce);
-    this.velocity.Limit(this.baseSpeed);
+    this.velocity.Limit(this.baseSpeed + this.speedModifier);
     
     this.location.Add(this.velocity);
-    
-    // is the disc returned to the unit now?
-    var collided = this.Collision(this.owner)
-    if (collided) {
-        console.log('Caught Disc!');
-        this.status = 'held';
-    }
 }
 
 Disc.prototype.BounceX = function() {

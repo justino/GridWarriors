@@ -12,6 +12,7 @@ function Player(gameGrid, location) {
 Player.prototype = Object.create(Unit.prototype);
 
 Player.prototype.Update = function() {
+    this.CatchDisc();
     this.UpdateLocation();
     this.bindToGameGrid();
     

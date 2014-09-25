@@ -25,7 +25,17 @@ Unit.prototype.Draw = function() {
 }
 
 Unit.prototype.Update = function() {
+    // Did we catch our own disc
+    this.CatchDisc();
+    
     // AI here
+}
+
+Unit.prototype.CatchDisc = function() {
+    if (this.disc.status == 'returning' && this.Collision(this.disc)) {
+        console.log('Disc: ' + this.name + ' caught disc');
+        this.disc.status = 'held';
+    }
 }
 
 Unit.prototype.setDestination = function() {
