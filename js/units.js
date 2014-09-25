@@ -1,8 +1,7 @@
-function Unit(name, gameGrid) {
-    this.color = '';
+function Unit(name, gameGrid, width, height, color, location) {   
     this.isPlayer = false;
     this.canBlock = false;
-    this.baseSpeed = 3;
+    this.baseSpeed = 1;
     this.speedModifier = 0;
     this.regenerates = false;
     this.recoveryRate = 4;
@@ -12,74 +11,72 @@ function Unit(name, gameGrid) {
     this.accuracyModifier = 0;
     this.movementVector = [];
     
-    this.gameGrid = gameGrid;
-    this.name = name;
-    this.canvas = this.gameGrid.canvas;
-    
-    console.log('Unit: ' + this.name + ' Created');
+    Sprite.call(this, name, gameGrid, width, height, color, location);
 }
+Unit.prototype = Object.create(Sprite.prototype);
 
 Unit.prototype.Draw = function() {
-    context = this.canvas.getContext('2d');
-    context.fillStyle = this.color;
-    context.fillRect(
-        this.location.points[0] - 15, this.location.points[1] - 15, 
-        15, 15
-    );
+    this.DrawSprite();
+    
+    // Draw units disc too
+    if (this.disc) {
+        this.disc.Draw();
+    }
 }
 
 Unit.prototype.Update = function() {
+    // AI here
 }
 
 Unit.prototype.setDestination = function() {
     // Random location on game grid
 }
 
+Unit.prototype.Throw = function(direction) {
+    if (this.disc && this.disc.status != 'held') return;
+    
+    this.disc.status = 'deadly';
+    
+    this.disc.Thrown(direction);
+}
+
+// -------------------------------------------------------------------------- //
+// Different Unit Types
 // -------------------------------------------------------------------------- //
 
-function Warrior(gameGrid) { 
-    Unit.call(this, 'Warrior', gameGrid);
-    
-    this.color = 'rgba(0, 255, 255, 1)';
-    
-    this.disc = new DarkBlue();
+function Warrior(gameGrid, location) { 
+    Unit.call(this, 'Warrior', gameGrid, 'rgba(0, 255, 255, 1)', location);
+    this.disc = new DarkBlue(gameGrid, this);
 }
 Warrior.prototype = Object.create(Unit.prototype);
 
-function Bulldog(gameGrid) { 
-    Unit.call(this, 'Bulldog', gameGrid);
-    
-    this.prototype.Color = 'rgba(255, 0, 255, 1)';
-    this.speed = 2;
+function Bulldog(gameGrid, location) {
+    Unit.call(this, 'Bulldog', gameGrid, 'rgba(255, 0, 255, 1)', location);
+    this.speed = .5;
     this.regenerates = true;
     this.maxHits = 2;
     this.baseAccuracy = 3;
-    
-    this.disc = new DarkBlue();
+    this.disc = new DarkBlue(gameGrid, this);
 }
 Bulldog.prototype = Object.create(Unit.prototype);
 
-function Leader(gameGrid) { 
-    Unit.call(this, 'Leader', gameGrid);
-    
-    this.color = 'rgba(0, 127, 255, 1)';
-    this.speed = 4;
+function Leader(gameGrid, location) {
+    Unit.call(this, 'Leader', gameGrid, 'rgba(0, 127, 255, 1)', location);
+    this.speed = 1.5;
     this.baseAccuracy = 7;
     
-    if (Math.random() * 100 < settings.whiteDiscPercent) {
-        this.disc = new White();
+    if (Math.random() * 100 <= settings.whiteDiscPercent) {
+        this.disc = new White(gameGrid, this);
     }
     else {
-        this.disc = new Brown();
+        this.disc = new Brown(gameGrid, this);
     }
 }
 Leader.prototype = Object.create(Unit.prototype);
 
-function Guard(gameGrid) { 
-    Unit.call(this, 'Guard', gameGrid);
-    
-    this.color = 'rgba(255, 255, 127, 1)';
-    this.speed = 5;
+function Guard(gameGrid, location) {
+    Unit.call(this, 'Guard', gameGrid, 'rgba(255, 255, 127, 1)', location);
+    this.speed = 2;
     this.regenerates = true;
     this.maxHits = 4;
     

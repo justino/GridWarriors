@@ -1,35 +1,98 @@
 // Special Type of Unit
 
-function Player(gameGrid) { 
-    Unit.call(this, 'Player', gameGrid);
-    
-    this.color = 'rgba(255, 0, 0, 1)'
+function Player(gameGrid, location) { 
     this.isPlayer = true;
     this.canBlock = true;
     this.regenerates = true;
     this.hits = 3;
     
-    this.disc = new Yellow();
-    this.location = new Vector([this.canvas.width / 2, this.canvas.height / 2]); // Starting Location
+    Unit.call(this, 'Tron', gameGrid, config.unitSize, config.unitSize, config.tronColor, location);
+    this.disc = new Yellow(gameGrid, this);
 }
 Player.prototype = Object.create(Unit.prototype);
 
 Player.prototype.Update = function() {
     this.UpdateLocation();
-    this.UpdateDisc();
+    this.bindToGameGrid();
+    
+    this.UpdateDiscStatus();
+    this.disc.Update();
 }
 
 Player.prototype.UpdateLocation = function() {
-    var velocity = new Vector([0, 0]);
+    // Can't run while blocking
+    if (this.disc.status != 'blocking') {
+        var velocity = new Vector([0, 0]);
     
-    // Move around based on keyboard input
-    if (KeyboardState.isDown(KeyboardState.DOWN))  { velocity.points[1] += (this.baseSpeed + this.speedModifier); }
-    if (KeyboardState.isDown(KeyboardState.UP))    { velocity.points[1] -= (this.baseSpeed + this.speedModifier); }
-    if (KeyboardState.isDown(KeyboardState.LEFT))  { velocity.points[0] -= (this.baseSpeed + this.speedModifier); }
-    if (KeyboardState.isDown(KeyboardState.RIGHT)) { velocity.points[0] += (this.baseSpeed + this.speedModifier); }
-    
-    this.location.Add(velocity);
+        // Move around based on keyboard input
+        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  { velocity.points[1] += (this.baseSpeed + this.speedModifier); }
+        if (KeyboardState.isDown(KeyboardState.movement.UP))    { velocity.points[1] -= (this.baseSpeed + this.speedModifier); }
+        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  { velocity.points[0] -= (this.baseSpeed + this.speedModifier); }
+        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed + this.speedModifier); }
+        
+        // Only perform movement if there was any
+        if (velocity.points[0] != 0 || velocity.points[1] != 0) { this.location.Add(velocity); }
+    }
 }
 
-Player.prototype.UpdateDisc = function() {
+Player.prototype.UpdateDiscStatus = function() {
+    if (this.disc.status == 'held') {
+        // Disc Throwing
+        discKey = KeyboardState.discKeyPressed();
+        if (discKey) {
+            this.disc.Thrown(discKey);
+            KeyboardState.keyUp(discKey); // Don't repeatably throw, must press again
+        }
+        
+        //Blocking
+        if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'blocking'; }
+    }
+    else if (this.disc.status == 'blocking') {
+        if (! KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'held'; }
+    }
+}
+
+// -------------------------------------------------------------------------- //
+
+function Yellow(gameGrid, unit) {
+    Disc.call(this, 'Yellow', gameGrid, 'rgba(255, 255, 0, 1)', unit)
+}
+Yellow.prototype = Object.create(Disc.prototype);
+
+Yellow.prototype.Thrown = function(direction) {
+    this.status = 'deadly';
+    var velocity = new Vector([0, 0]);
+    
+    switch(direction) {
+        case KeyboardState.disc.UP:
+            velocity.points[1] -= (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.UPLEFT:
+            velocity.points[1] -= (this.baseSpeed + this.speedModifier);
+            velocity.points[0] -= (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.LEFT:
+            velocity.points[0] -= (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.DOWNLEFT:
+            velocity.points[1] += (this.baseSpeed + this.speedModifier);
+            velocity.points[0] -= (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.DOWN:
+            velocity.points[1] += (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.DOWNRIGHT:
+            velocity.points[1] += (this.baseSpeed + this.speedModifier);
+            velocity.points[0] += (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.RIGHT:
+            velocity.points[0] += (this.baseSpeed + this.speedModifier);
+            break;
+        case KeyboardState.disc.UPRIGHT:
+            velocity.points[1] -= (this.baseSpeed + this.speedModifier);
+            velocity.points[0] += (this.baseSpeed + this.speedModifier);
+            break;
+    }
+    
+    this.velocity = velocity;
 }

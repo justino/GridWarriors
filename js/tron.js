@@ -18,7 +18,6 @@ window.onload = function() {
 
 function Tron(width, height) {
     this.initCanvas(width, height);
-    this.initControls();
     
     this.gameGrid = new GameGrid(this.canvas);
     this.gameGrid.Draw();
@@ -30,11 +29,6 @@ Tron.prototype.initCanvas = function(width, height) {
     this.canvas = document.getElementById('gamegrid');
     this.canvas.width = width;
     this.canvas.height = height;
-}
-
-Tron.prototype.initControls = function() {    
-    document.onkeyup = function(e) { KeyboardState.keyUp(e.keyCode); };
-    document.onkeydown = function(e) { KeyboardState.keyDown(e.keyCode); };
 }
 
 Tron.prototype.Play = function() {

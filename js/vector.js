@@ -63,9 +63,6 @@ Vector.prototype.Limit = function(max) {
         this.Mul(max)
     }
 }
-Vector.prototype.Clone = function() {
-    return new Vector(this.points);
-}
 
 // Static Functions
 Vector.Random2D = function() {
@@ -76,15 +73,19 @@ Vector.Random2D = function() {
 }
 
 Vector.AddFactory = function(a, b) {
-    var vector = new Vector(a.points);
+    var vector = Vector.Clone(a);
     vector.Add(b);
     
     return vector;
 }
 
 Vector.SubFactory = function(a, b) {
-    var vector = new Vector(a.points);
+    var vector = Vector.Clone(a);
     vector.Sub(b);
     
     return vector;
+}
+
+Vector.Clone = function(oldVector) {
+    return new Vector(oldVector.points.slice(0));
 }

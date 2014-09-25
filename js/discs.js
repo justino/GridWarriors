@@ -1,40 +1,114 @@
-function Disc(name) {
+function Disc(name, gameGrid, color, unit) {
     this.strength = 1;
-    this.multiHit = false;
-    this.status = 'held'; // attacking, returning, blocking
+    this.homing = false;
+    this.status = 'held'; // deadly, bouncing, returning, blocking
+    this.baseSpeed = config.discSpeed;
+    this.speedModifier = 0;
+    this.velocity = null;
     
-    this.name = name;
+    this.owner = unit;
     
-    console.log('Disc: ' + this.name + ' Created');
+    Sprite.call(this, name, gameGrid, config.discSize, config.discSize, color, this.owner.location);
+}
+Disc.prototype = Object.create(Sprite.prototype);
+
+Disc.prototype.Update = function() {
+    switch(this.status) {
+        case 'held':
+            this.location = Vector.Clone(this.owner.location);
+            break;
+        case 'returning':
+            this.Return();
+            break;
+        case 'deadly':
+        case 'bouncing':
+            this.location.Add(this.velocity);
+            break;
+    }
+    
+    var bounced = this.bindToGameGrid();
+    if (bounced[0] || bounced[1]) {
+        if (bounced[0]) { this.BounceX() }
+        if (bounced[1]) { this.BounceY() }
+        
+        if (this.status != 'bouncing') {
+            this.status = 'bouncing';
+            window.setTimeout(this.Return.bind(this), 1000);
+        }
+    }
 }
 
 Disc.prototype.Draw = function() {
+    context = this.canvas.getContext('2d');
+    context.fillStyle = this.color;
+    
+    switch(this.status) {
+        case 'held':
+        case 'bouncing':
+        case 'returning':
+            // Square
+            this.changeHeight(config.discSize);
+            this.DrawSprite();
+            break;
+        case 'deadly':
+            // Flat
+            this.changeHeight(config.discSize / 2);
+            this.DrawSprite();
+            break;
+        case 'blocking':
+            break;
+    }
+}
+
+Disc.prototype.Thrown = function(direction) {
+}
+
+Disc.prototype.Return = function() {
+    this.status = 'returning';
+    this.velocity = new Vector([0, 0]);
+    
+    var ownerForce = Vector.SubFactory(this.owner.location, this.location);
+    ownerForce.Normalize();
+    ownerForce.Mul(this.baseSpeed);
+    
+    this.velocity.Add(ownerForce);
+    this.velocity.Limit(this.baseSpeed);
+    
+    this.location.Add(this.velocity);
+    
+    // is the disc returned to the unit now?
+    var collided = this.Collision(this.owner)
+    if (collided) {
+        console.log('Caught Disc!');
+        this.status = 'held';
+    }
+}
+
+Disc.prototype.BounceX = function() {
+    this.velocity.points[0] *= -1;
+}
+
+Disc.prototype.BounceY = function() {
+    this.velocity.points[1] *= -1;
 }
 
 // -------------------------------------------------------------------------- //
+// Different Disc Types
+// -------------------------------------------------------------------------- //
 
-function Yellow() {
-    Disc.call(this, 'Yellow')
-    this.color = 'rgba(255, 255, 0, 1)';
-}
-Yellow.prototype = Object.create(Disc.prototype);
-
-function DarkBlue() {
-    Disc.call(this, 'DarkBlue');
-    this.color = 'rgba(0, 0, 128, 1)';    
+function DarkBlue(gameGrid, unit) {
+    Disc.call(this, 'DarkBlue', gameGrid, 'rgba(0, 0, 128, 1)', unit);
 }
 DarkBlue.prototype = Object.create(Disc.prototype);
 
-function Brown() {
-    Disc.call(this, 'Brown');
-    this.color = 'rgba(139, 69, 19, 1)';
+function Brown(gameGrid, unit) {
+    Disc.call(this, 'Brown', gameGrid, 'rgba(139, 69, 19, 1)', unit);
     this.strength = 2;
 }
 Brown.prototype = Object.create(Disc.prototype);
 
-function White() {
-    Disc.call(this, 'White');
-    this.color = 'rgba(255, 255, 255, 1)';
-    this.multiHit = true;
+function White(gameGrid, unit) {
+    Disc.call(this, 'White', gameGrid, 'rgba(255, 255, 255, 1)', unit);
+    this.homing = true;
 }
 White.prototype = Object.create(Disc.prototype);
