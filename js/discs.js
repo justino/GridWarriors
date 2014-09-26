@@ -7,6 +7,7 @@ function Disc(name, gameGrid, color, unit) {
     this.velocity = null;
     
     this.owner = unit;
+    this.primed = false;
     
     Sprite.call(this, name, gameGrid, config.discSize, config.discSize, color, this.owner.location);
 }
@@ -60,6 +61,14 @@ Disc.prototype.Draw = function() {
 }
 
 Disc.prototype.Thrown = function(direction) {
+    this.status = 'deadly';
+    var velocity = new Vector([0, 0]);
+    
+    direction.Mul(this.baseSpeed + this.speedModifier);
+    
+    velocity.Add(direction);
+    velocity.Limit(this.baseSpeed + this.speedModfier);
+    this.velocity = velocity;
 }
 
 Disc.prototype.Return = function() {

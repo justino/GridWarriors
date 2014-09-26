@@ -7,12 +7,20 @@ function GameGrid(canvas) {
 
 GameGrid.prototype.init = function() {
     this.player = new Player(this, new Vector([this.canvas.width / 2, this.canvas.height / 2]));
-    this.enemies = [];
+    // This will be managed by Waves
+    this.enemies = [
+        new Warrior(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ])),
+        new Warrior(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ])),
+        new Warrior(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ]))
+    ];
 }
 
 GameGrid.prototype.Draw = function() {
     this.DrawBackground();
     this.player.Draw();
+    for (var i = 0; i < this.enemies.length; i++) {
+        this.enemies[i].Draw();
+    }
 }
 
 GameGrid.prototype.DrawBackground = function() {

@@ -80,6 +80,22 @@ Sprite.prototype.Collision = function(sprite) {
     );
 }
 
+Sprite.prototype.TouchLocation = function(location) {
+    this.context.beginPath()
+    this.context.rect(
+        location.points[0] - config.destinationSize / 2, location.points[1] - config.destinationSize / 2,
+        config.destinationSize, config.destinationSize
+    );
+    
+    return (
+        this.context.isPointInPath(this.boundingBox[0], this.boundingBox[1]) ||
+        this.context.isPointInPath(this.boundingBox[2], this.boundingBox[1]) ||
+        this.context.isPointInPath(this.boundingBox[0], this.boundingBox[3]) ||
+        this.context.isPointInPath(this.boundingBox[2], this.boundingBox[3]) ||
+        this.context.isPointInPath(this.location.points[0], this.location.points[1])
+    );
+}
+
 Sprite.prototype.DrawSprite = function() {
     this.buildBoundingBox()
     

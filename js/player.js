@@ -22,18 +22,18 @@ Player.prototype.Update = function() {
 
 Player.prototype.UpdateLocation = function() {
     // Can't run while blocking
-    if (this.disc.status != 'blocking') {
-        var velocity = new Vector([0, 0]);
+    if (this.disc.status == 'blocking') { return; }
     
-        // Move around based on keyboard input
-        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  { velocity.points[1] += (this.baseSpeed + this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.UP))    { velocity.points[1] -= (this.baseSpeed + this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  { velocity.points[0] -= (this.baseSpeed + this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed + this.speedModifier); }
-        
-        // Only perform movement if there was any
-        if (velocity.points[0] != 0 || velocity.points[1] != 0) { this.location.Add(velocity); }
-    }
+    var velocity = new Vector([0, 0]);
+
+    // Move around based on keyboard input
+    if (KeyboardState.isDown(KeyboardState.movement.DOWN))  { velocity.points[1] += (this.baseSpeed + this.speedModifier); }
+    if (KeyboardState.isDown(KeyboardState.movement.UP))    { velocity.points[1] -= (this.baseSpeed + this.speedModifier); }
+    if (KeyboardState.isDown(KeyboardState.movement.LEFT))  { velocity.points[0] -= (this.baseSpeed + this.speedModifier); }
+    if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed + this.speedModifier); }
+    
+    // Only perform movement if there was any
+    if (velocity.points[0] != 0 || velocity.points[1] != 0) { this.location.Add(velocity); }
 }
 
 Player.prototype.UpdateDiscStatus = function() {
