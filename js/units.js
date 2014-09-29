@@ -7,7 +7,7 @@ function Unit(name, gameGrid, width, height, color, location) {
     this.recoveryRate = 4;
     this.maxHits = 1;
     this.hits = 0;
-    this.baseAccuracy = 5;
+    this.baseAccuracy = config.warriorAccuracy;
     this.accuracyModifier = 0;
     
     Sprite.call(this, name, gameGrid, width, height, color, location);
@@ -67,10 +67,14 @@ Unit.prototype.UpdateDiscStatus = function() {
 }
 
 Unit.prototype.ThrowDisc = function() {
-    // console.log('Unit: ' + this.name + ' throwing disc');
-
     // Aim at player
-    var direction = Vector.SubFactory(this.gameGrid.player.location, this.disc.location);
+    var aimFor = Vector.Clone(this.gameGrid.player.location);
+    
+    // Apply Accuracy (somewhere around the player)
+    aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
+    aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
+    
+    var direction = Vector.SubFactory(aimFor, this.disc.location);
     direction.Normalize();
     
     this.disc.Thrown(direction)
@@ -124,7 +128,7 @@ function Bulldog(gameGrid, location) {
     this.speed = .5;
     this.regenerates = true;
     this.maxHits = 2;
-    this.baseAccuracy = 3;
+    this.baseAccuracy = config.bulldogAccuracy;
     this.disc = new DarkBlue(gameGrid, this);
 }
 Bulldog.prototype = Object.create(Unit.prototype);
@@ -132,7 +136,7 @@ Bulldog.prototype = Object.create(Unit.prototype);
 function Leader(gameGrid, location) {
     Unit.call(this, 'Leader', gameGrid, config.unitSize, config.unitSize, config.leaderColor, location);
     this.speed = 1.5;
-    this.baseAccuracy = 7;
+    this.baseAccuracy = config.leaderAccuracy;
     
     if (Math.random() * 100 <= settings.whiteDiscPercent) {
         this.disc = new White(gameGrid, this);
