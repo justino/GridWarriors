@@ -4,9 +4,9 @@ function Player(gameGrid, location) {
     this.isPlayer = true;
     this.canBlock = true;
     this.regenerates = true;
-    this.hits = 3;
     
     Unit.call(this, 'Tron', gameGrid, config.unitSize, config.unitSize, config.tronColor, location);
+    this.maxHits = 3;
     this.disc = new Yellow(gameGrid, this);
 }
 Player.prototype = Object.create(Unit.prototype);

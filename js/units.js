@@ -67,6 +67,8 @@ Unit.prototype.UpdateDiscStatus = function() {
 }
 
 Unit.prototype.ThrowDisc = function() {
+    if (! this.gameGrid.player) { return; }
+    
     // Aim at player
     var aimFor = Vector.Clone(this.gameGrid.player.location);
     
@@ -111,6 +113,26 @@ Unit.prototype.Throw = function(direction) {
     this.disc.status = 'deadly';
     
     this.disc.Thrown(direction);
+}
+
+Unit.prototype.Hit = function() {
+    this.hits += 1;
+    
+    if (this.hits >= this.maxHits) {
+        console.log(this.name + ' derezzed');
+    }
+    else if (this.regenerates) {
+        window.setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
+    }
+}
+
+Unit.prototype.Regenerate = function() {
+    if (! this.regenerates) { return; }
+    
+    if (this.hits > 0) {
+        console.log(this.name + ' regenerated 1 HP');
+        this.hits -= 1;
+    }
 }
 
 // -------------------------------------------------------------------------- //

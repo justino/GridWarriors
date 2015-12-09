@@ -73,6 +73,7 @@ Disc.prototype.Thrown = function(direction) {
 
 Disc.prototype.Return = function() {
     this.status = 'returning';
+    
     this.velocity = new Vector([0, 0]);
     
     var ownerForce = Vector.SubFactory(this.owner.location, this.location);

@@ -3,15 +3,16 @@ var config = {
     width: 800,
     height: 600,
     unitSize: 16,
-    discSize: 4, // Deadly is Math.round(discScale / 2)
+    discSize: 4, // Should be divisible by 2
     
     // Game Play Params
     discReturnTime: 1000,  // Seconds
     discSpeed: 4,
     whiteDiscPercent: 20, // Percentage for when a white disc appears
-    warriorAccuracy: 35, // Percent
+    warriorAccuracy: 100, // Percent
     bulldogAccuracy: 25, // Percent
     leaderAccuracy: 60, // Percent
+    regenerationTime: 3, // Seconds
     
     // Colors
     gridColor: 'rgba(96, 96, 96, 1)',
