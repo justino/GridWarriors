@@ -4,23 +4,23 @@ var KeyboardState = {
     pressed: {},
     
     movement: {
-        UP: 87,
-        DOWN: 83,
-        LEFT: 65,
-        RIGHT: 68
+        UP: [87],
+        DOWN: [83],
+        LEFT: [65],
+        RIGHT: [68]
     },
     
-    BLOCK: 101,
+    BLOCK: [101, 53],
     
     disc: {
-        UP: 104,
-        UPRIGHT: 105,
-        RIGHT: 102,
-        DOWNRIGHT: 99,
-        DOWN: 98,
-        DOWNLEFT: 97,
-        LEFT: 100,
-        UPLEFT: 103
+        UP: [104, 56],
+        UPRIGHT: [105, 57],
+        RIGHT: [102, 54],
+        DOWNRIGHT: [99, 51],
+        DOWN: [98, 50],
+        DOWNLEFT: [97, 49],
+        LEFT: [100, 52],
+        UPLEFT: [103, 55]
     },
     
     isDown: function(keyCode) { return this.pressed[keyCode]; },
@@ -28,9 +28,11 @@ var KeyboardState = {
     keyUp: function(code) { delete this.pressed[code]; },
     
     discKeyPressed: function() {
-        for (direction in this.disc) {
-            if (this.isDown(this.disc[direction])) {
-                return this.disc[direction];
+        for (var direction in this.disc) {
+            for (var key of this.disc[direction]) {
+                if (this.isDown(key)) {
+                    return this.disc[direction];
+                }
             }
         }
         
