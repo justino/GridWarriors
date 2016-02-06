@@ -48,6 +48,14 @@ Player.prototype.UpdateDiscStatus = function() {
         //Blocking
         if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'blocking'; }
     }
+    else if (this.disc.status == 'deadly') {
+        // Maybe return disc
+        for (key in KeyboardState.disc) {
+            if (KeyboardState.isDown(key)) {
+                this.disc.Return();
+            }
+        }
+    }
     else if (this.disc.status == 'blocking') {
         if (! KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'held'; }
     }

@@ -2,13 +2,14 @@ function Unit(name, gameGrid, width, height, color, location) {
     this.isPlayer = false;
     this.canBlock = false;
     this.baseSpeed = 1;
-    this.speedModifier = 0;
+    this.speedModifier = 1;
     this.regenerates = false;
     this.recoveryRate = 4;
     this.maxHits = 1;
     this.hits = 0;
     this.baseAccuracy = config.warriorAccuracy;
     this.accuracyModifier = 0;
+    this.regenerateTimer = null;
     
     Sprite.call(this, name, gameGrid, width, height, color, location);
     
@@ -101,10 +102,10 @@ Unit.prototype.setDestination = function() {
     
     var destinationForce = Vector.SubFactory(this.destination, this.location);
     destinationForce.Normalize();
-    destinationForce.Mul(this.baseSpeed + this.speedModifier);
+    destinationForce.Mul(this.baseSpeed * this.speedModifier);
     
     this.velocity.Add(destinationForce);
-    this.velocity.Limit(this.baseSpeed + this.speedModifier);
+    this.velocity.Limit(this.baseSpeed * this.speedModifier);
 }
 
 Unit.prototype.Throw = function(direction) {
@@ -117,12 +118,11 @@ Unit.prototype.Throw = function(direction) {
 
 Unit.prototype.Hit = function() {
     this.hits += 1;
+    this.speedModifier = 0.5 * this.hits;
+    this.setDestination();
     
-    if (this.hits >= this.maxHits) {
-        console.log(this.name + ' derezzed');
-    }
-    else if (this.regenerates) {
-        window.setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
+    if (this.hits < this.maxHits && this.regenerates) {
+        this.regenerateTimer = window.setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
     }
 }
 
@@ -132,6 +132,8 @@ Unit.prototype.Regenerate = function() {
     if (this.hits > 0) {
         console.log(this.name + ' regenerated 1 HP');
         this.hits -= 1;
+        this.speedModifier = (0.5 * this.hits) || 1;
+        this.setDestination();
     }
 }
 
@@ -147,7 +149,7 @@ Warrior.prototype = Object.create(Unit.prototype);
 
 function Bulldog(gameGrid, location) {
     Unit.call(this, 'Bulldog', gameGrid, config.unitSize, config.unitSize, config.bulldogColor, location);
-    this.speed = .5;
+    this.baseSpeed = .5;
     this.regenerates = true;
     this.maxHits = 2;
     this.baseAccuracy = config.bulldogAccuracy;
@@ -157,7 +159,7 @@ Bulldog.prototype = Object.create(Unit.prototype);
 
 function Leader(gameGrid, location) {
     Unit.call(this, 'Leader', gameGrid, config.unitSize, config.unitSize, config.leaderColor, location);
-    this.speed = 1.5;
+    this.baseSpeed = 1.5;
     this.baseAccuracy = config.leaderAccuracy;
     
     if (Math.random() * 100 <= settings.whiteDiscPercent) {
@@ -171,7 +173,7 @@ Leader.prototype = Object.create(Unit.prototype);
 
 function Guard(gameGrid, location) {
     Unit.call(this, 'Guard', gameGrid, config.unitSize, config.unitSize, config.guardColor, location);
-    this.speed = 2;
+    this.baseSpeed = 2;
     this.regenerates = true;
     this.maxHits = 4;
     

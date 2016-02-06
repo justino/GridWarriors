@@ -34,20 +34,28 @@ GameGrid.prototype.Update = function() {
     // Check for hits/deaths by player
     if (this.player.disc.status == 'deadly') {
         for (var i = 0; i < this.enemies.length; i++) {
-            if (this.enemies.state == 'ready' && this.player.disc.Collision(this.enemies[i])) {
-                this.enemies[i].hit();
+            if (this.player.disc.Collided(this.enemies[i])) {
+                this.enemies[i].Hit();
+                console.log(this.enemies[i].name + ' hit. ' + (this.enemies[i].maxHits - this.enemies[i].hits) + ' left');
 
                 // Check to see if they died
-                if (this.enemies[i].state == 'derezzed') {
+                if (this.enemies[i].hits == this.enemies[i].maxHits) {
+                    console.log(this.enemies[i].name + ' derezzed');
+                    if (this.enemies[i].regenerateTimer) {
+                        window.clearTimeout(this.enemies[i].regenerateTimer);
+                    }
                     this.enemies.splice(i, 1);
                 }
+                
+                // Return disc to player
+                this.player.disc.Return();
             }
         }
     }
     // Check for player hits/death
     for (var i = 0; i < this.enemies.length; i++) {
-        if (this.enemies[i].disc && this.enemies[i].disc.status == 'deadly' && this.enemies[i].disc.Collision(this.player)) {
-            this.player.hits += 1;
+        if (this.enemies[i].disc && this.enemies[i].disc.status == 'deadly' && this.enemies[i].disc.Collided(this.player)) {
+            this.player.Hit();
             console.log(this.player.name + ' hit. ' + (this.player.maxHits - this.player.hits) + ' left');
             
             if (this.player.hits == this.player.maxHits) {
@@ -55,6 +63,9 @@ GameGrid.prototype.Update = function() {
                 console.log('Game Over');
                 this.player = null;
             }
+            
+            // Return disc to enemy
+            this.enemies[i].disc.Return();
         }
     }
     

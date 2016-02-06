@@ -8,6 +8,7 @@ function Disc(name, gameGrid, color, unit) {
     
     this.owner = unit;
     this.primed = false;
+    this.collided = null;
     
     Sprite.call(this, name, gameGrid, config.discSize, config.discSize, color, this.owner.location);
 }
@@ -58,6 +59,31 @@ Disc.prototype.Draw = function() {
         case 'blocking':
             break;
     }
+}
+
+Disc.prototype.Collided = function(unit) {
+    var collision = this.Collision(unit);
+    
+    /* If the disc has already collided with the current unit
+       ignore, we don't want to hit them again until we've stopped colliding
+       with them */
+    if (unit == this.collided && collision) {
+        return false;
+    }
+    
+    /* If the disc is marked as being collided with this unit
+       but it isn't collided any more, unmark it. */
+    if (unit == this.collided && ! collision) {
+        this.collided = null;
+    }
+    
+    /* If this disc has collided with this unit
+       then mark the disc as being collided with this unit */
+    if (collision) {
+        this.collided = unit;
+    }
+    
+    return collision;
 }
 
 Disc.prototype.Thrown = function(direction) {
