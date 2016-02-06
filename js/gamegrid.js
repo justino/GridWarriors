@@ -30,7 +30,7 @@ GameGrid.prototype.DrawBackground = function() {
 
 GameGrid.prototype.Update = function() {
     if (! this.player) { return; }
-    
+
     // Check for hits/deaths by player
     if (this.player.disc.status == 'deadly') {
         for (var i = 0; i < this.enemies.length; i++) {
@@ -46,7 +46,7 @@ GameGrid.prototype.Update = function() {
                     }
                     this.enemies.splice(i, 1);
                 }
-                
+
                 // Return disc to player
                 this.player.disc.Return();
             }
@@ -57,21 +57,25 @@ GameGrid.prototype.Update = function() {
         if (this.enemies[i].disc && this.enemies[i].disc.status == 'deadly' && this.enemies[i].disc.Collided(this.player)) {
             this.player.Hit();
             console.log(this.player.name + ' hit. ' + (this.player.maxHits - this.player.hits) + ' left');
-            
+
             if (this.player.hits == this.player.maxHits) {
                 console.log(this.player.name + ' derezzed');
                 console.log('Game Over');
                 this.player = null;
+                break;
             }
-            
+
             // Return disc to enemy
             this.enemies[i].disc.Return();
         }
     }
-    
+
     // Movement
-    if (this.player) { this.player.Update(); }
-    for (var i = 0; i < this.enemies.length; i++) {
-        this.enemies[i].Update();
+    if (this.player) {
+        this.player.Update();
+
+        for (var i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].Update();
+        }
     }
 }
