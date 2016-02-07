@@ -39,21 +39,23 @@ Player.prototype.UpdateLocation = function() {
 Player.prototype.UpdateDiscStatus = function() {
     if (this.disc.status == 'held') {
         // Disc Throwing
-        discKey = KeyboardState.discKeyPressed();
-        if (discKey) {
-            this.disc.Thrown(discKey);
-            KeyboardState.keyUp(discKey); // Don't repeatably throw, must press again
+        var direction = KeyboardState.discKeyPressed();
+        if (direction) {
+            this.disc.Thrown(direction);
+            KeyboardState.keyUp(direction); // Don't repeatably throw, must press again
         }
 
         //Blocking
         if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'blocking'; }
     }
     else if (this.disc.status == 'deadly') {
-        // Maybe return disc
-        for (key in KeyboardState.disc) {
-            if (KeyboardState.isDown(key)) {
+        if (KeyboardState.discKeyPressed()) {
+            if (this.disc.returnable === true) {
                 this.disc.Return();
             }
+        }
+        else if (! this.disc.returnable) {
+            this.disc.returnable = true;
         }
     }
     else if (this.disc.status == 'blocking') {

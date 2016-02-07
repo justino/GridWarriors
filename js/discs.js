@@ -5,11 +5,12 @@ function Disc(name, gameGrid, color, unit) {
     this.baseSpeed = config.discSpeed;
     this.speedModifier = 0;
     this.velocity = null;
-    
+    this.returnable = false;
+
     this.owner = unit;
     this.primed = false;
     this.collided = null;
-    
+
     Sprite.call(this, name, gameGrid, config.discSize, config.discSize, color, this.owner.location);
 }
 Disc.prototype = Object.create(Sprite.prototype);
@@ -29,12 +30,12 @@ Disc.prototype.Update = function() {
             this.location.Add(this.velocity);
             break;
     }
-    
+
     var bounced = this.bindToGameGrid();
     if (bounced[0] || bounced[1]) {
         if (bounced[0]) { this.BounceX() }
         if (bounced[1]) { this.BounceY() }
-        
+
         if (this.status != 'bouncing') {
             this.status = 'bouncing';
             window.setTimeout(this.Return.bind(this), config.discReturnTime);
@@ -63,35 +64,35 @@ Disc.prototype.Draw = function() {
 
 Disc.prototype.Collided = function(unit) {
     var collision = this.Collision(unit);
-    
+
     /* If the disc has already collided with the current unit
        ignore, we don't want to hit them again until we've stopped colliding
        with them */
     if (unit == this.collided && collision) {
         return false;
     }
-    
+
     /* If the disc is marked as being collided with this unit
        but it isn't collided any more, unmark it. */
     if (unit == this.collided && ! collision) {
         this.collided = null;
     }
-    
+
     /* If this disc has collided with this unit
        then mark the disc as being collided with this unit */
     if (collision) {
         this.collided = unit;
     }
-    
+
     return collision;
 }
 
 Disc.prototype.Thrown = function(direction) {
     this.status = 'deadly';
     var velocity = new Vector([0, 0]);
-    
+
     direction.Mul(this.baseSpeed + this.speedModifier);
-    
+
     velocity.Add(direction);
     velocity.Limit(this.baseSpeed + this.speedModfier);
     this.velocity = velocity;
@@ -99,16 +100,17 @@ Disc.prototype.Thrown = function(direction) {
 
 Disc.prototype.Return = function() {
     this.status = 'returning';
-    
+    this.returnable = false;
+
     this.velocity = new Vector([0, 0]);
-    
+
     var ownerForce = Vector.SubFactory(this.owner.location, this.location);
     ownerForce.Normalize();
     ownerForce.Mul(this.baseSpeed + this.speedModifier);
-    
+
     this.velocity.Add(ownerForce);
     this.velocity.Limit(this.baseSpeed + this.speedModifier);
-    
+
     this.location.Add(this.velocity);
 }
 
