@@ -2,16 +2,16 @@
 // Manages the state of keyboard key presses
 var KeyboardState = {
     pressed: {},
-    
+
     movement: {
         UP: [87],
         DOWN: [83],
         LEFT: [65],
         RIGHT: [68]
     },
-    
+
     BLOCK: [101, 53],
-    
+
     disc: {
         UP: [104, 56],
         UPRIGHT: [105, 57],
@@ -22,20 +22,25 @@ var KeyboardState = {
         LEFT: [100, 52],
         UPLEFT: [103, 55]
     },
-    
-    isDown: function(keyCode) { return this.pressed[keyCode]; },
-    keyDown: function(code) { this.pressed[code] = true; },
-    keyUp: function(code) { delete this.pressed[code]; },
-    
-    discKeyPressed: function() {
-        for (var direction in this.disc) {
-            for (var key of this.disc[direction]) {
-                if (this.isDown(key)) {
-                    return this.disc[direction];
-                }
+
+    isDown: function(keyList) {
+        for (var key of keyList) {
+            if (this.pressed[key]) {
+                return true;
             }
         }
-        
+        return false;
+    },
+    keyDown: function(code) { this.pressed[code] = true; },
+    keyUp: function(code) { delete this.pressed[code]; },
+
+    discKeyPressed: function() {
+        for (var direction in this.disc) {
+            if (this.isDown(KeyboardState.disc[direction])) {
+                return this.disc[direction];
+            }
+        }
+
         return false;
     }
 }
