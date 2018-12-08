@@ -40,5 +40,6 @@ Wave.prototype.spawnUnit = function() {
 
     var unit = units[Math.floor(Math.random() * units.length)];
     var location = new Vector([ Math.random() * (tran.gameGrid.canvas.width - config.unitSize * 2) + config.unitSize, Math.random() * (tran.gameGrid.canvas.height - config.unitSize * 2) + config.unitSize ]);
+
     tran.gameGrid.enemies.push(new unit(location));
 }

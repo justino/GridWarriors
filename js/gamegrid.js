@@ -62,7 +62,7 @@ GameGrid.prototype.Update = function() {
 GameGrid.prototype.unitHit = function(e) {
     console.log('Disc Collided');
 
-    e.detail.loser.Hit();
+    e.detail.loser.Hit(e.detail.winner.disc.strength);
     e.detail.winner.disc.Return();
 
     if (e.detail.winner.isPlayer) {

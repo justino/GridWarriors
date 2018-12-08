@@ -121,8 +121,8 @@ Unit.prototype.Throw = function(direction) {
     this.disc.Thrown(direction);
 }
 
-Unit.prototype.Hit = function() {
-    this.hits += 1;
+Unit.prototype.Hit = function(strength) {
+    this.hits += strength || 1;
     this.speedModifier = 1 / (this.hits + 1);
     this.setDestination();
 
@@ -181,9 +181,9 @@ Bulldog.prototype = Object.create(Unit.prototype);
 
 function Leader(location) {
     Unit.call(this, 'Leader', config.leaderColor, location);
-    this.baseSpeed = 1.5;
+    this.baseSpeed = 2;
     this.baseAccuracy = config.leaderAccuracy;
-    this.points = 100;
+    this.points = 1000;
 
     if (Math.random() * 100 <= config.whiteDiscPercent) {
         this.disc = new White(this);
