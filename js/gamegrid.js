@@ -13,6 +13,7 @@ GameGrid.prototype.init = function() {
 
     // Event listeners
     addEventListener('UnitHit', this.unitHit);
+    addEventListener('UnitHit', this.regeneration);
     addEventListener('Score', this.updateScoreboard);
     addEventListener('GameOver', this.gameOver);
 
@@ -80,6 +81,10 @@ GameGrid.prototype.unitHit = function(e) {
             dispatchEvent(new Event('GameOver'));
         }
     }
+}
+
+GameGrid.prototype.regeneration = function(e) {
+    e.detail.winner.Regenerate();
 }
 
 GameGrid.prototype.updateScoreboard = function(e) {

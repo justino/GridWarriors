@@ -126,16 +126,11 @@ Unit.prototype.Hit = function() {
     this.speedModifier = 1 / (this.hits + 1);
     this.setDestination();
 
-    if (this.hits < this.maxHits && this.regenerates) {
-        this.stopRegeneration();
-        this.regenerateTimer = setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
-    }
-
     console.log(`${this.name} hit. ${this.maxHits - this.hits} left`);
 }
 
 Unit.prototype.Regenerate = function() {
-    if (! this.regenerates) { return; }
+    if (! this.regenerates) return;
 
     if (this.hits > 0) {
         this.hits -= 1;
@@ -146,20 +141,12 @@ Unit.prototype.Regenerate = function() {
     }
 }
 
-Unit.prototype.stopRegeneration = function() {
-    if (this.regenerateTimer) {
-        clearTimeout(this.regenerateTimer);
-        this.regenerateTimer = null;
-    }
-}
-
 Unit.prototype.isDead = function() {
     return this.hits >= this.maxHits;
 }
 
 Unit.prototype.remove = function() {
     var _ = this;
-    _.stopRegeneration();
 
     if (_.isPlayer) return;
 
