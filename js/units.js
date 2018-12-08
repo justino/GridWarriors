@@ -73,10 +73,10 @@ Unit.prototype.UpdateDiscStatus = function() {
 }
 
 Unit.prototype.ThrowDisc = function() {
-    if (! tron.gameGrid.player) { return; }
+    if (! tran.gameGrid.player) { return; }
 
     // Aim at player
-    var aimFor = Vector.Clone(tron.gameGrid.player.location);
+    var aimFor = Vector.Clone(tran.gameGrid.player.location);
 
     // Apply Accuracy (somewhere around the player)
     aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
@@ -163,8 +163,8 @@ Unit.prototype.remove = function() {
 
     if (_.isPlayer) return;
 
-    tron.gameGrid.score += _.points;
-    tron.gameGrid.enemies = tron.gameGrid.enemies.filter(function(el) {
+    tran.gameGrid.score += _.points;
+    tran.gameGrid.enemies = tran.gameGrid.enemies.filter(function(el) {
         return el !== _;
     });
 

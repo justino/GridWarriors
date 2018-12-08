@@ -13,14 +13,14 @@ var config = {
     discReturnTime: 1000,  // Seconds
     discSpeed: 4,
     whiteDiscPercent: 20, // Percentage for when a white disc appears
-    warriorAccuracy: 100, // Percent
-    bulldogAccuracy: 25, // Percent
+    warriorAccuracy: 30, // Percent
+    bulldogAccuracy: 40, // Percent
     leaderAccuracy: 60, // Percent
     regenerationTime: 6, // Seconds
     
     // Colors
     gridColor: 'rgba(96, 96, 96, 1)',
-    tronColor: 'rgba(255, 0, 0, 1)',
+    tranColor: 'rgba(255, 0, 0, 1)',
     warriorColor: 'rgba(0, 255, 255, 1)',
     bulldogColor: 'rgba(255, 0, 255, 1)',
     leaderColor: 'rgba(0, 127, 255, 1)',

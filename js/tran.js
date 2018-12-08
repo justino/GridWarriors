@@ -18,9 +18,9 @@ window.onload = function() {
     })();
     
     console.log('TRON: Initialize TRON');
-    tron = new Tron(config.width, config.height);
-    tron.init();
-    tron.play();
+    tran = new Tron(config.width, config.height);
+    tran.init();
+    tran.play();
 }
 
 function Tron(width, height) {

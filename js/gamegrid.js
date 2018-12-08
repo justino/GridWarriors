@@ -1,6 +1,6 @@
 function GameGrid() {
     console.log("Grid: Rezzing");
-    this.canvas = tron.canvas;
+    this.canvas = tran.canvas;
     this.context = this.canvas.getContext('2d');
 
     this.score = 0;
@@ -66,17 +66,17 @@ GameGrid.prototype.unitHit = function(e) {
 
     if (e.detail.winner.isPlayer) {
         if (e.detail.loser.isDead()) {
-            tron.gameGrid.score += e.detail.loser.points;
-            dispatchEvent(new CustomEvent('Score', { detail: { score: tron.gameGrid.score } }));
+            tran.gameGrid.score += e.detail.loser.points;
+            dispatchEvent(new CustomEvent('Score', { detail: { score: tran.gameGrid.score } }));
 
             e.detail.loser.remove();
-            tron.gameGrid.wave.hit();
+            tran.gameGrid.wave.hit();
         }
     }
     else {
         if (e.detail.loser.isDead()) {
             e.detail.loser.remove();
-            tron.gameGrid.player = null;
+            tran.gameGrid.player = null;
             dispatchEvent(new Event('GameOver'));
         }
     }

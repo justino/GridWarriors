@@ -7,9 +7,9 @@ Wave.prototype.init = function() {
 }
 
 Wave.prototype.next = function() {
-    if (tron.gameGrid.enemies.length >= config.enemyCount) return;
+    if (tran.gameGrid.enemies.length >= config.enemyCount) return;
 
-    var unitsToSpawn = config.enemyCount - tron.gameGrid.enemies.length;
+    var unitsToSpawn = config.enemyCount - tran.gameGrid.enemies.length;
     console.log(`Spawning ${unitsToSpawn} units`);
 
     for (var i = 0; i < unitsToSpawn; i++) {
@@ -36,6 +36,6 @@ Wave.prototype.spawnUnit = function() {
     units.push(Warrior);
 
     var unit = units[Math.floor(Math.random() * units.length)];
-    var location = new Vector([ Math.random() * (tron.gameGrid.canvas.width - config.unitSize * 2) + config.unitSize, Math.random() * (tron.gameGrid.canvas.height - config.unitSize * 2) + config.unitSize ]);
-    tron.gameGrid.enemies.push(new unit(location));
+    var location = new Vector([ Math.random() * (tran.gameGrid.canvas.width - config.unitSize * 2) + config.unitSize, Math.random() * (tran.gameGrid.canvas.height - config.unitSize * 2) + config.unitSize ]);
+    tran.gameGrid.enemies.push(new unit(location));
 }
