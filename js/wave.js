@@ -33,6 +33,9 @@ Wave.prototype.hit = function() {
 
 Wave.prototype.spawnUnit = function() {
     var units = [];
+
+    if (tran.gameGrid.score > 3000) units.push(Leader);
+    if (tran.gameGrid.score > 1000) units.push(Bulldog);
     units.push(Warrior);
 
     var unit = units[Math.floor(Math.random() * units.length)];

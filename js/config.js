@@ -13,9 +13,9 @@ var config = {
     discReturnTime: 1000,  // Seconds
     discSpeed: 4,
     whiteDiscPercent: 20, // Percentage for when a white disc appears
-    warriorAccuracy: 30, // Percent
-    bulldogAccuracy: 40, // Percent
-    leaderAccuracy: 60, // Percent
+    warriorAccuracy: 85, // Percent
+    bulldogAccuracy: 90, // Percent
+    leaderAccuracy: 95, // Percent
     regenerationTime: 6, // Seconds
     
     // Colors

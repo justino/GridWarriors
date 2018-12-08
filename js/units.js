@@ -198,7 +198,7 @@ function Leader(location) {
     this.baseAccuracy = config.leaderAccuracy;
     this.points = 100;
 
-    if (Math.random() * 100 <= settings.whiteDiscPercent) {
+    if (Math.random() * 100 <= config.whiteDiscPercent) {
         this.disc = new White(this);
     }
     else {
