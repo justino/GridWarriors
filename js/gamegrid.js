@@ -1,19 +1,22 @@
-function GameGrid(canvas) {
+function GameGrid() {
     console.log("Grid: Rezzing");
-    this.canvas = canvas;
+    this.canvas = tron.canvas;
     this.context = this.canvas.getContext('2d');
 
-    this.init();
+    this.score = 0;
+    this.enemies = [];
 }
 
 GameGrid.prototype.init = function() {
-    this.score = 0;
-    this.player = new Player(this, new Vector([this.canvas.width / 2, this.canvas.height / 2]));
-    this.enemies = [];
-    this.wave = new Wave(this);
+    this.player = new Player(new Vector([this.canvas.width / 2, this.canvas.height / 2]));
+    this.wave = new Wave();
+
+    // Event listeners
+    addEventListener('UnitHit', this.unitHit);
+    addEventListener('Score', this.updateScoreboard);
+    addEventListener('GameOver', this.gameOver);
 
     // Begin game
-    this.updateScoreboard();
     this.wave.init();
 }
 
@@ -34,60 +37,57 @@ GameGrid.prototype.Update = function() {
     if (! this.player) { return; }
 
     // Check for hits/deaths by player
-    if (this.player.disc.status == 'deadly') {
-        for (var i = 0; i < this.enemies.length; i++) {
-            if (this.player.disc.Collided(this.enemies[i])) {
-                this.enemies[i].Hit();
-                this.wave.hit();
-                console.log(this.enemies[i].name + ' hit. ' + (this.enemies[i].maxHits - this.enemies[i].hits) + ' left');
-
-                // Check to see if they died
-                if (this.enemies[i].hits == this.enemies[i].maxHits) {
-                    console.log(this.enemies[i].name + ' derezzed');
-                    if (this.enemies[i].regenerateTimer) {
-                        window.clearTimeout(this.enemies[i].regenerateTimer);
-                    }
-                    this.score += this.enemies[i].points;
-                    if (this.enemies.length === 0) this.score += 1000;
-                    this.updateScoreboard();
-
-                    this.enemies.splice(i, 1);
-                }
-
-                // Return disc to player
-                this.player.disc.Return();
-            }
+    if (this.player.disc.status === 'deadly') {
+        for (var enemy of this.enemies) {
+            this.player.disc.checkCollide(enemy);
         }
     }
+
     // Check for player hits/death
-    for (var i = 0; i < this.enemies.length; i++) {
-        if (this.enemies[i].disc && this.enemies[i].disc.status == 'deadly' && this.enemies[i].disc.Collided(this.player)) {
-            this.player.Hit();
-            console.log(this.player.name + ' hit. ' + (this.player.maxHits - this.player.hits) + ' left');
-
-            if (this.player.hits == this.player.maxHits) {
-                this.wave.end();
-                console.log(this.player.name + ' derezzed');
-                console.log('Game Over');
-                this.player = null;
-                break;
-            }
-
-            // Return disc to enemy
-            this.enemies[i].disc.Return();
-        }
+    for (var enemy of this.enemies) {
+        enemy.disc.checkCollide(this.player);
     }
 
     // Movement
     if (this.player) {
         this.player.Update();
 
-        for (var i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].Update();
+        for (var enemy of this.enemies) {
+            enemy.Update();
         }
     }
 }
 
-GameGrid.prototype.updateScoreboard = function() {
-    document.querySelector('#score').innerHTML = this.score;
+GameGrid.prototype.unitHit = function(e) {
+    console.log('Disc Collided');
+
+    e.detail.loser.Hit();
+    e.detail.winner.disc.Return();
+
+    if (e.detail.winner.isPlayer) {
+        if (e.detail.loser.isDead()) {
+            tron.gameGrid.score += e.detail.loser.points;
+            dispatchEvent(new CustomEvent('Score', { detail: { score: tron.gameGrid.score } }));
+
+            e.detail.loser.remove();
+            tron.gameGrid.wave.hit();
+        }
+    }
+    else {
+        if (e.detail.loser.isDead()) {
+            e.detail.loser.remove();
+            tron.gameGrid.player = null;
+            dispatchEvent(new Event('GameOver'));
+        }
+    }
+}
+
+GameGrid.prototype.updateScoreboard = function(e) {
+    document.querySelector('#score').innerHTML = e.detail.score;
+
+    console.log('Updated scoreboard');
+}
+
+GameGrid.prototype.gameOver = function(e) {
+    console.log('Game Over');
 }

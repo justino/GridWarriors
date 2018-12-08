@@ -1,3 +1,9 @@
+Array.prototype.remove = function(value) {
+    return this.filter(function(element) {
+        return element != value;
+    });
+}
+
 window.onload = function() {
     // Build Animation System
     window.requestAnimFrame = (function() {
@@ -7,20 +13,18 @@ window.onload = function() {
             window.oRequestAnimationFrame      ||
             window.msRequestAnimationFrame     ||
             function(callback) {
-               window.setTimeout(callback, 1000 / 60);
+               setTimeout(callback, 1000 / 60);
             };
     })();
     
     console.log('TRON: Initialize TRON');
     tron = new Tron(config.width, config.height);
-    tron.Play();
+    tron.init();
+    tron.play();
 }
 
 function Tron(width, height) {
     this.initCanvas(width, height);
-    
-    this.gameGrid = new GameGrid(this.canvas);
-    this.gameGrid.Draw();
 }
 
 Tron.prototype.initCanvas = function(width, height) {
@@ -31,9 +35,15 @@ Tron.prototype.initCanvas = function(width, height) {
     this.canvas.height = height;
 }
 
-Tron.prototype.Play = function() {
+Tron.prototype.init = function() {
+    this.gameGrid = new GameGrid();
+    this.gameGrid.init();
+    this.gameGrid.Draw();
+}
+
+Tron.prototype.play = function() {
     this.gameGrid.Update();
     this.gameGrid.Draw();
     
-    requestAnimFrame(this.Play.bind(this));
+    requestAnimFrame(this.play.bind(this));
 }

@@ -1,9 +1,13 @@
-function Unit(name, gameGrid, width, height, color, location) {
+function Unit(name, color, location) {
     this.isPlayer = false;
     this.canBlock = false;
+    this.regenerates = false;
+
+    var width = config.unitSize;
+    var height = config.unitSize;
+    
     this.baseSpeed = 1;
     this.speedModifier = 1;
-    this.regenerates = false;
     this.recoveryRate = 4;
     this.maxHits = 1;
     this.hits = 0;
@@ -12,7 +16,7 @@ function Unit(name, gameGrid, width, height, color, location) {
     this.regenerateTimer = null;
     this.points = 100;
 
-    Sprite.call(this, name, gameGrid, width, height, color, location);
+    Sprite.call(this, name, width, height, color, location);
 
     this.velocity = new Vector([0, 0]);
     this.setDestination();
@@ -42,7 +46,7 @@ Unit.prototype.Update = function() {
         this.setDestination();
     }
 
-    // Make sure Unit statys on the grid
+    // Make sure Unit stays on the grid
     var hitEdge = this.bindToGameGrid();
     if (hitEdge[0] || hitEdge[1]) {
         // Hit an edge, make a new destination
@@ -69,10 +73,10 @@ Unit.prototype.UpdateDiscStatus = function() {
 }
 
 Unit.prototype.ThrowDisc = function() {
-    if (! this.gameGrid.player) { return; }
+    if (! tron.gameGrid.player) { return; }
 
     // Aim at player
-    var aimFor = Vector.Clone(this.gameGrid.player.location);
+    var aimFor = Vector.Clone(tron.gameGrid.player.location);
 
     // Apply Accuracy (somewhere around the player)
     aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
@@ -123,59 +127,88 @@ Unit.prototype.Hit = function() {
     this.setDestination();
 
     if (this.hits < this.maxHits && this.regenerates) {
-        this.regenerateTimer = window.setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
+        this.stopRegeneration();
+        this.regenerateTimer = setTimeout(this.Regenerate.bind(this), config.regenerationTime * 1000);
     }
+
+    console.log(`${this.name} hit. ${this.maxHits - this.hits} left`);
 }
 
 Unit.prototype.Regenerate = function() {
     if (! this.regenerates) { return; }
 
     if (this.hits > 0) {
-        console.log(this.name + ' regenerated 1 HP');
         this.hits -= 1;
         this.speedModifier = (0.5 * this.hits) || 1;
         this.setDestination();
+
+        console.log(`${this.name} regenerated 1 HP`);
     }
+}
+
+Unit.prototype.stopRegeneration = function() {
+    if (this.regenerateTimer) {
+        clearTimeout(this.regenerateTimer);
+        this.regenerateTimer = null;
+    }
+}
+
+Unit.prototype.isDead = function() {
+    return this.hits >= this.maxHits;
+}
+
+Unit.prototype.remove = function() {
+    var _ = this;
+    _.stopRegeneration();
+
+    if (_.isPlayer) return;
+
+    tron.gameGrid.score += _.points;
+    tron.gameGrid.enemies = tron.gameGrid.enemies.filter(function(el) {
+        return el !== _;
+    });
+
+    console.log(`${_.name} derezzed`);
 }
 
 // -------------------------------------------------------------------------- //
 // Different Unit Types
 // -------------------------------------------------------------------------- //
 
-function Warrior(gameGrid, location) {
-    Unit.call(this, 'Warrior', gameGrid, config.unitSize, config.unitSize, config.warriorColor, location);
-    this.disc = new DarkBlue(gameGrid, this);
+function Warrior(location) {
+    Unit.call(this, 'Warrior', config.warriorColor, location);
+    this.disc = new DarkBlue(this);
 }
 Warrior.prototype = Object.create(Unit.prototype);
 
-function Bulldog(gameGrid, location) {
-    Unit.call(this, 'Bulldog', gameGrid, config.unitSize, config.unitSize, config.bulldogColor, location);
+function Bulldog(location) {
+    Unit.call(this, 'Bulldog', config.bulldogColor, location);
     this.baseSpeed = .5;
     this.regenerates = true;
     this.maxHits = 2;
     this.baseAccuracy = config.bulldogAccuracy;
-    this.disc = new DarkBlue(gameGrid, this);
+    this.disc = new DarkBlue(this);
     this.points = 500;
 }
 Bulldog.prototype = Object.create(Unit.prototype);
 
-function Leader(gameGrid, location) {
-    Unit.call(this, 'Leader', gameGrid, config.unitSize, config.unitSize, config.leaderColor, location);
+function Leader(location) {
+    Unit.call(this, 'Leader', config.leaderColor, location);
     this.baseSpeed = 1.5;
     this.baseAccuracy = config.leaderAccuracy;
     this.points = 100;
 
     if (Math.random() * 100 <= settings.whiteDiscPercent) {
-        this.disc = new White(gameGrid, this);
+        this.disc = new White(this);
     }
     else {
-        this.disc = new Brown(gameGrid, this);
+        this.disc = new Brown(this);
     }
 }
 Leader.prototype = Object.create(Unit.prototype);
 
-function Guard(gameGrid, location) {
-    Unit.call(this, 'Guard', gameGrid, config.unitSize, config.unitSize, config.guardColor, location);
+function Guard(location) {
+    Unit.call(this, 'Guard', config.guardColor, location);
     this.baseSpeed = 2;
     this.regenerates = true;
     this.maxHits = 4;

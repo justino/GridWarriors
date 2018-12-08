@@ -1,13 +1,13 @@
-function Sprite(name, gameGrid, width, height, color, location) {
+function Sprite(name, width, height, color, location) {
     this.name = name;
-    this.gameGrid = gameGrid;
     this.width = width;
     this.height = height;
     this.color = color;
+
     this.location = Vector.Clone(location);
     
-    this.canvas = this.gameGrid.canvas;
-    this.context = this.gameGrid.context;
+    this.canvas = tron.gameGrid.canvas;
+    this.context = tron.gameGrid.context;
     this.buildBoundingBox();
     
     // Filled in by child class

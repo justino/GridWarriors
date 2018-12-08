@@ -1,13 +1,13 @@
 // Special Type of Unit
 
-function Player(gameGrid, location) {
+function Player(location) {
+    Unit.call(this, 'Tron', config.tronColor, location);
+
     this.isPlayer = true;
     this.canBlock = true;
     this.regenerates = true;
-
-    Unit.call(this, 'Tron', gameGrid, config.unitSize, config.unitSize, config.tronColor, location);
     this.maxHits = 3;
-    this.disc = new Yellow(gameGrid, this);
+    this.disc = new Yellow(this);
 }
 Player.prototype = Object.create(Unit.prototype);
 
@@ -65,8 +65,8 @@ Player.prototype.UpdateDiscStatus = function() {
 
 // -------------------------------------------------------------------------- //
 
-function Yellow(gameGrid, unit) {
-    Disc.call(this, 'Yellow', gameGrid, 'rgba(255, 255, 0, 1)', unit)
+function Yellow(unit) {
+    Disc.call(this, 'Yellow', 'rgba(255, 255, 0, 1)', unit)
 }
 Yellow.prototype = Object.create(Disc.prototype);
 

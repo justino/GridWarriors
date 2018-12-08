@@ -1,4 +1,4 @@
-function Disc(name, gameGrid, color, unit) {
+function Disc(name, color, unit) {
     this.strength = 1;
     this.homing = false;
     this.status = 'held'; // deadly, bouncing, returning, blocking
@@ -11,7 +11,7 @@ function Disc(name, gameGrid, color, unit) {
     this.primed = false;
     this.collided = null;
 
-    Sprite.call(this, name, gameGrid, config.discSize, config.discSize, color, this.owner.location);
+    Sprite.call(this, name, config.discSize, config.discSize, color, this.owner.location);
 }
 Disc.prototype = Object.create(Sprite.prototype);
 
@@ -38,7 +38,7 @@ Disc.prototype.Update = function() {
 
         if (this.status != 'bouncing') {
             this.status = 'bouncing';
-            window.setTimeout(this.Return.bind(this), config.discReturnTime);
+            setTimeout(this.Return.bind(this), config.discReturnTime);
         }
     }
 }
@@ -87,6 +87,41 @@ Disc.prototype.Collided = function(unit) {
     return collision;
 }
 
+Disc.prototype.checkCollide = function(unit) {
+    // We don't care about non-deadly discs
+    if (this.status !== 'deadly') return;
+
+    var collision = this.Collision(unit);
+
+    /* If the disc has already collided with the current unit
+       ignore, we don't want to hit them again until we've stopped colliding
+       with them */
+    if (unit === this.collided && collision) {
+        return;
+    }
+
+    /* If the disc is marked as being collided with this unit
+       but it isn't collided any more, unmark it. */
+    if (unit === this.collided && ! collision) {
+        this.collided = null;
+    }
+
+    /* If this disc has collided with this unit
+       then mark the disc as being collided with this unit */
+    if (collision) {
+        this.collided = unit;
+    }
+
+    if (collision) {
+        dispatchEvent(new CustomEvent('UnitHit', {
+            detail: { 
+                winner: this.owner,
+                loser: unit
+            }
+        }));
+    }
+}
+
 Disc.prototype.Thrown = function(direction) {
     this.status = 'deadly';
     var velocity = new Vector([0, 0]);
@@ -126,19 +161,19 @@ Disc.prototype.BounceY = function() {
 // Different Disc Types
 // -------------------------------------------------------------------------- //
 
-function DarkBlue(gameGrid, unit) {
-    Disc.call(this, 'DarkBlue', gameGrid, 'rgba(0, 0, 128, 1)', unit);
+function DarkBlue(unit) {
+    Disc.call(this, 'DarkBlue', 'rgba(0, 0, 128, 1)', unit);
 }
 DarkBlue.prototype = Object.create(Disc.prototype);
 
-function Brown(gameGrid, unit) {
-    Disc.call(this, 'Brown', gameGrid, 'rgba(139, 69, 19, 1)', unit);
+function Brown(unit) {
+    Disc.call(this, 'Brown', 'rgba(139, 69, 19, 1)', unit);
     this.strength = 2;
 }
 Brown.prototype = Object.create(Disc.prototype);
 
-function White(gameGrid, unit) {
-    Disc.call(this, 'White', gameGrid, 'rgba(255, 255, 255, 1)', unit);
+function White(unit) {
+    Disc.call(this, 'White', 'rgba(255, 255, 255, 1)', unit);
     this.homing = true;
 }
 White.prototype = Object.create(Disc.prototype);

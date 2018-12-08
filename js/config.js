@@ -7,7 +7,7 @@ var config = {
 
     // Units
     enemyCount: 3,
-    respawnInterval: 10, // Seconds
+    respawnInterval: 5, // Seconds
     
     // Game Play Params
     discReturnTime: 1000,  // Seconds
@@ -16,7 +16,7 @@ var config = {
     warriorAccuracy: 100, // Percent
     bulldogAccuracy: 25, // Percent
     leaderAccuracy: 60, // Percent
-    regenerationTime: 3, // Seconds
+    regenerationTime: 6, // Seconds
     
     // Colors
     gridColor: 'rgba(96, 96, 96, 1)',
