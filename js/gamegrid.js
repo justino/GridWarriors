@@ -7,11 +7,13 @@ function GameGrid(canvas) {
 }
 
 GameGrid.prototype.init = function() {
+    this.score = 0;
     this.player = new Player(this, new Vector([this.canvas.width / 2, this.canvas.height / 2]));
     this.enemies = [];
     this.wave = new Wave(this);
 
     // Begin game
+    this.updateScoreboard();
     this.wave.init();
 }
 
@@ -45,6 +47,9 @@ GameGrid.prototype.Update = function() {
                     if (this.enemies[i].regenerateTimer) {
                         window.clearTimeout(this.enemies[i].regenerateTimer);
                     }
+                    this.score += this.enemies[i].points;
+                    if (this.enemies.length === 0) this.score += 1000;
+                    this.updateScoreboard();
 
                     this.enemies.splice(i, 1);
                 }
@@ -81,4 +86,8 @@ GameGrid.prototype.Update = function() {
             this.enemies[i].Update();
         }
     }
+}
+
+GameGrid.prototype.updateScoreboard = function() {
+    document.querySelector('#score').innerHTML = this.score;
 }

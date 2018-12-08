@@ -10,6 +10,7 @@ function Unit(name, gameGrid, width, height, color, location) {
     this.baseAccuracy = config.warriorAccuracy;
     this.accuracyModifier = 0;
     this.regenerateTimer = null;
+    this.points = 100;
 
     Sprite.call(this, name, gameGrid, width, height, color, location);
 
@@ -154,6 +155,7 @@ function Bulldog(gameGrid, location) {
     this.maxHits = 2;
     this.baseAccuracy = config.bulldogAccuracy;
     this.disc = new DarkBlue(gameGrid, this);
+    this.points = 500;
 }
 Bulldog.prototype = Object.create(Unit.prototype);
 
@@ -161,6 +163,7 @@ function Leader(gameGrid, location) {
     Unit.call(this, 'Leader', gameGrid, config.unitSize, config.unitSize, config.leaderColor, location);
     this.baseSpeed = 1.5;
     this.baseAccuracy = config.leaderAccuracy;
+    this.points = 100;
 
     if (Math.random() * 100 <= settings.whiteDiscPercent) {
         this.disc = new White(gameGrid, this);
@@ -176,6 +179,7 @@ function Guard(gameGrid, location) {
     this.baseSpeed = 2;
     this.regenerates = true;
     this.maxHits = 4;
+    this.points = 2000;
 
     this.disc = null; // Has Stun Pole
 }
