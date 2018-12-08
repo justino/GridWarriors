@@ -4,6 +4,10 @@ var config = {
     height: 600,
     unitSize: 16,
     discSize: 4, // Should be divisible by 2
+
+    // Units
+    enemyCount: 3,
+    respawnInterval: 10, // Seconds
     
     // Game Play Params
     discReturnTime: 1000,  // Seconds

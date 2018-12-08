@@ -2,17 +2,17 @@ function GameGrid(canvas) {
     console.log("Grid: Rezzing");
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');
+
     this.init();
 }
 
 GameGrid.prototype.init = function() {
     this.player = new Player(this, new Vector([this.canvas.width / 2, this.canvas.height / 2]));
-    // This will be managed by Waves
-    this.enemies = [
-        new Warrior(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ])),
-        new Warrior(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ])),
-        new Bulldog(this, new Vector([ Math.random() * (this.canvas.width - config.unitSize) + config.unitSize, Math.random() * (this.canvas.height - config.unitSize) + config.unitSize ]))
-    ];
+    this.enemies = [];
+    this.wave = new Wave(this);
+
+    // Begin game
+    this.wave.init();
 }
 
 GameGrid.prototype.Draw = function() {
@@ -36,6 +36,7 @@ GameGrid.prototype.Update = function() {
         for (var i = 0; i < this.enemies.length; i++) {
             if (this.player.disc.Collided(this.enemies[i])) {
                 this.enemies[i].Hit();
+                this.wave.hit();
                 console.log(this.enemies[i].name + ' hit. ' + (this.enemies[i].maxHits - this.enemies[i].hits) + ' left');
 
                 // Check to see if they died
@@ -44,6 +45,7 @@ GameGrid.prototype.Update = function() {
                     if (this.enemies[i].regenerateTimer) {
                         window.clearTimeout(this.enemies[i].regenerateTimer);
                     }
+
                     this.enemies.splice(i, 1);
                 }
 
@@ -59,6 +61,7 @@ GameGrid.prototype.Update = function() {
             console.log(this.player.name + ' hit. ' + (this.player.maxHits - this.player.hits) + ' left');
 
             if (this.player.hits == this.player.maxHits) {
+                this.wave.end();
                 console.log(this.player.name + ' derezzed');
                 console.log('Game Over');
                 this.player = null;
