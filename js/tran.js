@@ -17,31 +17,31 @@ window.onload = function() {
             };
     })();
     
-    console.log('TRON: Initialize TRON');
-    tran = new Tron(config.width, config.height);
+    console.log('TRAN: Initialize TRAN');
+    tran = new Tran(config.width, config.height);
     tran.init();
     tran.play();
 }
 
-function Tron(width, height) {
+function Tran(width, height) {
     this.initCanvas(width, height);
 }
 
-Tron.prototype.initCanvas = function(width, height) {
-    console.log('TRON: Init Canvas');
+Tran.prototype.initCanvas = function(width, height) {
+    console.log('TRAN: Init Canvas');
     
     this.canvas = document.getElementById('gamegrid');
     this.canvas.width = width;
     this.canvas.height = height;
 }
 
-Tron.prototype.init = function() {
+Tran.prototype.init = function() {
     this.gameGrid = new GameGrid();
     this.gameGrid.init();
     this.gameGrid.Draw();
 }
 
-Tron.prototype.play = function() {
+Tran.prototype.play = function() {
     this.gameGrid.Update();
     this.gameGrid.Draw();
     

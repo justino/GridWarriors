@@ -1,7 +1,7 @@
 // Special Type of Unit
 
 function Player(location) {
-    Unit.call(this, 'Tron', config.tranColor, location);
+    Unit.call(this, 'Tran', config.tranColor, location);
 
     this.isPlayer = true;
     this.canBlock = true;
