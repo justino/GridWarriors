@@ -5,26 +5,20 @@ Array.prototype.remove = function(value) {
 }
 
 window.onload = function() {
-    // Build Animation System
-    window.requestAnimFrame = (function() {
-        return window.requestAnimationFrame    ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            window.oRequestAnimationFrame      ||
-            window.msRequestAnimationFrame     ||
-            function(callback) {
-               setTimeout(callback, 1000 / 60);
-            };
-    })();
-    
     console.log('TRAN: Initialize TRAN');
     tran = new Tran(config.width, config.height);
-    tran.init();
-    tran.play();
 }
 
 function Tran(width, height) {
     this.initCanvas(width, height);
+    this.playing = false;
+
+    addEventListener('GameOver', this.gameOver.bind(this));
+    document.querySelector('.overlay button').addEventListener('click', () => {
+        tran.startGame();
+    });
+
+    this.init();
 }
 
 Tran.prototype.initCanvas = function(width, height) {
@@ -36,14 +30,42 @@ Tran.prototype.initCanvas = function(width, height) {
 }
 
 Tran.prototype.init = function() {
+    this.overlay();
+}
+
+Tran.prototype.startGame = function() {
+    this.overlay(true);
+
     this.gameGrid = new GameGrid();
     this.gameGrid.init();
     this.gameGrid.Draw();
+
+    this.playing = true;
+    this.play();
 }
 
 Tran.prototype.play = function() {
     this.gameGrid.Update();
     this.gameGrid.Draw();
     
-    requestAnimFrame(this.play.bind(this));
+    if (this.playing) {
+        requestAnimationFrame(this.play.bind(this));
+    }
+}
+
+Tran.prototype.gameOver = function() {
+    console.log('Game Over');
+    this.playing = false;
+
+    this.init();
+}
+
+Tran.prototype.overlay = function(hide = false) {
+    var overlay = document.querySelector('.overlay');
+    var func = 'add';
+    if (hide) {
+        func = 'remove';
+    }
+
+    overlay.classList[func]('show');
 }

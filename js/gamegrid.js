@@ -15,7 +15,6 @@ GameGrid.prototype.init = function() {
     addEventListener('UnitHit', this.unitHit);
     addEventListener('UnitHit', this.regeneration);
     addEventListener('Score', this.updateScoreboard);
-    addEventListener('GameOver', this.gameOver);
 
     // Begin game
     this.wave.init();
@@ -91,8 +90,4 @@ GameGrid.prototype.updateScoreboard = function(e) {
     document.querySelector('#score').innerHTML = e.detail.score;
 
     console.log('Updated scoreboard');
-}
-
-GameGrid.prototype.gameOver = function(e) {
-    console.log('Game Over');
 }
