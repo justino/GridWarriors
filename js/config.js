@@ -19,7 +19,7 @@ var config = {
     regenerationTime: 6, // Seconds
     
     // Colors
-    gridColor: 'rgba(204, 204, 204, 1)',
+    gridColor: 'rgba(130, 130, 130, 1)',
     tranColor: 'rgba(255, 0, 0, 1)',
     warriorColor: 'rgba(97, 170, 200, 1)',
     bulldogColor: 'rgba(255, 0, 255, 1)',
