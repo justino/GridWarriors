@@ -1,27 +1,20 @@
-function GameGrid() {
+function GameGrid(canvas) {
     console.log("Grid: Rezzing");
-    this.canvas = tran.canvas;
-    this.context = this.canvas.getContext('2d');
 
-    this.score = 0;
-    this.enemies = [];
+    addEventListener('UnitHit', this.unitHit);
 }
 
-GameGrid.prototype.init = function() {
-    this.player = new Player(new Vector([this.canvas.width / 2, this.canvas.height / 2]));
+GameGrid.prototype.reset = function() {
+    this.enemies = [];
+    this.player = new Player(
+        new Vector([tran.canvas.width / 2, tran.canvas.height / 2])
+    );
     this.wave = new Wave();
-
-    // Event listeners
-    addEventListener('UnitHit', this.unitHit);
-    addEventListener('UnitHit', this.regeneration);
-    addEventListener('Score', this.updateScoreboard);
-
-    // Begin game
-    this.wave.init();
 }
 
 GameGrid.prototype.Draw = function() {
     this.DrawBackground();
+
     if (this.player) { this.player.Draw() };
     for (var i = 0; i < this.enemies.length; i++) {
         this.enemies[i].Draw();
@@ -29,8 +22,8 @@ GameGrid.prototype.Draw = function() {
 }
 
 GameGrid.prototype.DrawBackground = function() {
-    this.context.fillStyle = config.gridColor;
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    tran.context.fillStyle = config.gridColor;
+    tran.context.fillRect(0, 0, tran.canvas.width, tran.canvas.height);
 }
 
 GameGrid.prototype.Update = function() {
@@ -62,15 +55,13 @@ GameGrid.prototype.unitHit = function(e) {
     console.log('Disc Collided');
 
     e.detail.loser.Hit(e.detail.winner.disc.strength);
-    e.detail.winner.disc.Return();
 
     if (e.detail.winner.isPlayer) {
         if (e.detail.loser.isDead()) {
-            tran.gameGrid.score += e.detail.loser.points;
-            dispatchEvent(new CustomEvent('Score', { detail: { score: tran.gameGrid.score } }));
+            dispatchEvent(new CustomEvent('Score', { detail: { score: e.detail.loser.points } }));
 
             e.detail.loser.remove();
-            tran.gameGrid.wave.hit();
+            tran.gameGrid.wave.trigger();
         }
     }
     else {
@@ -80,14 +71,4 @@ GameGrid.prototype.unitHit = function(e) {
             dispatchEvent(new Event('GameOver'));
         }
     }
-}
-
-GameGrid.prototype.regeneration = function(e) {
-    e.detail.winner.Regenerate();
-}
-
-GameGrid.prototype.updateScoreboard = function(e) {
-    document.querySelector('#score').innerHTML = e.detail.score;
-
-    console.log('Updated scoreboard');
 }

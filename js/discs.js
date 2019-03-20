@@ -94,6 +94,10 @@ Disc.prototype.checkCollide = function(unit) {
                 loser: unit
             }
         }));
+        
+        // When a collision occurs, attempt to regenerate the disc owner
+        // if they are capable
+        this.owner.Regenerate();
     }
 }
 

@@ -42,7 +42,7 @@ body {
     display: flex;
 }
 
-.start-game {
+button.start {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
@@ -54,6 +54,6 @@ body {
     z-index: 1;
     border: none;
 }
-.start-game:hover {
+button.start:hover {
     background-color: #fff;
 }

@@ -1,71 +1,59 @@
-Array.prototype.remove = function(value) {
-    return this.filter(function(element) {
-        return element != value;
-    });
-}
+function Tran(canvas, scoreBoard) {
+    this.canvas = canvas;
+    this.context = this.canvas.getContext('2d');
 
-window.onload = function() {
-    console.log('TRAN: Initialize TRAN');
-    tran = new Tran(config.width, config.height);
-}
+    this.scoreBoard = scoreBoard;
+    this.gameGrid = new GameGrid(this.canvas);
 
-function Tran(width, height) {
-    this.initCanvas(width, height);
+    this.canvas.width = config.width;
+    this.canvas.height = config.height;
+
+    this.scoreTotal = 0;
     this.playing = false;
 
     addEventListener('GameOver', this.gameOver.bind(this));
-    document.querySelector('.overlay button').addEventListener('click', () => {
-        tran.startGame();
+    addEventListener('Score', this.score.bind(this));
+
+    document.querySelector('button.start').addEventListener('click', () => {
+        this.hideOverlay();
+
+        this.gameGrid.reset();
+        this.playing = true;
+        this.play();
     });
 
-    this.init();
-}
-
-Tran.prototype.initCanvas = function(width, height) {
-    console.log('TRAN: Init Canvas');
-    
-    this.canvas = document.getElementById('gamegrid');
-    this.canvas.width = width;
-    this.canvas.height = height;
-}
-
-Tran.prototype.init = function() {
-    this.overlay();
-}
-
-Tran.prototype.startGame = function() {
-    this.overlay(true);
-
-    this.gameGrid = new GameGrid();
-    this.gameGrid.init();
-    this.gameGrid.Draw();
-
-    this.playing = true;
-    this.play();
+    this.showOverlay();
 }
 
 Tran.prototype.play = function() {
-    this.gameGrid.Update();
-    this.gameGrid.Draw();
-    
     if (this.playing) {
+        this.gameGrid.Update();
+        this.gameGrid.Draw();
         requestAnimationFrame(this.play.bind(this));
     }
+}
+
+Tran.prototype.score = function(e) {
+    // Track score
+    this.scoreTotal += e.detail.score;
+    this.scoreBoard.querySelector('#score').innerHTML = this.scoreTotal;
+
+    console.log('Updated Scoreboard');
 }
 
 Tran.prototype.gameOver = function() {
     console.log('Game Over');
     this.playing = false;
 
-    this.init();
+    this.showOverlay();
 }
 
-Tran.prototype.overlay = function(hide = false) {
+Tran.prototype.showOverlay = function() {
     var overlay = document.querySelector('.overlay');
-    var func = 'add';
-    if (hide) {
-        func = 'remove';
-    }
+    overlay.classList.add('show');
+}
 
-    overlay.classList[func]('show');
+Tran.prototype.hideOverlay = function() {
+    var overlay = document.querySelector('.overlay');
+    overlay.classList.remove('show');
 }
