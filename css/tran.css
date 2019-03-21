@@ -11,8 +11,15 @@ body {
     margin: auto;
 }
 
-.scoreboard {
+#scoreboard {
     font-size: 1.5rem;
+    clear: both;
+}
+#scoreboard .left {
+    float: left;
+}
+#scoreboard .right {
+    float: right;
 }
 
 #gamegrid {

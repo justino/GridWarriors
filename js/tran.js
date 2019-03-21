@@ -8,12 +8,13 @@ function Tran(canvas, scoreBoard) {
     this.canvas.width = config.width;
     this.canvas.height = config.height;
 
-    this.scoreTotal = 0;
+    this.score = 0;
+    this.highScore = localStorage.getItem('highScore') || 0;
     this.playing = false;
     this.paused = false;
 
     addEventListener('GameOver', this.gameOver.bind(this));
-    addEventListener('Score', this.score.bind(this));
+    addEventListener('Score', this.updateScore.bind(this));
 
     addEventListener('keypress', this.pause.bind(this));
     document.querySelector('button.start').addEventListener('click', () => {
@@ -24,6 +25,7 @@ function Tran(canvas, scoreBoard) {
         this.play();
     });
 
+    this.updateHighScore();
     this.showOverlay();
 }
 
@@ -41,12 +43,23 @@ Tran.prototype.play = function() {
     }
 }
 
-Tran.prototype.score = function(e) {
+Tran.prototype.updateScore = function(e) {
     // Track score
-    this.scoreTotal += e.detail.score;
-    this.scoreBoard.querySelector('#score').innerHTML = this.scoreTotal;
+    this.score += e.detail.score;
+    this.scoreBoard.querySelector('#score').innerHTML = this.score;
+
+    this.updateHighScore();
 
     console.log('Updated Scoreboard');
+}
+
+Tran.prototype.updateHighScore = function() {
+    if (this.score > this.highScore) {
+        this.highScore = this.score;
+        localStorage.setItem('highScore', this.highScore);
+    }
+
+    this.scoreBoard.querySelector('#highscore').innerHTML = this.highScore;
 }
 
 Tran.prototype.pause = function(e) {
