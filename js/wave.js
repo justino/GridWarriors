@@ -34,8 +34,8 @@ Wave.prototype.trigger = function(interval = config.respawnInterval) {
 Wave.prototype.spawnUnit = function() {
     var units = [];
 
-    if (tran.scoreTotal > 3000) units.push(Leader);
-    if (tran.scoreTotal > 1000) units.push(Bulldog);
+    if (tran.score > 3000) units.push(Leader);
+    if (tran.score > 1000) units.push(Bulldog);
     units.push(Warrior);
 
     var unit = units[Math.floor(Math.random() * units.length)];
