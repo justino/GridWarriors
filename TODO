@@ -1,4 +1,12 @@
+* Guard Unit
 * Blocking
 * Doors
 * Recognizer
 * Paralyzer Unit
+
+* Units facing direction of destination
+
+* Graphics
+  * Bodies instead of squares
+  * Body animation sequences for running
+  * Scale units + discs to accomodate new graphics
