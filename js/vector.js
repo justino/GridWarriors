@@ -64,10 +64,21 @@ Vector.prototype.Limit = function(max) {
     }
 }
 
+Vector.prototype.Distance = function(vector) {
+    return Math.sqrt(
+        Math.abs(
+            Math.pow(vector.points[0] - this.points[0], 2) +
+            Math.pow(vector.points[1] - this.points[1], 2)
+        )
+    );
+}
+
 // Static Functions
-Vector.Random2D = function() {
-    var vector = new Vector([Math.random(), Math.random()]);
-    vector.Normalize();
+Vector.Random2D = function(width, height) {
+    var vector = new Vector([
+        Math.round(Math.random() * width),
+        Math.round(Math.random() * height)
+    ]);
     
     return vector;
 }

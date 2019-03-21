@@ -84,8 +84,8 @@ Sprite.prototype.Collision = function(sprite) {
 Sprite.prototype.TouchLocation = function(location) {
     this.context.beginPath()
     this.context.rect(
-        location.points[0] - config.destinationSize / 2, location.points[1] - config.destinationSize / 2,
-        config.destinationSize, config.destinationSize
+        location.points[0], location.points[1],
+        location.points[0], location.points[1]
     );
     
     return (

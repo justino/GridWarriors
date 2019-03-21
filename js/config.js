@@ -8,6 +8,7 @@ var config = {
     // Units
     enemyCount: 3,
     respawnInterval: 5, // Seconds
+    minimumDistance: 250,
     
     // Game Play Params
     discReturnTime: 1000,  // Seconds

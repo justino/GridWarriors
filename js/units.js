@@ -43,6 +43,7 @@ Unit.prototype.Update = function() {
 
     // Are we at our destination
     if (this.TouchLocation(this.destination)) {
+        // console.log(`Unit: ${this.name} got to destination, setting new destination`);
         this.setDestination();
     }
 
@@ -50,7 +51,7 @@ Unit.prototype.Update = function() {
     var hitEdge = this.bindToGameGrid();
     if (hitEdge[0] || hitEdge[1]) {
         // Hit an edge, make a new destination
-        //console.log('Unit: ' + this.name + ' hit an edge, setting new destination')
+        // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
         this.setDestination();
     }
 
@@ -97,18 +98,22 @@ Unit.prototype.CatchDisc = function() {
 }
 
 Unit.prototype.setDestination = function() {
-    this.velocity = new Vector([0, 0]);
+    // Try to generate a new location on the grid that is at least ${config.minimumDistance}
+    // away from itself. This prevents odd jumpy behavior when the locations are too close.
+    // If we try 3 times, stop trying and go with it, don't want to get bogged down.
+    var attempts = 0;
+    do {
+        attempts++;
 
-    // Random location on game grid
-    this.destination = new Vector([
-        Math.round(Math.random() * (this.canvas.width - config.unitSize)),
-        Math.round(Math.random() * (this.canvas.height - config.unitSize))
-    ]);
+        // Random location on game grid
+        this.destination = Vector.Random2D(this.canvas.width, this.canvas.height);
+    } while (this.location.Distance(this.destination) < config.minimumDistance || attempts <= 3)
 
     var destinationForce = Vector.SubFactory(this.destination, this.location);
     destinationForce.Normalize();
     destinationForce.Mul(this.baseSpeed * this.speedModifier);
 
+    this.velocity = new Vector([0, 0]);
     this.velocity.Add(destinationForce);
     this.velocity.Limit(this.baseSpeed * this.speedModifier);
 }
