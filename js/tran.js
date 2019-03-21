@@ -21,6 +21,7 @@ function Tran(canvas, scoreBoard) {
         this.hideOverlay();
 
         this.gameGrid.reset();
+        this.score = 0;
         this.playing = true;
         this.play();
     });
