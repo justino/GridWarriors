@@ -74,3 +74,7 @@ DEREZ EVERYTHING THAT MOVES
 * Bulldog: slow speed, better accuracy, kill with 2 hits, regenerates
 * Leader: fast speed, best accuracy
 * Guard: (not in game yet)
+
+## Roadmap
+
+You see where I am with development here: https://trello.com/b/p9YvADPz/tran-roadmap
