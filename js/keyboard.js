@@ -45,5 +45,5 @@ var KeyboardState = {
     }
 }
 
-document.onkeyup = function(e) { KeyboardState.keyUp(e.keyCode); };
-document.onkeydown = function(e) { KeyboardState.keyDown(e.keyCode); };
+addEventListener('keyup',   e => { KeyboardState.keyUp(e.keyCode); });
+addEventListener('keydown', e => { KeyboardState.keyDown(e.keyCode); });

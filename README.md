@@ -47,6 +47,15 @@ You should use the number pad to throw your disc. You could use the numbers abov
 
 * `5`: Block
 
+### Pausing
+
+You can pause the game.
+While the game is paused, the game grid will be blanked out so you can't see where you or your enemies are located.
+
+To pause the game:
+
+* `p`: Pause
+
 ## Gameplay
 
 Your disc is your weapon. Throw it around the board and hit your enemies to kill them.

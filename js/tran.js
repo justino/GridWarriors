@@ -10,10 +10,12 @@ function Tran(canvas, scoreBoard) {
 
     this.scoreTotal = 0;
     this.playing = false;
+    this.paused = false;
 
     addEventListener('GameOver', this.gameOver.bind(this));
     addEventListener('Score', this.score.bind(this));
 
+    addEventListener('keypress', this.pause.bind(this));
     document.querySelector('button.start').addEventListener('click', () => {
         this.hideOverlay();
 
@@ -27,8 +29,14 @@ function Tran(canvas, scoreBoard) {
 
 Tran.prototype.play = function() {
     if (this.playing) {
-        this.gameGrid.Update();
-        this.gameGrid.Draw();
+        if (! this.paused) {
+            this.gameGrid.Update();
+            this.gameGrid.Draw();
+        }
+        else {
+            this.gameGrid.DrawBackground();
+        }
+
         requestAnimationFrame(this.play.bind(this));
     }
 }
@@ -39,6 +47,14 @@ Tran.prototype.score = function(e) {
     this.scoreBoard.querySelector('#score').innerHTML = this.scoreTotal;
 
     console.log('Updated Scoreboard');
+}
+
+Tran.prototype.pause = function(e) {
+    if (! [80, 112].includes(e.keyCode)) { return; }
+
+    e.stopPropagation();
+    this.paused = ! this.paused;
+    console.log(this.paused ? 'Paused' : 'Unpaused');
 }
 
 Tran.prototype.gameOver = function() {
