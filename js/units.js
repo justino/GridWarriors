@@ -71,7 +71,12 @@ Unit.prototype.UpdateLocation = function() {
 Unit.prototype.UpdateDiscStatus = function() {
     if (this.disc.status == 'held' && ! this.disc.primed) {
         this.disc.primed = true;
-        window.setTimeout(this.ThrowDisc.bind(this), 2000 + Math.round(Math.random() * 10000));
+
+        var distance = this.location.Distance(tran.gameGrid.player.location);
+        var multiplier = distance / tran.diagonal;
+        var time = 1000 + ((2000 + Math.random() * 4000) * multiplier);
+
+        window.setTimeout(this.ThrowDisc.bind(this), time);
     }
 }
 
@@ -177,7 +182,7 @@ Warrior.prototype = Object.create(Unit.prototype);
 
 function Bulldog(location) {
     Unit.call(this, 'Bulldog', config.bulldogColor, location);
-    this.baseSpeed = .5;
+    this.baseSpeed = .75;
     this.regenerates = true;
     this.maxHits = 2;
     this.baseAccuracy = config.bulldogAccuracy;

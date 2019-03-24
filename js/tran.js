@@ -7,6 +7,7 @@ function Tran(canvas, scoreBoard) {
 
     this.canvas.width = config.width;
     this.canvas.height = config.height;
+    this.diagonal = Math.sqrt((config.width^2) * (config.height^2));
 
     this.score = 0;
     this.highScore = localStorage.getItem('highScore') || 0;
