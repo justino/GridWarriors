@@ -2,7 +2,7 @@ function Wave() {
     this.timer;
     this.count = 0;
 
-    this.trigger(3); // 3 seconds before the waves begin
+    this.trigger();
 }
 
 Wave.prototype.next = function() {
@@ -27,15 +27,23 @@ Wave.prototype.end = function() {
 Wave.prototype.trigger = function(interval = config.respawnInterval) {
     this.end();
 
+    if (! interval) { interval = config.gameStartTime; }
+
     this.timer = setTimeout(this.next.bind(this), interval * 1000);
     console.log("Wave triggered");
+
+    if (this.isCleared()) {
+        // Wave cleared, extra points
+        dispatchEvent(new CustomEvent('Score', { detail: { score: 250 } }));
+        console.log("Wave Cleared");
+    }
 }
 
 Wave.prototype.spawnUnit = function() {
     var units = [];
 
-    if (tran.score > 3000) units.push(Leader);
-    if (tran.score > 1000) units.push(Bulldog);
+    if (this.count > 10) units.push(Leader);
+    if (this.count > 5) units.push(Bulldog);
     units.push(Warrior);
 
     var unit = units[Math.floor(Math.random() * units.length)];
@@ -45,4 +53,8 @@ Wave.prototype.spawnUnit = function() {
     ]);
 
     tran.gameGrid.enemies.push(new unit(location));
+}
+
+Wave.prototype.isCleared = function() {
+    return (this.count > 0 && tran.gameGrid.enemies.length === 0);
 }

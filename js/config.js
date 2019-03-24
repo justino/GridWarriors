@@ -5,6 +5,8 @@ var config = {
     unitSize: 16,
     discSize: 4, // Should be divisible by 2
 
+    gameStartTime: 2,
+
     // Units
     enemyCount: 3,
     respawnInterval: 5, // Seconds
