@@ -17,9 +17,6 @@ function Unit(name, color, location) {
     this.points = 100;
 
     Sprite.call(this, name, width, height, color, location);
-
-    this.velocity = new Vector([0, 0]);
-    this.setDestination();
 }
 Unit.prototype = Object.create(Sprite.prototype);
 
@@ -36,6 +33,11 @@ Unit.prototype.Update = function() {
     // Did we catch our own disc
     if (this.disc) {
         this.CatchDisc();
+    }
+
+    // If we don't have a velocity set, do it now
+    if (! this.velocity) {
+        this.setDestination();
     }
 
     // Move Unit towards destination
