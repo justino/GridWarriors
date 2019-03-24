@@ -68,11 +68,17 @@ Recall your disc by pressing the number pad keys again.
 
 DEREZ EVERYTHING THAT MOVES
 
+## Scoring
+
+Each enemy type in the game is worth a certain amount of points.
+Killing them will earn you points.
+Get hit though, and you'll lose points. Go negative and you'll have to dig yourself out of your hole.
+
 ## Enemies
 
 * Warrior: normal speed, bad disc accuracy, kill with one hit
 * Bulldog: slow speed, better accuracy, kill with 2 hits, regenerates
-* Leader: fast speed, best accuracy
+* Leader: fast speed, best accuracy, harder hitting. Watch out, they have 2 different kinds of discs
 * Guard: (not in game yet)
 
 ## Roadmap

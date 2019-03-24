@@ -65,6 +65,8 @@ GameGrid.prototype.unitHit = function(e) {
         }
     }
     else {
+        dispatchEvent(new CustomEvent('Score', { detail: { score: -(e.detail.winner.disc.strength * 100) } }))
+
         if (e.detail.loser.isDead()) {
             e.detail.loser.remove();
             tran.gameGrid.player = null;
