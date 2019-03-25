@@ -5,15 +5,15 @@ function Sprite(name, width, height, color, location) {
     this.color = color;
 
     this.location = Vector.Clone(location);
-    
+
     this.canvas = tran.canvas;
     this.context = tran.context;
 
     this.buildBoundingBox();
-    
+
     // Filled in by child class
     this.velocity = null;
-    
+
     console.log('Sprite: ' + this.name + ' Rezzed');
 }
 
@@ -36,31 +36,31 @@ Sprite.prototype.buildBoundingBox = function() {
 
 Sprite.prototype.bindToGameGrid = function() {
     var bounded = [0, 0];
-    
+
     // Top
     if (this.boundingBox[1] < 0) {
         bounded[1] = 1; // Y-axis
         this.location.points[1] = 0 + Math.round(this.height / 2);
     }
-    
+
     // Bottom
     if (this.boundingBox[3] > this.canvas.height) {
         bounded[1] = 1; // Y-axis
         this.location.points[1] = this.canvas.height - Math.round(this.height / 2);
     }
-    
+
     // Left
     if (this.boundingBox[0] < 0) {
         bounded[0] = 1; // X-axis
         this.location.points[0] = 0 + Math.round(this.width / 2);
     }
-    
+
     // Right
     if (this.boundingBox[2] > this.canvas.width) {
         bounded[0] = 1; // X-axis
         this.location.points[0] = this.canvas.width - Math.round(this.width / 2);
     }
-    
+
     return bounded;
 }
 
@@ -87,7 +87,7 @@ Sprite.prototype.TouchLocation = function(location) {
         location.points[0], location.points[1],
         location.points[0], location.points[1]
     );
-    
+
     return (
         this.context.isPointInPath(this.boundingBox[0], this.boundingBox[1]) ||
         this.context.isPointInPath(this.boundingBox[2], this.boundingBox[1]) ||
@@ -99,7 +99,7 @@ Sprite.prototype.TouchLocation = function(location) {
 
 Sprite.prototype.DrawSprite = function() {
     this.buildBoundingBox()
-    
+
     this.context.fillStyle = this.color;
     this.context.fillRect(
         this.boundingBox[0], this.boundingBox[1],

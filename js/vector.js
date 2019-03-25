@@ -8,7 +8,7 @@ Vector.prototype.Add = function(vector) {
     if (this.dimensions != vector.dimensions) {
         throw "Cannot add vectors of different dimensions"
     }
-    
+
     for (var i = 0; i < this.dimensions; i++) {
         this.points[i] += vector.points[i];
     }
@@ -18,7 +18,7 @@ Vector.prototype.Sub = function(vector) {
     if (this.dimensions != vector.dimensions) {
         throw "Cannot subtract vectors of different dimensions"
     }
-    
+
     for (var i = 0; i < this.dimensions; i++) {
         this.points[i] -= vector.points[i];
     }
@@ -34,7 +34,7 @@ Vector.prototype.Div = function(n) {
     if (n == 0) {
         throw "Cannot divide a vector by zero"
     }
-    
+
     for (var i = 0; i < this.dimensions; i++) {
         this.points[i] /= n;
     }
@@ -45,13 +45,13 @@ Vector.prototype.Magnitude = function() {
     for (var i = 0; i < this.dimensions; i++) {
         x += Math.pow(this.points[i], 2);
     }
-    
+
     return Math.sqrt(x);
 }
 
 Vector.prototype.Normalize = function() {
     var mag = this.Magnitude();
-    
+
     if (mag != 0) {
         this.Div(mag);
     }
@@ -79,21 +79,21 @@ Vector.Random2D = function(width, height) {
         Math.round(Math.random() * width),
         Math.round(Math.random() * height)
     ]);
-    
+
     return vector;
 }
 
 Vector.AddFactory = function(a, b) {
     var vector = Vector.Clone(a);
     vector.Add(b);
-    
+
     return vector;
 }
 
 Vector.SubFactory = function(a, b) {
     var vector = Vector.Clone(a);
     vector.Sub(b);
-    
+
     return vector;
 }
 

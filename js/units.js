@@ -5,7 +5,7 @@ function Unit(name, color, location) {
 
     var width = config.unitSize;
     var height = config.unitSize;
-    
+
     this.baseSpeed = 1;
     this.speedModifier = 1;
     this.recoveryRate = 4;

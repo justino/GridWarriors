@@ -89,12 +89,12 @@ Disc.prototype.checkCollide = function(unit) {
 
     if (collision) {
         dispatchEvent(new CustomEvent('UnitHit', {
-            detail: { 
+            detail: {
                 winner: this.owner,
                 loser: unit
             }
         }));
-        
+
         // When a collision occurs, attempt to regenerate the disc owner
         // if they are capable
         this.owner.Regenerate();

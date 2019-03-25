@@ -11,7 +11,7 @@ var config = {
     enemyCount: 3,
     respawnInterval: 5, // Seconds
     minimumDistance: 250,
-    
+
     // Game Play Params
     discReturnTime: 1000,  // Seconds
     discSpeed: 4,
@@ -20,7 +20,7 @@ var config = {
     bulldogAccuracy: 90, // Percent
     leaderAccuracy: 95, // Percent
     regenerationTime: 6, // Seconds
-    
+
     // Colors
     gridColor: 'rgba(130, 130, 130, 1)',
     tranColor: 'rgba(255, 0, 0, 1)',
@@ -28,6 +28,6 @@ var config = {
     bulldogColor: 'rgba(255, 0, 255, 1)',
     leaderColor: 'rgba(0, 127, 255, 1)',
     guardColor: 'rgba(255, 255, 127, 1)'
-    
+
     // Debuging Params
 };
