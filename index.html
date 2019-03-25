@@ -5,23 +5,29 @@
         <link rel="stylesheet" type="text/css" href="css/tran.css" />
     </head>
     <body>
-        <div class="container">
-            <div id="scoreboard">
-                <div class="left">
-                    Score: <span id="score">0</span>
-                </div>
-                <div class="right">
-                    High Score: <span id="highscore">0</span>
-                </div>
+        <header id="scoreboard">
+            <div>
+                Score: <span id="score">0</span>
             </div>
+            <div>
+                High Score: <span id="highscore">0</span>
+            </div>
+        </header>
 
+        <main>
             <div class="gamegrid">
                 <canvas id="gamegrid"></canvas>
                 <div class="overlay">
                     <button class="start">Enter the Game Grid</button>
                 </div>
             </div>
-        </div>
+        </main>
+
+        <footer>
+            <ul>
+                <li><a href="https://github.com/justino/TRAN">Github</a></li>
+            </ul>
+        </footer>
 
         <script type="text/javascript" src="js/util.js"></script>
         <script type="text/javascript" src="js/config.js"></script>
