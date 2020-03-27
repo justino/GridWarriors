@@ -95,3 +95,6 @@ footer ul {
 footer ul li {
     display: inline-block
 }
+footer ul li + li:before {
+    content: ' | ';
+}
