@@ -27,8 +27,8 @@ export class GameGrid {
         this.DrawBackground();
 
         if (this.player) { this.player.Draw(); };
-        for (var i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].Draw();
+        for (const enemy of this.enemies) {
+            enemy.Draw();
         }
     }
 
@@ -42,13 +42,13 @@ export class GameGrid {
 
         // Check for hits/deaths by player
         if (this.player.disc.status === 'deadly') {
-            for (var enemy of this.enemies) {
+            for (const enemy of this.enemies) {
                 this.player.disc.checkCollide(enemy);
             }
         }
 
         // Check for player hits/death
-        for (var enemy of this.enemies) {
+        for (const enemy of this.enemies) {
             enemy.disc.checkCollide(this.player);
         }
 
@@ -56,7 +56,7 @@ export class GameGrid {
         if (this.player) {
             this.player.Update();
 
-            for (var enemy of this.enemies) {
+            for (const enemy of this.enemies) {
                 enemy.Update();
             }
         }

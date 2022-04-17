@@ -5,44 +5,44 @@ export class Vector {
     }
 
     Add(vector) {
-        if (this.dimensions != vector.dimensions) {
+        if (this.dimensions !== vector.dimensions) {
             throw "Cannot add vectors of different dimensions";
         }
 
-        for (var i = 0; i < this.dimensions; i++) {
+        for (let i = 0; i < this.dimensions; i++) {
             this.points[i] += vector.points[i];
         }
     }
 
     Sub(vector) {
-        if (this.dimensions != vector.dimensions) {
+        if (this.dimensions !== vector.dimensions) {
             throw "Cannot subtract vectors of different dimensions";
         }
 
-        for (var i = 0; i < this.dimensions; i++) {
+        for (let i = 0; i < this.dimensions; i++) {
             this.points[i] -= vector.points[i];
         }
     }
 
     Mul(n) {
-        for (var i = 0; i < this.dimensions; i++) {
+        for (let i = 0; i < this.dimensions; i++) {
             this.points[i] *= n;
         }
     }
 
     Div(n) {
-        if (n == 0) {
+        if (n === 0) {
             throw "Cannot divide a vector by zero";
         }
 
-        for (var i = 0; i < this.dimensions; i++) {
+        for (let i = 0; i < this.dimensions; i++) {
             this.points[i] /= n;
         }
     }
 
     Magnitude() {
-        var x = 0;
-        for (var i = 0; i < this.dimensions; i++) {
+        let x = 0;
+        for (let i = 0; i < this.dimensions; i++) {
             x += Math.pow(this.points[i], 2);
         }
 
@@ -50,9 +50,9 @@ export class Vector {
     }
 
     Normalize() {
-        var mag = this.Magnitude();
+        const mag = this.Magnitude();
 
-        if (mag != 0) {
+        if (mag !== 0) {
             this.Div(mag);
         }
     }
@@ -74,7 +74,7 @@ export class Vector {
     }
 
     static Random2D(width, height) {
-        var vector = new Vector([
+        const vector = new Vector([
             Math.round(Math.random() * width),
             Math.round(Math.random() * height)
         ]);
@@ -83,14 +83,14 @@ export class Vector {
     }
 
     static AddFactory(a, b) {
-        var vector = Vector.Clone(a);
+        const vector = Vector.Clone(a);
         vector.Add(b);
 
         return vector;
     }
 
     static SubFactory(a, b) {
-        var vector = Vector.Clone(a);
+        const vector = Vector.Clone(a);
         vector.Sub(b);
 
         return vector;

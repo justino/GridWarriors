@@ -26,9 +26,9 @@ export class Player extends Unit {
 
     UpdateLocation() {
         // Can't run while blocking
-        if (this.disc.status == 'blocking') { return; }
+        if (this.disc.status === 'blocking') { return; }
 
-        var velocity = new Vector([0, 0]);
+        const velocity = new Vector([0, 0]);
 
         // Move around based on keyboard input
         if (KeyboardState.isDown(KeyboardState.movement.DOWN)) { velocity.points[1] += (this.baseSpeed * this.speedModifier); }
@@ -37,13 +37,13 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed * this.speedModifier); }
 
         // Only perform movement if there was any
-        if (velocity.points[0] != 0 || velocity.points[1] != 0) { this.location.Add(velocity); }
+        if (velocity.points[0] !== 0 || velocity.points[1] !== 0) { this.location.Add(velocity); }
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status == 'held') {
+        if (this.disc.status === 'held') {
             // Disc Throwing
-            var direction = KeyboardState.discKeyPressed();
+            const direction = KeyboardState.discKeyPressed();
             if (direction) {
                 this.disc.Thrown(direction);
                 KeyboardState.keyUp(direction); // Don't repeatably throw, must press again
@@ -52,7 +52,7 @@ export class Player extends Unit {
             //Blocking
             if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'blocking'; }
         }
-        else if (this.disc.status == 'deadly') {
+        else if (this.disc.status === 'deadly') {
             if (KeyboardState.discKeyPressed()) {
                 if (this.disc.returnable === true) {
                     this.disc.Return();
@@ -62,7 +62,7 @@ export class Player extends Unit {
                 this.disc.returnable = true;
             }
         }
-        else if (this.disc.status == 'blocking') {
+        else if (this.disc.status === 'blocking') {
             if (!KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'held'; }
         }
     }

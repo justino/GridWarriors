@@ -17,10 +17,10 @@ export class Wave {
             return;
         this.count++;
 
-        var unitsToSpawn = this.gameGrid.config.enemyCount - this.gameGrid.enemies.length;
+        const unitsToSpawn = this.gameGrid.config.enemyCount - this.gameGrid.enemies.length;
         console.log(`Wave ${this.count}: Spawning ${unitsToSpawn} units`);
 
-        for (var i = 0; i < unitsToSpawn; i++) {
+        for (let i = 0; i < unitsToSpawn; i++) {
             this.spawnUnit();
         }
     }

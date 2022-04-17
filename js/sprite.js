@@ -36,7 +36,7 @@ export class Sprite {
     }
 
     bindToGameGrid() {
-        var bounded = [0, 0];
+        const bounded = [0, 0];
 
         // Top
         if (this.boundingBox[1] < 0) {

@@ -35,12 +35,12 @@ export class Disc extends Sprite {
                 break;
         }
 
-        var bounced = this.bindToGameGrid();
+        const bounced = this.bindToGameGrid();
         if (bounced[0] || bounced[1]) {
             if (bounced[0]) { this.BounceX(); }
             if (bounced[1]) { this.BounceY(); }
 
-            if (this.status != 'bouncing') {
+            if (this.status !== 'bouncing') {
                 this.status = 'bouncing';
                 setTimeout(this.Return.bind(this), this.owner.gameGrid.config.discReturnTime);
             }
@@ -53,12 +53,12 @@ export class Disc extends Sprite {
             case 'bouncing':
             case 'returning':
                 // Square
-                if (this.height != this.owner.gameGrid.config.discSize) { this.changeHeight(this.owner.gameGrid.config.discSize); }
+                if (this.height !== this.owner.gameGrid.config.discSize) { this.changeHeight(this.owner.gameGrid.config.discSize); }
                 this.DrawSprite();
                 break;
             case 'deadly':
                 // Flat
-                if (this.height != this.owner.gameGrid.config.discSize / 2) { this.changeHeight(this.owner.gameGrid.config.discSize / 2); }
+                if (this.height !== this.owner.gameGrid.config.discSize / 2) { this.changeHeight(this.owner.gameGrid.config.discSize / 2); }
                 this.DrawSprite();
                 break;
             case 'blocking':
@@ -71,7 +71,7 @@ export class Disc extends Sprite {
         if (this.status !== 'deadly')
             return;
 
-        var collision = this.Collision(unit);
+        const collision = this.Collision(unit);
 
         /* If the disc has already collided with the current unit
            ignore, we don't want to hit them again until we've stopped colliding
@@ -108,7 +108,7 @@ export class Disc extends Sprite {
 
     Thrown(direction) {
         this.status = 'deadly';
-        var velocity = new Vector([0, 0]);
+        const velocity = new Vector([0, 0]);
 
         direction.Mul(this.baseSpeed + this.speedModifier);
 
@@ -123,7 +123,7 @@ export class Disc extends Sprite {
 
         this.velocity = new Vector([0, 0]);
 
-        var ownerForce = Vector.SubFactory(this.owner.location, this.location);
+        const ownerForce = Vector.SubFactory(this.owner.location, this.location);
         ownerForce.Normalize();
         ownerForce.Mul(this.baseSpeed + this.speedModifier);
 

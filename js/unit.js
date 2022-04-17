@@ -50,7 +50,7 @@ export class Unit extends Sprite {
         }
 
         // Make sure Unit stays on the grid
-        var hitEdge = this.bindToGameGrid();
+        const hitEdge = this.bindToGameGrid();
         if (hitEdge[0] || hitEdge[1]) {
             // Hit an edge, make a new destination
             // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
@@ -69,12 +69,12 @@ export class Unit extends Sprite {
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status == 'held' && !this.disc.primed) {
+        if (this.disc.status === 'held' && !this.disc.primed) {
             this.disc.primed = true;
 
-            var distance = this.location.Distance(this.gameGrid.player.location);
-            var multiplier = distance / this.gameGrid.diagonal;
-            var time = 1000 + ((2000 + Math.random() * 4000) * multiplier);
+            const distance = this.location.Distance(this.gameGrid.player.location);
+            const multiplier = distance / this.gameGrid.diagonal;
+            const time = 1000 + ((2000 + Math.random() * 4000) * multiplier);
 
             window.setTimeout(this.ThrowDisc.bind(this), time);
         }
@@ -84,20 +84,20 @@ export class Unit extends Sprite {
         if (!this.gameGrid.player) { return; }
 
         // Aim at player
-        var aimFor = Vector.Clone(this.gameGrid.player.location);
+        const aimFor = Vector.Clone(this.gameGrid.player.location);
 
         // Apply Accuracy (somewhere around the player)
         aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
         aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
 
-        var direction = Vector.SubFactory(aimFor, this.disc.location);
+        const direction = Vector.SubFactory(aimFor, this.disc.location);
         direction.Normalize();
 
         this.disc.Thrown(direction);
     }
 
     CatchDisc() {
-        if (this.disc.status == 'returning' && this.Collision(this.disc)) {
+        if (this.disc.status === 'returning' && this.Collision(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc');
             this.disc.status = 'held';
             this.disc.primed = false;
@@ -108,7 +108,7 @@ export class Unit extends Sprite {
         // Try to generate a new location on the grid that is at least ${this.gameGrid.config.minimumDistance}
         // away from itself. This prevents odd jumpy behavior when the locations are too close.
         // If we try 3 times, stop trying and go with it, don't want to get bogged down.
-        var attempts = 0;
+        let attempts = 0;
         do {
             attempts++;
 
@@ -116,7 +116,7 @@ export class Unit extends Sprite {
             this.destination = Vector.Random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height);
         } while (this.location.Distance(this.destination) < this.gameGrid.config.minimumDistance || attempts <= 3);
 
-        var destinationForce = Vector.SubFactory(this.destination, this.location);
+        const destinationForce = Vector.SubFactory(this.destination, this.location);
         destinationForce.Normalize();
         destinationForce.Mul(this.baseSpeed * this.speedModifier);
 
@@ -126,7 +126,7 @@ export class Unit extends Sprite {
     }
 
     Throw(direction) {
-        if (this.disc && this.disc.status != 'held')
+        if (this.disc && this.disc.status !== 'held')
             return;
 
         this.disc.status = 'deadly';
@@ -160,16 +160,14 @@ export class Unit extends Sprite {
     }
 
     remove() {
-        var _ = this;
-
-        if (_.isPlayer)
+        if (this.isPlayer)
             return;
 
-        this.gameGrid.score += _.points;
-        this.gameGrid.enemies = this.gameGrid.enemies.filter(function (el) {
-            return el !== _;
+        this.gameGrid.score += this.points;
+        this.gameGrid.enemies = this.gameGrid.enemies.filter((el) => {
+            return el !== this;
         });
 
-        console.log(`${_.name} derezzed`);
+        console.log(`${this.name} derezzed`);
     }
 }

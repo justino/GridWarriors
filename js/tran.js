@@ -82,12 +82,12 @@ export class Tran {
     }
 
     showOverlay() {
-        var overlay = document.querySelector('.overlay');
+        const overlay = document.querySelector('.overlay');
         overlay.classList.add('show');
     }
 
     hideOverlay() {
-        var overlay = document.querySelector('.overlay');
+        const overlay = document.querySelector('.overlay');
         overlay.classList.remove('show');
     }
 }
