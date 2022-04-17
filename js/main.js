@@ -1,8 +1,10 @@
+import { Tran } from "./tran.js"
+
 window.onload = function() {
     console.log('TRAN: Initialize TRAN');
 
-    var canvas = document.getElementById('gamegrid');
-    var scoreBoard = document.getElementById('scoreboard');
+    const canvas = document.getElementById('gamegrid');
+    const scoreBoard = document.getElementById('scoreboard');
 
-    tran = new Tran(canvas, scoreBoard);
+    new Tran(canvas, scoreBoard);
 }

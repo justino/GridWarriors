@@ -1,6 +1,6 @@
 // Keyboard State Object
 // Manages the state of keyboard key presses
-var KeyboardState = {
+export const KeyboardState = {
     pressed: {},
 
     movement: {

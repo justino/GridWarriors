@@ -1,76 +1,88 @@
-function GameGrid(canvas) {
-    console.log("Grid: Rezzing");
+import { Player } from "./player.js"
+import { Wave } from "./wave.js"
+import { Vector } from "./vector.js"
 
-    addEventListener('UnitHit', this.unitHit);
-}
+export class GameGrid {
+    constructor(config, canvas) {
+        console.log("Grid: Rezzing");
+        this.config = config
+        this.canvas = canvas
+        this.context = this.canvas.getContext('2d');
 
-GameGrid.prototype.reset = function() {
-    this.enemies = [];
-    this.player = new Player(
-        new Vector([tran.canvas.width / 2, tran.canvas.height / 2])
-    );
-    this.wave = new Wave();
-}
+        this.diagonal = Math.sqrt((this.config.width ^ 2) + (this.config.height ^ 2));
 
-GameGrid.prototype.Draw = function() {
-    this.DrawBackground();
-
-    if (this.player) { this.player.Draw() };
-    for (var i = 0; i < this.enemies.length; i++) {
-        this.enemies[i].Draw();
+        addEventListener('UnitHit', this.unitHit.bind(this));
     }
-}
 
-GameGrid.prototype.DrawBackground = function() {
-    tran.context.fillStyle = config.gridColor;
-    tran.context.fillRect(0, 0, tran.canvas.width, tran.canvas.height);
-}
+    reset() {
+        this.enemies = [];
+        this.player = new Player(
+            this,
+            new Vector([this.canvas.width / 2, this.canvas.height / 2])
+        );
+        this.wave = new Wave(this);
+    }
 
-GameGrid.prototype.Update = function() {
-    if (! this.player) { return; }
+    Draw() {
+        this.DrawBackground();
 
-    // Check for hits/deaths by player
-    if (this.player.disc.status === 'deadly') {
+        if (this.player) { this.player.Draw(); };
+        for (var i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].Draw();
+        }
+    }
+
+    DrawBackground() {
+        this.context.fillStyle = this.config.gridColor;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    Update() {
+        if (!this.player) { return; }
+
+        // Check for hits/deaths by player
+        if (this.player.disc.status === 'deadly') {
+            for (var enemy of this.enemies) {
+                this.player.disc.checkCollide(enemy);
+            }
+        }
+
+        // Check for player hits/death
         for (var enemy of this.enemies) {
-            this.player.disc.checkCollide(enemy);
+            enemy.disc.checkCollide(this.player);
+        }
+
+        // Movement
+        if (this.player) {
+            this.player.Update();
+
+            for (var enemy of this.enemies) {
+                enemy.Update();
+            }
         }
     }
 
-    // Check for player hits/death
-    for (var enemy of this.enemies) {
-        enemy.disc.checkCollide(this.player);
-    }
+    unitHit(e) {
+        console.log('Disc Collided');
 
-    // Movement
-    if (this.player) {
-        this.player.Update();
+        e.detail.loser.Hit(e.detail.winner.disc.strength);
 
-        for (var enemy of this.enemies) {
-            enemy.Update();
+        if (e.detail.winner.isPlayer) {
+            if (e.detail.loser.isDead()) {
+                dispatchEvent(new CustomEvent('Score', { detail: { score: e.detail.loser.points } }));
+
+                e.detail.loser.remove();
+                this.wave.trigger();
+            }
         }
-    }
-}
+        else {
+            dispatchEvent(new CustomEvent('Score', { detail: { score: -(e.detail.winner.disc.strength * 100) } }));
 
-GameGrid.prototype.unitHit = function(e) {
-    console.log('Disc Collided');
-
-    e.detail.loser.Hit(e.detail.winner.disc.strength);
-
-    if (e.detail.winner.isPlayer) {
-        if (e.detail.loser.isDead()) {
-            dispatchEvent(new CustomEvent('Score', { detail: { score: e.detail.loser.points } }));
-
-            e.detail.loser.remove();
-            tran.gameGrid.wave.trigger();
-        }
-    }
-    else {
-        dispatchEvent(new CustomEvent('Score', { detail: { score: -(e.detail.winner.disc.strength * 100) } }))
-
-        if (e.detail.loser.isDead()) {
-            e.detail.loser.remove();
-            tran.gameGrid.player = null;
-            dispatchEvent(new Event('GameOver'));
+            if (e.detail.loser.isDead()) {
+                e.detail.loser.remove();
+                this.player = null;
+                dispatchEvent(new Event('GameOver'));
+            }
         }
     }
 }

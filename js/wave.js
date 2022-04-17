@@ -1,60 +1,71 @@
-function Wave() {
-    this.timer;
-    this.count = 0;
+import { Warrior } from "./units/warrior.js"
+import { Bulldog } from "./units/bulldog.js"
+import { Leader } from "./units/leader.js"
+import { Vector } from "./vector.js"
 
-    this.trigger();
-}
+export class Wave {
+    constructor(gameGrid) {
+        this.gameGrid = gameGrid;
+        this.timer;
+        this.count = 0;
 
-Wave.prototype.next = function() {
-    if (tran.gameGrid.enemies.length >= config.enemyCount) return;
-    this.count++;
-
-    var unitsToSpawn = config.enemyCount - tran.gameGrid.enemies.length;
-    console.log(`Wave ${this.count}: Spawning ${unitsToSpawn} units`);
-
-    for (var i = 0; i < unitsToSpawn; i++) {
-        this.spawnUnit();
+        this.trigger();
     }
-}
 
-Wave.prototype.end = function() {
-    if (this.timer) {
-        clearTimeout(this.timer);
-        this.timer = null;
+    next() {
+        if (this.gameGrid.enemies.length >= this.gameGrid.config.enemyCount)
+            return;
+        this.count++;
+
+        var unitsToSpawn = this.gameGrid.config.enemyCount - this.gameGrid.enemies.length;
+        console.log(`Wave ${this.count}: Spawning ${unitsToSpawn} units`);
+
+        for (var i = 0; i < unitsToSpawn; i++) {
+            this.spawnUnit();
+        }
     }
-}
 
-Wave.prototype.trigger = function(interval = config.respawnInterval) {
-    this.end();
-
-    if (! interval) { interval = config.gameStartTime; }
-
-    this.timer = setTimeout(this.next.bind(this), interval * 1000);
-    console.log("Wave triggered");
-
-    if (this.isCleared()) {
-        // Wave cleared, extra points
-        dispatchEvent(new CustomEvent('Score', { detail: { score: 250 } }));
-        console.log("Wave Cleared");
+    end() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
     }
-}
 
-Wave.prototype.spawnUnit = function() {
-    var units = [];
+    trigger(interval = this.gameGrid.config.respawnInterval) {
+        this.end();
 
-    if (this.count > 10) units.push(Leader);
-    if (this.count > 5) units.push(Bulldog);
-    units.push(Warrior);
+        if (!interval) { interval = this.gameGrid.config.gameStartTime; }
 
-    var unit = units[Math.floor(Math.random() * units.length)];
-    var location = new Vector([
-        Math.random() * (tran.canvas.width - config.unitSize * 2) + config.unitSize,
-        Math.random() * (tran.canvas.height - config.unitSize * 2) + config.unitSize
-    ]);
+        this.timer = setTimeout(this.next.bind(this), interval * 1000);
+        console.log("Wave triggered");
 
-    tran.gameGrid.enemies.push(new unit(location));
-}
+        if (this.isCleared()) {
+            // Wave cleared, extra points
+            dispatchEvent(new CustomEvent('Score', { detail: { score: 250 } }));
+            console.log("Wave Cleared");
+        }
+    }
 
-Wave.prototype.isCleared = function() {
-    return (this.count > 0 && tran.gameGrid.enemies.length === 0);
+    spawnUnit() {
+        const units = [];
+
+        if (this.count > 10)
+            units.push(Leader);
+        if (this.count > 5)
+            units.push(Bulldog);
+        units.push(Warrior);
+
+        const unit = units[Math.floor(Math.random() * units.length)];
+        const location = new Vector([
+            Math.random() * (this.gameGrid.canvas.width - this.gameGrid.config.unitSize * 2) + this.gameGrid.config.unitSize,
+            Math.random() * (this.gameGrid.canvas.height - this.gameGrid.config.unitSize * 2) + this.gameGrid.config.unitSize
+        ]);
+
+        this.gameGrid.enemies.push(new unit(this.gameGrid, location));
+    }
+
+    isCleared() {
+        return (this.count > 0 && this.gameGrid.enemies.length === 0);
+    }
 }

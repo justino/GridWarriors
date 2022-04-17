@@ -1,90 +1,93 @@
-function Tran(canvas, scoreBoard) {
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
+import { GameGrid } from "./gamegrid.js"
+import config from "./config.js"
 
-    this.scoreBoard = scoreBoard;
-    this.gameGrid = new GameGrid(this.canvas);
+export class Tran {
+    constructor(canvas, scoreBoard) {
+        this.canvas = canvas;
+        this.canvas.width = config.width;
+        this.canvas.height = config.height;
 
-    this.canvas.width = config.width;
-    this.canvas.height = config.height;
-    this.diagonal = Math.sqrt((config.width^2) * (config.height^2));
-
-    this.score = 0;
-    this.highScore = localStorage.getItem('highScore') || 0;
-    this.playing = false;
-    this.paused = false;
-
-    addEventListener('GameOver', this.gameOver.bind(this));
-    addEventListener('Score', this.updateScore.bind(this));
-
-    addEventListener('keypress', this.pause.bind(this));
-    document.querySelector('button.start').addEventListener('click', () => {
-        this.hideOverlay();
-
-        this.gameGrid.reset();
+        this.scoreBoard = scoreBoard;
         this.score = 0;
-        this.playing = true;
-        this.play();
-    });
+        this.highScore = localStorage.getItem('highScore') || 0;
 
-    this.updateHighScore();
-    this.showOverlay();
-}
+        this.gameGrid = new GameGrid(config, this.canvas);
 
-Tran.prototype.play = function() {
-    if (this.playing) {
-        if (! this.paused) {
-            this.gameGrid.Update();
-            this.gameGrid.Draw();
-        }
-        else {
-            this.gameGrid.DrawBackground();
-        }
+        this.playing = false;
+        this.paused = false;
 
-        requestAnimationFrame(this.play.bind(this));
-    }
-}
+        addEventListener('GameOver', this.gameOver.bind(this));
+        addEventListener('Score', this.updateScore.bind(this));
 
-Tran.prototype.updateScore = function(e) {
-    // Track score
-    this.score += e.detail.score;
-    this.scoreBoard.querySelector('#score').innerHTML = this.score;
+        addEventListener('keypress', this.pause.bind(this));
+        document.querySelector('button.start').addEventListener('click', () => {
+            this.hideOverlay();
 
-    this.updateHighScore();
+            this.gameGrid.reset();
+            this.score = 0;
+            this.playing = true;
+            this.play();
+        });
 
-    console.log('Updated Scoreboard');
-}
-
-Tran.prototype.updateHighScore = function() {
-    if (this.score > this.highScore) {
-        this.highScore = this.score;
-        localStorage.setItem('highScore', this.highScore);
+        this.updateHighScore();
+        this.showOverlay();
     }
 
-    this.scoreBoard.querySelector('#highscore').innerHTML = this.highScore;
-}
+    play() {
+        if (this.playing) {
+            if (!this.paused) {
+                this.gameGrid.Update();
+                this.gameGrid.Draw();
+            }
+            else {
+                this.gameGrid.DrawBackground();
+            }
 
-Tran.prototype.pause = function(e) {
-    if (! [80, 112].includes(e.keyCode)) { return; }
+            requestAnimationFrame(this.play.bind(this));
+        }
+    }
 
-    e.stopPropagation();
-    this.paused = ! this.paused;
-    console.log(this.paused ? 'Paused' : 'Unpaused');
-}
+    updateScore(e) {
+        // Track score
+        this.score += e.detail.score;
+        this.scoreBoard.querySelector('#score').innerHTML = this.score;
 
-Tran.prototype.gameOver = function() {
-    console.log('Game Over');
-    this.playing = false;
+        this.updateHighScore();
 
-    this.showOverlay();
-}
+        console.log('Updated Scoreboard');
+    }
 
-Tran.prototype.showOverlay = function() {
-    var overlay = document.querySelector('.overlay');
-    overlay.classList.add('show');
-}
+    updateHighScore() {
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('highScore', this.highScore);
+        }
 
-Tran.prototype.hideOverlay = function() {
-    var overlay = document.querySelector('.overlay');
-    overlay.classList.remove('show');
+        this.scoreBoard.querySelector('#highscore').innerHTML = this.highScore;
+    }
+
+    pause(e) {
+        if (![80, 112].includes(e.keyCode)) { return; }
+
+        e.stopPropagation();
+        this.paused = !this.paused;
+        console.log(this.paused ? 'Paused' : 'Unpaused');
+    }
+
+    gameOver() {
+        console.log('Game Over');
+        this.playing = false;
+
+        this.showOverlay();
+    }
+
+    showOverlay() {
+        var overlay = document.querySelector('.overlay');
+        overlay.classList.add('show');
+    }
+
+    hideOverlay() {
+        var overlay = document.querySelector('.overlay');
+        overlay.classList.remove('show');
+    }
 }
