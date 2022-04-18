@@ -24,7 +24,7 @@ export const KeyboardState = {
     },
 
     isDown: function(keyList) {
-        for (var key of keyList) {
+        for (const key of keyList) {
             if (this.pressed[key]) {
                 return true;
             }
@@ -35,13 +35,19 @@ export const KeyboardState = {
     keyUp: function(code) { delete this.pressed[code]; },
 
     discKeyPressed: function() {
-        for (var direction in this.disc) {
+        for (const direction in this.disc) {
             if (this.isDown(KeyboardState.disc[direction])) {
-                return this.disc[direction];
+                return direction;
             }
         }
 
-        return false;
+        return null;
+    },
+    releaseDiscKey: function(direction) {
+        const keys = this.disc[direction]
+        for (const key of keys) {
+            this.keyUp(key)
+        }
     }
 }
 

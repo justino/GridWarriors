@@ -67,7 +67,7 @@ export class GameGrid {
 
         e.detail.loser.Hit(e.detail.winner.disc.strength);
 
-        if (e.detail.winner.isPlayer) {
+        if (e.detail.winner === this.player) {
             if (e.detail.loser.isDead()) {
                 dispatchEvent(new CustomEvent('Score', { detail: { score: e.detail.loser.points } }));
 

@@ -6,7 +6,6 @@ export class Disc extends Sprite {
     DEADLY = Symbol("deadly")
     BOUNCING = Symbol("bouncing")
     RETURNING = Symbol("returning")
-    BLOCKING = Symbol("blocking")
 
     constructor(name, color, unit) {
         super(unit.gameGrid, name, unit.gameGrid.config.discSize, unit.gameGrid.config.discSize, color, unit.location)
@@ -15,12 +14,12 @@ export class Disc extends Sprite {
 
         this.strength = 1;
         this.homing = false;
-        this.status = this.HELD; // deadly, bouncing, returning, blocking
+        this.status = this.HELD; // deadly, bouncing, returning
         this.baseSpeed = this.owner.gameGrid.config.discSpeed;
         this.speedModifier = 0;
         this.velocity = null;
-        this.returnable = false;
 
+        this.returnable = false;
         this.primed = false;
         this.collided = null;
     }
@@ -67,8 +66,6 @@ export class Disc extends Sprite {
                 if (this.height !== this.owner.gameGrid.config.discSize / 2) { this.changeHeight(this.owner.gameGrid.config.discSize / 2); }
                 this.DrawSprite();
                 break;
-            case this.BLOCKING:
-                break;
         }
     }
 
@@ -114,6 +111,7 @@ export class Disc extends Sprite {
 
     Thrown(direction) {
         this.status = this.DEADLY;
+
         const velocity = new Vector([0, 0]);
 
         direction.Mul(this.baseSpeed + this.speedModifier);

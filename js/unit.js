@@ -8,31 +8,32 @@ export class Unit extends Sprite {
     RIGHT = Symbol("right")
 
     constructor(gameGrid, name, color, location) {
-        super(gameGrid, name, gameGrid.config.unitSize, gameGrid.config.unitSize, color, location);
+        super(gameGrid, name, gameGrid.config.unitSize, gameGrid.config.unitSize, color, location)
 
-        this.isPlayer = false;
-        this.canBlock = false;
-        this.regenerates = false;
+        this.canBlock = false
+        this.regenerates = false
 
-        this.baseSpeed = 1;
-        this.speedModifier = 1;
-        this.recoveryRate = 4;
-        this.maxHits = 1;
-        this.hits = 0;
-        this.baseAccuracy = this.gameGrid.config.warriorAccuracy;
-        this.accuracyModifier = 0;
-        this.regenerateTimer = null;
-        this.points = 100;
+        this.baseSpeed = 1
+        this.speedModifier = 1
+        this.recoveryRate = 4
+        this.maxHits = 1
+        this.hits = 0
+        this.baseAccuracy = this.gameGrid.config.warriorAccuracy
+        this.accuracyModifier = 0
+        this.regenerateTimer = null
+        this.points = 100
 
-        this.direction = null;
+        this.direction = null
+
+        this.isBlocking = false
     }
 
     Draw() {
-        this.DrawSprite();
+        this.DrawSprite()
 
         // Draw units disc too
         if (this.disc) {
-            this.disc.Draw();
+            this.disc.Draw()
         }
     }
 
@@ -88,7 +89,7 @@ export class Unit extends Sprite {
     }
 
     ThrowDisc() {
-        if (!this.gameGrid.player) { return; }
+        if (! this.gameGrid.player) return
 
         // Aim at player
         const aimFor = Vector.Clone(this.gameGrid.player.location);
@@ -108,7 +109,12 @@ export class Unit extends Sprite {
             //console.log('Unit: ' + this.name + ' caught disc');
             this.disc.status = this.disc.HELD;
             this.disc.primed = false;
+            this.disc.returnable = false;
         }
+    }
+
+    Blocking() {
+
     }
 
     setDestination() {
@@ -157,15 +163,6 @@ export class Unit extends Sprite {
         }
     }
 
-    Throw(direction) {
-        if (this.disc && this.disc.status !== this.disc.HELD)
-            return;
-
-        this.disc.status = this.disc.DEADLY;
-
-        this.disc.Thrown(direction);
-    }
-
     Hit(strength) {
         this.hits += strength || 1;
         this.speedModifier = 1 / (this.hits + 1);
@@ -192,9 +189,6 @@ export class Unit extends Sprite {
     }
 
     remove() {
-        if (this.isPlayer)
-            return;
-
         this.gameGrid.score += this.points;
         this.gameGrid.enemies = this.gameGrid.enemies.filter((el) => {
             return el !== this;

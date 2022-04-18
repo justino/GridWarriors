@@ -5,28 +5,29 @@ import { KeyboardState } from "./keyboard.js"
 
 export class Player extends Unit {
     constructor(gameGrid, location) {
-        super(gameGrid, 'Tran', gameGrid.config.tranColor, location);
+        super(gameGrid, 'Tran', gameGrid.config.tranColor, location)
 
-        this.gameGrid = gameGrid;
-        this.isPlayer = true;
-        this.canBlock = true;
-        this.regenerates = true;
-        this.maxHits = 3;
-        this.disc = new Yellow(this);
+        this.gameGrid = gameGrid
+
+        this.canBlock = true
+        this.regenerates = true
+        this.maxHits = 3
+
+        this.disc = new Yellow(this)
     }
 
     Update() {
-        this.CatchDisc();
-        this.UpdateLocation();
-        this.bindToGameGrid();
+        this.CatchDisc()
+        this.UpdateLocation()
+        this.bindToGameGrid()
 
-        this.UpdateDiscStatus();
-        this.disc.Update();
+        this.UpdateDiscStatus()
+        this.disc.Update()
     }
 
     UpdateLocation() {
-        // Can't run while blocking
-        if (this.disc.status === this.disc.BLOCKING) { return; }
+        // Can't move while blocking
+        if (this.isBlocking) { return }
 
         const velocity = new Vector([0, 0]);
 
@@ -36,39 +37,45 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.LEFT)) { velocity.points[0] -= (this.baseSpeed * this.speedModifier); }
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed * this.speedModifier); }
 
-        // Only perform movement if there was any
-        if (velocity.points[0] !== 0 || velocity.points[1] !== 0) {
-            this.location.Add(velocity);
-            this.setDirection(this.findDirection(velocity))
-        } else {
-            this.setDirection(this.UP)
-        }
+        this.location.Add(velocity);
+        this.setDirection(this.findDirection(velocity))
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status === this.disc.HELD) {
-            // Disc Throwing
-            const direction = KeyboardState.discKeyPressed();
-            if (direction) {
-                this.disc.Thrown(direction);
-                KeyboardState.keyUp(direction); // Don't repeatably throw, must press again
-            }
+        this.Blocking()
+        this.ThrowDisc()
+        this.ReturnDisc()
+    }
 
-            //Blocking
-            if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = this.disc.BLOCKING; }
+    Blocking() {
+        this.isBlocking = KeyboardState.isDown(KeyboardState.BLOCK)
+    }
+
+    ThrowDisc() {
+        if (this.disc.status !== this.disc.HELD) return
+
+        const direction = KeyboardState.discKeyPressed()
+        if (! direction) return
+
+        const velocity = new Vector([0, 0])
+
+        if (direction.includes('UP'))    velocity.points[1] = -1
+        if (direction.includes('DOWN'))  velocity.points[1] =  1
+        if (direction.includes('LEFT'))  velocity.points[0] = -1
+        if (direction.includes('RIGHT')) velocity.points[0] =  1
+
+        this.disc.Thrown(velocity)
+    }
+
+    ReturnDisc() {
+        if (this.disc.status !== this.disc.DEADLY) return
+
+        const direction = KeyboardState.discKeyPressed()
+        if (! direction) {
+            this.disc.returnable = true
+            return
         }
-        else if (this.disc.status === this.disc.DEADLY) {
-            if (KeyboardState.discKeyPressed()) {
-                if (this.disc.returnable === true) {
-                    this.disc.Return();
-                }
-            }
-            else if (!this.disc.returnable) {
-                this.disc.returnable = true;
-            }
-        }
-        else if (this.disc.status === this.disc.BLOCKING) {
-            if (!KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = this.disc.HELD; }
-        }
+
+        if (this.disc.returnable) this.disc.Return()
     }
 }
