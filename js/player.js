@@ -26,7 +26,7 @@ export class Player extends Unit {
 
     UpdateLocation() {
         // Can't run while blocking
-        if (this.disc.status === 'blocking') { return; }
+        if (this.disc.status === this.disc.BLOCKING) { return; }
 
         const velocity = new Vector([0, 0]);
 
@@ -46,7 +46,7 @@ export class Player extends Unit {
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status === 'held') {
+        if (this.disc.status === this.disc.HELD) {
             // Disc Throwing
             const direction = KeyboardState.discKeyPressed();
             if (direction) {
@@ -55,9 +55,9 @@ export class Player extends Unit {
             }
 
             //Blocking
-            if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'blocking'; }
+            if (KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = this.disc.BLOCKING; }
         }
-        else if (this.disc.status === 'deadly') {
+        else if (this.disc.status === this.disc.DEADLY) {
             if (KeyboardState.discKeyPressed()) {
                 if (this.disc.returnable === true) {
                     this.disc.Return();
@@ -67,8 +67,8 @@ export class Player extends Unit {
                 this.disc.returnable = true;
             }
         }
-        else if (this.disc.status === 'blocking') {
-            if (!KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = 'held'; }
+        else if (this.disc.status === this.disc.BLOCKING) {
+            if (!KeyboardState.isDown(KeyboardState.BLOCK)) { this.disc.status = this.disc.HELD; }
         }
     }
 }

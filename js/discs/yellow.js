@@ -8,7 +8,7 @@ export class Yellow extends Disc {
     }
 
     Thrown(direction) {
-        this.status = 'deadly';
+        this.status = this.DEADLY;
         const velocity = new Vector([0, 0]);
 
         switch (direction) {

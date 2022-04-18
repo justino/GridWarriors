@@ -2,6 +2,12 @@ import { Sprite } from "./sprite.js"
 import { Vector } from "./vector.js"
 
 export class Disc extends Sprite {
+    HELD = Symbol("held")
+    DEADLY = Symbol("deadly")
+    BOUNCING = Symbol("bouncing")
+    RETURNING = Symbol("returning")
+    BLOCKING = Symbol("blocking")
+
     constructor(name, color, unit) {
         super(unit.gameGrid, name, unit.gameGrid.config.discSize, unit.gameGrid.config.discSize, color, unit.location)
 
@@ -9,7 +15,7 @@ export class Disc extends Sprite {
 
         this.strength = 1;
         this.homing = false;
-        this.status = 'held'; // deadly, bouncing, returning, blocking
+        this.status = this.HELD; // deadly, bouncing, returning, blocking
         this.baseSpeed = this.owner.gameGrid.config.discSpeed;
         this.speedModifier = 0;
         this.velocity = null;
@@ -21,15 +27,15 @@ export class Disc extends Sprite {
 
     Update() {
         switch (this.status) {
-            case 'held':
+            case this.HELD:
                 // Follow owner around
                 this.location = Vector.Clone(this.owner.location);
                 break;
-            case 'returning':
+            case this.RETURNING:
                 this.Return();
                 break;
-            case 'deadly':
-            case 'bouncing':
+            case this.DEADLY:
+            case this.BOUNCING:
                 // Basic Straight Lines
                 this.location.Add(this.velocity);
                 break;
@@ -40,8 +46,8 @@ export class Disc extends Sprite {
             if (bounced[0]) { this.BounceX(); }
             if (bounced[1]) { this.BounceY(); }
 
-            if (this.status !== 'bouncing') {
-                this.status = 'bouncing';
+            if (this.status !== this.BOUNCING) {
+                this.status = this.BOUNCING;
                 setTimeout(this.Return.bind(this), this.owner.gameGrid.config.discReturnTime);
             }
         }
@@ -49,26 +55,26 @@ export class Disc extends Sprite {
 
     Draw() {
         switch (this.status) {
-            case 'held':
-            case 'bouncing':
-            case 'returning':
+            case this.HELD:
+            case this.BOUNCING:
+            case this.RETURNING:
                 // Square
                 if (this.height !== this.owner.gameGrid.config.discSize) { this.changeHeight(this.owner.gameGrid.config.discSize); }
                 this.DrawSprite();
                 break;
-            case 'deadly':
+            case this.DEADLY:
                 // Flat
                 if (this.height !== this.owner.gameGrid.config.discSize / 2) { this.changeHeight(this.owner.gameGrid.config.discSize / 2); }
                 this.DrawSprite();
                 break;
-            case 'blocking':
+            case this.BLOCKING:
                 break;
         }
     }
 
     checkCollide(unit) {
         // We don't care about non-deadly discs
-        if (this.status !== 'deadly')
+        if (this.status !== this.DEADLY)
             return;
 
         const collision = this.Collision(unit);
@@ -107,7 +113,7 @@ export class Disc extends Sprite {
     }
 
     Thrown(direction) {
-        this.status = 'deadly';
+        this.status = this.DEADLY;
         const velocity = new Vector([0, 0]);
 
         direction.Mul(this.baseSpeed + this.speedModifier);
@@ -118,7 +124,7 @@ export class Disc extends Sprite {
     }
 
     Return() {
-        this.status = 'returning';
+        this.status = this.RETURNING;
         this.returnable = false;
 
         this.velocity = new Vector([0, 0]);

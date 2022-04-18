@@ -41,7 +41,7 @@ export class GameGrid {
         if (!this.player) { return; }
 
         // Check for hits/deaths by player
-        if (this.player.disc.status === 'deadly') {
+        if (this.player.disc.status === this.player.disc.DEADLY) {
             for (const enemy of this.enemies) {
                 this.player.disc.checkCollide(enemy);
             }

@@ -76,7 +76,7 @@ export class Unit extends Sprite {
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status === 'held' && !this.disc.primed) {
+        if (this.disc.status === this.disc.HELD && !this.disc.primed) {
             this.disc.primed = true;
 
             const distance = this.location.Distance(this.gameGrid.player.location);
@@ -104,9 +104,9 @@ export class Unit extends Sprite {
     }
 
     CatchDisc() {
-        if (this.disc.status === 'returning' && this.Collision(this.disc)) {
+        if (this.disc.status === this.disc.RETURNING && this.Collision(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc');
-            this.disc.status = 'held';
+            this.disc.status = this.disc.HELD;
             this.disc.primed = false;
         }
     }
@@ -158,10 +158,10 @@ export class Unit extends Sprite {
     }
 
     Throw(direction) {
-        if (this.disc && this.disc.status !== 'held')
+        if (this.disc && this.disc.status !== this.disc.HELD)
             return;
 
-        this.disc.status = 'deadly';
+        this.disc.status = this.disc.DEADLY;
 
         this.disc.Thrown(direction);
     }
