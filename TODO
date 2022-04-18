@@ -2,8 +2,6 @@
 * Blocking
 * Doors
 
-* Units facing direction of destination
-
 * Graphics
   * Bodies instead of squares
   * Body animation sequences for running

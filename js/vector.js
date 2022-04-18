@@ -57,6 +57,12 @@ export class Vector {
         }
     }
 
+    Angle() {
+        const rads = Math.atan2(this.points[0], this.points[1])
+        const degs = (180 * rads / Math.PI) - 90
+        return (360 + Math.round(degs)) % 360
+    }
+
     Limit(max) {
         if (this.Magnitude() > max) {
             this.Normalize();

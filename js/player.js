@@ -37,7 +37,12 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed * this.speedModifier); }
 
         // Only perform movement if there was any
-        if (velocity.points[0] !== 0 || velocity.points[1] !== 0) { this.location.Add(velocity); }
+        if (velocity.points[0] !== 0 || velocity.points[1] !== 0) {
+            this.location.Add(velocity);
+            this.setDirection(this.findDirection(velocity))
+        } else {
+            this.setDirection(this.UP)
+        }
     }
 
     UpdateDiscStatus() {

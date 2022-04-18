@@ -2,6 +2,11 @@ import { Sprite } from "./sprite.js"
 import { Vector } from "./vector.js"
 
 export class Unit extends Sprite {
+    UP = Symbol("up")
+    DOWN = Symbol("down")
+    LEFT = Symbol("left")
+    RIGHT = Symbol("right")
+
     constructor(gameGrid, name, color, location) {
         super(gameGrid, name, gameGrid.config.unitSize, gameGrid.config.unitSize, color, location);
 
@@ -18,6 +23,8 @@ export class Unit extends Sprite {
         this.accuracyModifier = 0;
         this.regenerateTimer = null;
         this.points = 100;
+
+        this.direction = null;
     }
 
     Draw() {
@@ -123,6 +130,31 @@ export class Unit extends Sprite {
         this.velocity = new Vector([0, 0]);
         this.velocity.Add(destinationForce);
         this.velocity.Limit(this.baseSpeed * this.speedModifier);
+
+        this.setDirection(this.findDirection(this.velocity))
+    }
+
+    findDirection(vector) {
+        let direction = this.DOWN
+
+        const angle = vector.Angle()
+
+        if (angle <= 45 || angle > 315) {
+            direction = this.RIGHT
+        } else if (angle > 45 && angle <= 135) {
+            direction = this.UP
+        } else if (angle > 135 && angle <= 225) {
+            direction = this.LEFT
+        }
+
+        return direction
+    }
+
+    setDirection(direction) {
+        if (this.direction !== direction) {
+            this.direction = direction
+            // console.log(`${this.name} - ${this.direction.toString()}`)
+        }
     }
 
     Throw(direction) {
