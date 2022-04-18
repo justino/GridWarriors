@@ -1,4 +1,4 @@
-import { Unit } from "../unit.js"
+import { Unit } from "./unit.js"
 import { Brown } from "../discs/brown.js"
 import { White } from "../discs/white.js"
 

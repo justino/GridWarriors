@@ -1,4 +1,4 @@
-import { Disc } from "../disc.js"
+import { Disc } from "./disc.js"
 
 export class Brown extends Disc {
     constructor(unit) {

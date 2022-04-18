@@ -1,7 +1,7 @@
 import { Unit } from "./unit.js"
-import { Yellow } from "./discs/yellow.js"
-import { Vector } from "./vector.js"
-import { KeyboardState } from "./keyboard.js"
+import { Yellow } from "../discs/yellow.js"
+import { Vector } from "../vector.js"
+import { KeyboardState } from "../keyboard.js"
 
 export class Player extends Unit {
     constructor(gameGrid, location) {

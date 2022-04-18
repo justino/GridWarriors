@@ -1,4 +1,4 @@
-import { Unit } from "../unit.js"
+import { Unit } from "./unit.js"
 import { DarkBlue } from "../discs/darkblue.js"
 
 export class Warrior extends Unit {

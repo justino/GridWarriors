@@ -1,4 +1,4 @@
-import { Player } from "./player.js"
+import { Player } from "./units/player.js"
 import { Wave } from "./wave.js"
 import { Vector } from "./vector.js"
 

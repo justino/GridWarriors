@@ -1,5 +1,5 @@
-import { Sprite } from "./sprite.js"
-import { Vector } from "./vector.js"
+import { Sprite } from "../sprite.js"
+import { Vector } from "../vector.js"
 
 export class Disc extends Sprite {
     HELD = Symbol("held")
