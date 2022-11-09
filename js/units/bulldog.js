@@ -1,5 +1,5 @@
 import { Unit } from "./unit.js"
-import { DarkBlue } from "../discs/darkblue.js"
+import { BeginnerDisc } from "../discs/beginner.js"
 
 export class Bulldog extends Unit {
     constructor(gameGrid, location) {
@@ -9,7 +9,7 @@ export class Bulldog extends Unit {
         this.regenerates = true;
         this.maxHits = 2;
         this.baseAccuracy = this.gameGrid.config.bulldogAccuracy;
-        this.disc = new DarkBlue(this);
+        this.disc = new BeginnerDisc(this);
         this.points = 500;
     }
 }

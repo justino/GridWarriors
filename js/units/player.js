@@ -1,5 +1,5 @@
 import { Unit } from "./unit.js"
-import { Yellow } from "../discs/yellow.js"
+import { PlayerDisc } from "../discs/player.js"
 import { Vector } from "../vector.js"
 import { KeyboardState } from "../keyboard.js"
 
@@ -13,7 +13,7 @@ export class Player extends Unit {
         this.regenerates = true
         this.maxHits = 3
 
-        this.disc = new Yellow(this)
+        this.disc = new PlayerDisc(this)
     }
 
     Update() {

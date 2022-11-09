@@ -1,6 +1,6 @@
 import { Unit } from "./unit.js"
-import { Brown } from "../discs/brown.js"
-import { White } from "../discs/white.js"
+import { IntermediateDisc } from "../discs/intermediate.js"
+import { HomingDisc } from "../discs/homing.js"
 
 export class Leader extends Unit {
     constructor(gameGrid, location) {
@@ -10,11 +10,11 @@ export class Leader extends Unit {
         this.baseAccuracy = this.gameGrid.config.leaderAccuracy;
         this.points = 1000;
 
-        if (Math.random() * 100 <= this.gameGrid.config.whiteDiscPercent) {
-            this.disc = new White(this);
+        if (Math.random() * 100 <= this.gameGrid.config.homingDiscPercent) {
+            this.disc = new HomingDisc(this);
         }
         else {
-            this.disc = new Brown(this);
+            this.disc = new IntermediateDisc(this);
         }
     }
 }
