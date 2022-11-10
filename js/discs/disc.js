@@ -13,7 +13,6 @@ export class Disc extends Sprite {
         this.owner = unit;
 
         this.strength = 1;
-        this.homing = false;
         this.status = this.HELD; // deadly, bouncing, returning
         this.baseSpeed = this.owner.gameGrid.config.discSpeed;
         this.speedModifier = 0;
@@ -40,6 +39,10 @@ export class Disc extends Sprite {
                 break;
         }
 
+        this.checkBounce();
+    }
+
+    checkBounce() {
         const bounced = this.bindToGameGrid();
         if (bounced[0] || bounced[1]) {
             if (bounced[0]) { this.BounceX(); }
@@ -106,6 +109,8 @@ export class Disc extends Sprite {
             // When a collision occurs, attempt to regenerate the disc owner
             // if they are capable
             this.owner.Regenerate();
+            // Bounce off unit if they are alive, otherwise pass through corpse
+            if (! unit.isDead()) this.Return();
         }
     }
 
