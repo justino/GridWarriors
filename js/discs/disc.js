@@ -14,7 +14,6 @@ export class Disc extends Sprite {
 
         this.strength = 1;
         this.status = this.HELD; // deadly, bouncing, returning
-        this.baseSpeed = this.owner.gameGrid.config.discSpeed;
         this.speedModifier = 0;
         this.velocity = null;
 

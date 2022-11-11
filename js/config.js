@@ -14,7 +14,6 @@ export default {
 
     // Game Play Params
     discReturnTime: 1000,  // Seconds
-    discSpeed: 4,
     homingDiscPercent: 20, // Percentage for when a white disc appears
     warriorAccuracy: 85, // Percent
     bulldogAccuracy: 90, // Percent
