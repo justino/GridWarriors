@@ -81,10 +81,10 @@ export class Unit extends Sprite {
             this.disc.primed = true;
 
             const distance = this.location.Distance(this.gameGrid.player.location);
-            const multiplier = distance / this.gameGrid.diagonal;
-            const time = 1000 + ((2000 + Math.random() * 4000) * multiplier);
+            const modifier = distance / this.gameGrid.diagonal;
+            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier);
 
-            window.setTimeout(this.ThrowDisc.bind(this), time);
+            window.setTimeout(this.ThrowDisc.bind(this), time * 1000);
         }
     }
 
