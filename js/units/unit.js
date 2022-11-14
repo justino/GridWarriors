@@ -15,6 +15,7 @@ export class Unit extends Sprite {
 
         this.baseSpeed = 1
         this.speedModifier = 1
+        this.throwFrequencyModifier = 0
         this.recoveryRate = 4
         this.maxHits = 1
         this.hits = 0
@@ -82,7 +83,7 @@ export class Unit extends Sprite {
 
             const distance = this.location.Distance(this.gameGrid.player.location);
             const modifier = distance / this.gameGrid.diagonal;
-            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier);
+            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier;
 
             window.setTimeout(this.ThrowDisc.bind(this), time * 1000);
         }

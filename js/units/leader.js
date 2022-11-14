@@ -7,6 +7,7 @@ export class Leader extends Unit {
         super(gameGrid, 'Leader', gameGrid.config.leaderColor, location);
 
         this.baseSpeed = 2;
+        this.throwFrequencyModifier = -2;
         this.baseAccuracy = this.gameGrid.config.leaderAccuracy;
         this.points = 1000;
 
