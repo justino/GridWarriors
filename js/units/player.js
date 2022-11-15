@@ -5,7 +5,7 @@ import { KeyboardState } from "../keyboard.js"
 
 export class Player extends Unit {
     constructor(gameGrid, location) {
-        super(gameGrid, 'Tran', gameGrid.config.tranColor, location)
+        super(gameGrid, 'Tran', config.tranColor, location)
 
         this.gameGrid = gameGrid
 
@@ -29,15 +29,15 @@ export class Player extends Unit {
         // Can't move while blocking
         if (this.isBlocking) { return }
 
-        const velocity = new Vector([0, 0]);
+        const velocity = new Vector([0, 0])
 
         // Move around based on keyboard input
-        if (KeyboardState.isDown(KeyboardState.movement.DOWN)) { velocity.points[1] += (this.baseSpeed * this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.UP)) { velocity.points[1] -= (this.baseSpeed * this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.LEFT)) { velocity.points[0] -= (this.baseSpeed * this.speedModifier); }
-        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) { velocity.points[0] += (this.baseSpeed * this.speedModifier); }
+        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  velocity.points[1] += (this.baseSpeed * this.speedModifier)
+        if (KeyboardState.isDown(KeyboardState.movement.UP))    velocity.points[1] -= (this.baseSpeed * this.speedModifier)
+        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= (this.baseSpeed * this.speedModifier)
+        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += (this.baseSpeed * this.speedModifier)
 
-        this.location.Add(velocity);
+        this.location.Add(velocity)
         this.setDirection(this.findDirection(velocity))
     }
 

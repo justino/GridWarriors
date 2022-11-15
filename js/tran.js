@@ -1,93 +1,56 @@
 import { GameGrid } from "./gamegrid.js"
-import config from "./config.js"
+import { Scoreboard } from "./scoreboard.js"
+import { Overlay } from "./overlay.js"
 
 export class Tran {
-    constructor(canvas, scoreBoard) {
-        this.canvas = canvas;
-        this.canvas.width = config.width;
-        this.canvas.height = config.height;
+    constructor() {
+        this.scoreBoard = new Scoreboard()
+        this.overlay = new Overlay()
+        this.gameGrid = new GameGrid()
 
-        this.scoreBoard = scoreBoard;
-        this.score = 0;
-        this.highScore = localStorage.getItem('highScore') || 0;
+        this.playing = false
+        this.paused = false
 
-        this.gameGrid = new GameGrid(config, this.canvas);
+        addEventListener('GameOver', this.gameOver.bind(this))
+        addEventListener('GameStart', this.gameStart.bind(this))
+        addEventListener('keypress', this.pause.bind(this))
 
-        this.playing = false;
-        this.paused = false;
+        this.overlay.show()
+    }
 
-        addEventListener('GameOver', this.gameOver.bind(this));
-        addEventListener('Score', this.updateScore.bind(this));
-
-        addEventListener('keypress', this.pause.bind(this));
-        document.querySelector('button.start').addEventListener('click', () => {
-            this.hideOverlay();
-
-            this.gameGrid.reset();
-            this.score = 0;
-            this.playing = true;
-            this.play();
-        });
-
-        this.updateHighScore();
-        this.showOverlay();
+    gameStart() {
+        this.gameGrid.reset()
+        this.score = 0
+        this.playing = true
+        this.play()
     }
 
     play() {
-        if (this.playing) {
-            if (!this.paused) {
-                this.gameGrid.Update();
-                this.gameGrid.Draw();
-            }
-            else {
-                this.gameGrid.DrawBackground();
-            }
+        if (! this.playing) return
 
-            requestAnimationFrame(this.play.bind(this));
+        if (this.paused) {
+            this.gameGrid.DrawBackground()
         }
-    }
-
-    updateScore(e) {
-        // Track score
-        this.score += e.detail.score;
-        this.scoreBoard.querySelector('#score').innerHTML = this.score;
-
-        this.updateHighScore();
-
-        console.log('Updated Scoreboard');
-    }
-
-    updateHighScore() {
-        if (this.score > this.highScore) {
-            this.highScore = this.score;
-            localStorage.setItem('highScore', this.highScore);
+        else {
+            this.gameGrid.Update()
+            this.gameGrid.Draw()
         }
 
-        this.scoreBoard.querySelector('#highscore').innerHTML = this.highScore;
+        requestAnimationFrame(this.play.bind(this))
     }
 
     pause(e) {
-        if (![80, 112].includes(e.keyCode)) { return; }
+        // Look for 'p' or 'P' keys
+        if (![80, 112].includes(e.keyCode)) return
 
-        e.stopPropagation();
-        this.paused = !this.paused;
-        console.log(this.paused ? 'Paused' : 'Unpaused');
+        e.stopPropagation()
+        this.paused = !this.paused
+        console.log(this.paused ? 'Paused' : 'Unpaused')
     }
 
     gameOver() {
-        console.log('Game Over');
-        this.playing = false;
-
-        this.showOverlay();
-    }
-
-    showOverlay() {
-        const overlay = document.querySelector('.overlay');
-        overlay.classList.add('show');
-    }
-
-    hideOverlay() {
-        const overlay = document.querySelector('.overlay');
-        overlay.classList.remove('show');
+        console.log('Game Over')
+        this.playing = false
+        this.overlay.show()
     }
 }

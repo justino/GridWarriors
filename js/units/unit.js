@@ -8,7 +8,7 @@ export class Unit extends Sprite {
     RIGHT = Symbol("right")
 
     constructor(gameGrid, name, color, location) {
-        super(gameGrid, name, gameGrid.config.unitSize, gameGrid.config.unitSize, color, location)
+        super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
         this.canBlock = false
         this.regenerates = false
@@ -19,7 +19,7 @@ export class Unit extends Sprite {
         this.recoveryRate = 4
         this.maxHits = 1
         this.hits = 0
-        this.baseAccuracy = this.gameGrid.config.warriorAccuracy
+        this.baseAccuracy = config.warriorAccuracy
         this.accuracyModifier = 0
         this.regenerateTimer = null
         this.points = 100
@@ -40,52 +40,48 @@ export class Unit extends Sprite {
 
     Update() {
         // Did we catch our own disc
-        if (this.disc) {
-            this.CatchDisc();
-        }
+        if (this.disc) this.CatchDisc()
 
         // If we don't have a velocity set, do it now
-        if (!this.velocity) {
-            this.setDestination();
-        }
+        if (!this.velocity) this.setDestination()
 
         // Move Unit towards destination
-        this.UpdateLocation();
+        this.UpdateLocation()
 
         // Are we at our destination
         if (this.TouchLocation(this.destination)) {
-            // console.log(`Unit: ${this.name} got to destination, setting new destination`);
-            this.setDestination();
+            // console.log(`Unit: ${this.name} got to destination, setting new destination`)
+            this.setDestination()
         }
 
         // Make sure Unit stays on the grid
-        const hitEdge = this.bindToGameGrid();
+        const hitEdge = this.bindToGameGrid()
         if (hitEdge[0] || hitEdge[1]) {
             // Hit an edge, make a new destination
             // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
-            this.setDestination();
+            this.setDestination()
         }
 
         // Maintain Disc
         if (this.disc) {
-            this.UpdateDiscStatus();
-            this.disc.Update();
+            this.UpdateDiscStatus()
+            this.disc.Update()
         }
     }
 
     UpdateLocation() {
-        this.location.Add(this.velocity);
+        this.location.Add(this.velocity)
     }
 
     UpdateDiscStatus() {
         if (this.disc.status === this.disc.HELD && !this.disc.primed) {
-            this.disc.primed = true;
+            this.disc.primed = true
 
-            const distance = this.location.Distance(this.gameGrid.player.location);
-            const modifier = distance / this.gameGrid.diagonal;
-            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier;
+            const distance = this.location.Distance(this.gameGrid.player.location)
+            const modifier = distance / this.gameGrid.diagonal
+            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier
 
-            window.setTimeout(this.ThrowDisc.bind(this), time * 1000);
+            window.setTimeout(this.ThrowDisc.bind(this), time * 1000)
         }
     }
 
@@ -93,24 +89,24 @@ export class Unit extends Sprite {
         if (! this.gameGrid.player) return
 
         // Aim at player
-        const aimFor = Vector.Clone(this.gameGrid.player.location);
+        const aimFor = Vector.Clone(this.gameGrid.player.location)
 
         // Apply Accuracy (somewhere around the player)
-        aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
-        aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier);
+        aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
+        aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
 
-        const direction = Vector.SubFactory(aimFor, this.disc.location);
-        direction.Normalize();
+        const direction = Vector.SubFactory(aimFor, this.disc.location)
+        direction.Normalize()
 
-        this.disc.Thrown(direction);
+        this.disc.Thrown(direction)
     }
 
     CatchDisc() {
         if (this.disc.status === this.disc.RETURNING && this.Collision(this.disc)) {
-            //console.log('Unit: ' + this.name + ' caught disc');
-            this.disc.status = this.disc.HELD;
-            this.disc.primed = false;
-            this.disc.returnable = false;
+            //console.log('Unit: ' + this.name + ' caught disc')
+            this.disc.status = this.disc.HELD
+            this.disc.primed = false
+            this.disc.returnable = false
         }
     }
 
@@ -119,24 +115,24 @@ export class Unit extends Sprite {
     }
 
     setDestination() {
-        // Try to generate a new location on the grid that is at least ${this.gameGrid.config.minimumDistance}
+        // Try to generate a new location on the grid that is at least ${config.minimumDistance}
         // away from itself. This prevents odd jumpy behavior when the locations are too close.
         // If we try 3 times, stop trying and go with it, don't want to get bogged down.
-        let attempts = 0;
+        let attempts = 0
         do {
-            attempts++;
+            attempts++
 
             // Random location on game grid
-            this.destination = Vector.Random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height);
-        } while (this.location.Distance(this.destination) < this.gameGrid.config.minimumDistance || attempts <= 3);
+            this.destination = Vector.Random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
+        } while (this.location.Distance(this.destination) < config.minimumDistance || attempts <= 3)
 
-        const destinationForce = Vector.SubFactory(this.destination, this.location);
-        destinationForce.Normalize();
-        destinationForce.Mul(this.baseSpeed * this.speedModifier);
+        const destinationForce = Vector.SubFactory(this.destination, this.location)
+        destinationForce.Normalize()
+        destinationForce.Mul(this.baseSpeed * this.speedModifier)
 
-        this.velocity = new Vector([0, 0]);
-        this.velocity.Add(destinationForce);
-        this.velocity.Limit(this.baseSpeed * this.speedModifier);
+        this.velocity = new Vector([0, 0])
+        this.velocity.Add(destinationForce)
+        this.velocity.Limit(this.baseSpeed * this.speedModifier)
 
         this.setDirection(this.findDirection(this.velocity))
     }
@@ -165,36 +161,35 @@ export class Unit extends Sprite {
     }
 
     Hit(strength) {
-        this.hits += strength || 1;
-        this.speedModifier = 1 / (this.hits + 1);
-        this.setDestination();
+        this.hits += strength || 1
+        this.speedModifier = 1 / (this.hits + 1)
+        this.setDestination()
 
-        console.log(`${this.name} hit. ${this.maxHits - this.hits} left`);
+        console.log(`${this.name} hit. ${this.maxHits - this.hits} left`)
     }
 
     Regenerate() {
-        if (!this.regenerates)
-            return;
+        if (!this.regenerates) return
 
         if (this.hits > 0) {
-            this.hits -= 1;
-            this.speedModifier = (0.5 * this.hits) || 1;
-            this.setDestination();
+            this.hits -= 1
+            this.speedModifier = (0.5 * this.hits) || 1
+            this.setDestination()
 
-            console.log(`${this.name} regenerated 1 HP`);
+            console.log(`${this.name} regenerated 1 HP`)
         }
     }
 
     isDead() {
-        return this.hits >= this.maxHits;
+        return this.hits >= this.maxHits
     }
 
     remove() {
-        this.gameGrid.score += this.points;
+        this.gameGrid.score += this.points
         this.gameGrid.enemies = this.gameGrid.enemies.filter((el) => {
-            return el !== this;
-        });
+            return el !== this
+        })
 
-        console.log(`${this.name} derezzed`);
+        console.log(`${this.name} derezzed`)
     }
 }

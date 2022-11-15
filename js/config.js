@@ -34,4 +34,4 @@ export default {
     homingDiscColor: 'rgba(255, 255, 255, 1)'
 
     // Debuging Params
-};
+}

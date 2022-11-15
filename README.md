@@ -72,7 +72,7 @@ DEREZ EVERYTHING THAT MOVES
 
 Each enemy type in the game is worth a certain amount of points.
 Killing them will earn you points.
-Get hit though, and you'll lose points. Go negative and you'll have to dig yourself out of your hole.
+Get hit though, and you'll lose points.
 
 ## Enemies
 

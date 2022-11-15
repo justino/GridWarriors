@@ -26,22 +26,22 @@ export const KeyboardState = {
     isDown: function(keyList) {
         for (const key of keyList) {
             if (this.pressed[key]) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     },
-    keyDown: function(code) { this.pressed[code] = true; },
-    keyUp: function(code) { delete this.pressed[code]; },
+    keyDown: function(code) { this.pressed[code] = true },
+    keyUp: function(code) { delete this.pressed[code] },
 
     discKeyPressed: function() {
         for (const direction in this.disc) {
             if (this.isDown(KeyboardState.disc[direction])) {
-                return direction;
+                return direction
             }
         }
 
-        return null;
+        return null
     },
     releaseDiscKey: function(direction) {
         const keys = this.disc[direction]
@@ -51,5 +51,5 @@ export const KeyboardState = {
     }
 }
 
-addEventListener('keyup',   e => { KeyboardState.keyUp(e.keyCode); });
-addEventListener('keydown', e => { KeyboardState.keyDown(e.keyCode); });
+addEventListener('keyup',   e => { KeyboardState.keyUp(e.keyCode) })
+addEventListener('keydown', e => { KeyboardState.keyDown(e.keyCode) })
