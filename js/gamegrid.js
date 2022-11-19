@@ -1,5 +1,4 @@
 import { Player } from "./units/player.js"
-import { Wave } from "./wave.js"
 import { Vector } from "./vector.js"
 
 export class GameGrid {
@@ -13,16 +12,16 @@ export class GameGrid {
 
         this.diagonal = Math.sqrt((config.width ^ 2) + (config.height ^ 2))
 
-        addEventListener('UnitHit', this.unitHit.bind(this))
+        this.enemies = []
+        this.player = null
     }
 
-    reset() {
+    Setup() {
         this.enemies = []
         this.player = new Player(
             this,
             new Vector([this.canvas.width / 2, this.canvas.height / 2])
         )
-        this.wave = new Wave(this)
     }
 
     Draw() {
@@ -64,27 +63,18 @@ export class GameGrid {
         }
     }
 
-    unitHit(e) {
-        console.log('Disc Collided')
+    AddEnemy(enemy) {
+        this.enemies.push(enemy)
+    }
 
-        e.detail.loser.Hit(e.detail.winner.disc.strength)
+    RemoveEnemy(enemy) {
+        console.log(`${enemy.name} derezzed`)
+        this.enemies = this.enemies.filter((unit) => {
+            return unit != enemy
+        })
+    }
 
-        if (e.detail.winner === this.player) {
-            if (e.detail.loser.isDead()) {
-                dispatchEvent(new CustomEvent('Score', { detail: { score: e.detail.loser.points } }))
-
-                e.detail.loser.remove()
-                this.wave.trigger(config.respawnInterval)
-            }
-        }
-        else {
-            dispatchEvent(new CustomEvent('Score', { detail: { score: -(e.detail.winner.disc.strength * 100) } }))
-
-            if (e.detail.loser.isDead()) {
-                e.detail.loser.remove()
-                this.player = null
-                dispatchEvent(new Event('GameOver'))
-            }
-        }
+    RemovePlayer() {
+        this.player = null
     }
 }

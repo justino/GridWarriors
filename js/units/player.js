@@ -9,6 +9,7 @@ export class Player extends Unit {
 
         this.gameGrid = gameGrid
 
+        this.isPlayer = true
         this.canBlock = true
         this.regenerates = true
         this.maxHits = 3

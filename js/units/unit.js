@@ -10,6 +10,7 @@ export class Unit extends Sprite {
     constructor(gameGrid, name, color, location) {
         super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
+        this.isPlayer = false
         this.canBlock = false
         this.regenerates = false
 
@@ -162,10 +163,15 @@ export class Unit extends Sprite {
 
     Hit(strength) {
         this.hits += strength || 1
-        this.speedModifier = 1 / (this.hits + 1)
-        this.setDestination()
-
         console.log(`${this.name} hit. ${this.maxHits - this.hits} left`)
+
+        const dead = this.isDead()
+        if (! dead) {
+            this.speedModifier = 1 / (this.hits + 1)
+            this.setDestination()
+        }
+
+        return dead
     }
 
     Regenerate() {
@@ -182,14 +188,5 @@ export class Unit extends Sprite {
 
     isDead() {
         return this.hits >= this.maxHits
-    }
-
-    remove() {
-        this.gameGrid.score += this.points
-        this.gameGrid.enemies = this.gameGrid.enemies.filter((el) => {
-            return el !== this
-        })
-
-        console.log(`${this.name} derezzed`)
     }
 }

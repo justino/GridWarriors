@@ -3,13 +3,11 @@ import { Bulldog } from "./units/bulldog.js"
 import { Leader } from "./units/leader.js"
 import { Vector } from "./vector.js"
 
-export class Wave {
+export class WaveManager {
     constructor(gameGrid) {
         this.gameGrid = gameGrid
         this.timer
         this.count = 0
-
-        this.trigger(config.gameStartTime)
     }
 
     next() {
@@ -21,7 +19,7 @@ export class Wave {
         console.log(`Wave ${this.count}: Spawning ${unitsToSpawn} units`)
 
         for (let i = 0; i < unitsToSpawn; i++) {
-            this.spawnUnit()
+            this.spawnUnits()
         }
     }
 
@@ -40,12 +38,12 @@ export class Wave {
 
         if (this.isCleared()) {
             // Wave cleared, extra points
-            dispatchEvent(new CustomEvent('Score', { detail: { score: 250 } }))
+            dispatchEvent(new CustomEvent('Score', { detail: { points: 250 } }))
             console.log("Wave Cleared")
         }
     }
 
-    spawnUnit() {
+    spawnUnits() {
         const units = []
 
         if (this.count > 10)
@@ -60,7 +58,7 @@ export class Wave {
             Math.random() * (this.gameGrid.canvas.height - config.unitSize * 2) + config.unitSize
         ])
 
-        this.gameGrid.enemies.push(new unit(this.gameGrid, location))
+        this.gameGrid.AddEnemy(new unit(this.gameGrid, location))
     }
 
     isCleared() {

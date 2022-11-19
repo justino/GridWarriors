@@ -91,18 +91,16 @@ export class Disc extends Sprite {
         if (collision) this.collided = unit
 
         if (collision) {
+            const isDead = unit.Hit(this.strength)
+            this.owner.Regenerate()
+            if (! isDead) this.Return()
+
             dispatchEvent(new CustomEvent('UnitHit', {
                 detail: {
                     winner: this.owner,
                     loser: unit
                 }
             }))
-
-            // When a collision occurs, attempt to regenerate the disc owner
-            // if they are capable
-            this.owner.Regenerate()
-            // Bounce off unit if they are alive, otherwise pass through corpse
-            if (! unit.isDead()) this.Return()
         }
     }
 

@@ -3,29 +3,42 @@ export class Scoreboard {
         this.scoreElement = document.getElementById('score')
         this.highScoreElement = document.getElementById('highscore')
 
-        this.score = 0
-        this.highScore = localStorage.getItem('highScore') || 0
+        this.currentScore = 0
+        this.highScore = this._getHighScore()
 
-        addEventListener('Score', this.updateScores.bind(this))
-
-        this.updateBoard()
+        this._updateBoard()
     }
 
-    updateScores(e) {
-        const newScore = this.score + e.detail.score
+    score(points) {
+        const newScore = this.currentScore + points
         if (newScore >= 0)
-            this.score = newScore
+            this.currentScore = newScore
 
-        if (this.score > this.highScore) {
-            this.highScore = this.score
-            localStorage.setItem('highScore', this.score)
+        this._updateHighScore()
+        this._updateBoard()
+    }
+
+    _getHighScore() {
+        const highScore = localStorage.getItem('highScore') || 0
+        try {
+            parseInt(highScore)
+        }
+        catch {
+            highScore = 0
         }
 
-        this.updateBoard()
+        return highScore
     }
 
-    updateBoard() {
-        this.scoreElement.innerHTML = this.score
+    _updateHighScore() {
+        if (this.currentScore <= this.highScore) return
+
+        this.highScore = this.currentScore
+        localStorage.setItem('highScore', this.highScore)
+    }
+
+    _updateBoard() {
+        this.scoreElement.innerHTML = this.currentScore
         this.highScoreElement.innerHTML = this.highScore
     }
 }
