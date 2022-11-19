@@ -45,7 +45,6 @@ main {
 }
 
 #gamegrid {
-    border: 1px solid #ccc;
     z-index: 0;
 }
 
