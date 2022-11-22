@@ -1,7 +1,6 @@
 import { Warrior } from "./units/warrior.js"
 import { Bulldog } from "./units/bulldog.js"
 import { Leader } from "./units/leader.js"
-import { Vector } from "./vector.js"
 
 export class WaveManager {
     constructor(gameGrid) {
@@ -53,12 +52,8 @@ export class WaveManager {
         units.push(Warrior)
 
         const unit = units[Math.floor(Math.random() * units.length)]
-        const location = new Vector([
-            Math.random() * (this.gameGrid.canvas.width - config.unitSize * 2) + config.unitSize,
-            Math.random() * (this.gameGrid.canvas.height - config.unitSize * 2) + config.unitSize
-        ])
 
-        this.gameGrid.AddEnemy(new unit(this.gameGrid, location))
+        this.gameGrid.AddEnemy(unit)
     }
 
     isCleared() {

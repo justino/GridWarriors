@@ -79,7 +79,13 @@ export class GameGrid {
         }
     }
 
-    AddEnemy(enemy) {
+    AddEnemy(enemyUnit) {
+        const location = new Vector([
+            Math.random() * (this.canvas.width - config.unitSize * 2) + config.unitSize,
+            Math.random() * (this.canvas.height - config.unitSize * 2) + config.unitSize
+        ])
+
+        const enemy = new enemyUnit(this, location)
         this.enemies.push(enemy)
     }
 
