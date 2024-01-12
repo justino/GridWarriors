@@ -37,21 +37,20 @@ export class GameGrid {
         this.context.fillStyle = config.gridColor
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-        // Verticles
+        // Grid
         this.context.strokeStyle = 'darkgray'
+        this.context.beginPath()
+        // Verticles
         for (let i = 0; i < this.canvas.width; i += (this.canvas.width / 13)) {
-            this.context.beginPath()
             this.context.moveTo(i, 0)
             this.context.lineTo(i, this.canvas.height)
-            this.context.stroke()
         }
         // Horizontals
         for (let i = 0; i < this.canvas.height; i += (this.canvas.height / 13)) {
-            this.context.beginPath()
             this.context.moveTo(0, i)
             this.context.lineTo(this.canvas.width, i)
-            this.context.stroke()
         }
+        this.context.stroke()
     }
 
     Update() {
