@@ -2,12 +2,14 @@ import { Sprite } from "../sprite.js"
 import { Vector } from "../vector.js"
 import { DiscStates } from "../discs/disc.js"
 
-export class Unit extends Sprite {
-    UP = Symbol("up")
-    DOWN = Symbol("down")
-    LEFT = Symbol("left")
-    RIGHT = Symbol("right")
+const UnitFacings = Object.freeze({
+    UP:    Symbol("up"),
+    DOWN:  Symbol("down"),
+    LEFT:  Symbol("left"),
+    RIGHT: Symbol("right")
+})
 
+export class Unit extends Sprite {
     constructor(gameGrid, name, color, location) {
         super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
@@ -26,7 +28,8 @@ export class Unit extends Sprite {
         this.regenerateTimer = null
         this.points = 100
 
-        this.direction = null
+        // General direction unit is facing
+        this.facing = null
 
         this.isBlocking = false
     }
@@ -136,29 +139,29 @@ export class Unit extends Sprite {
         this.velocity.Add(destinationForce)
         this.velocity.Limit(this.baseSpeed * this.speedModifier)
 
-        this.setDirection(this.findDirection(this.velocity))
+        this.setFacing(this.findFacing(this.velocity))
     }
 
-    findDirection(vector) {
-        let direction = this.DOWN
+    findFacing(vector) {
+        let facing = UnitFacings.DOWN
 
         const angle = vector.Angle()
 
         if (angle <= 45 || angle > 315) {
-            direction = this.RIGHT
+            facing = UnitFacings.RIGHT
         } else if (angle > 45 && angle <= 135) {
-            direction = this.UP
+            facing = UnitFacings.UP
         } else if (angle > 135 && angle <= 225) {
-            direction = this.LEFT
+            facing = UnitFacings.LEFT
         }
 
-        return direction
+        return facing
     }
 
-    setDirection(direction) {
-        if (this.direction !== direction) {
-            this.direction = direction
-            // console.log(`${this.name} - ${this.direction.toString()}`)
+    setFacing(facing) {
+        if (this.facing !== facing) {
+            this.facing = facing
+            // console.log(`${this.name} - Facing: ${this.facing.toString()}`)
         }
     }
 

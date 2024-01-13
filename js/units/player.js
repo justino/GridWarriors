@@ -40,7 +40,7 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += (this.baseSpeed * this.speedModifier)
 
         this.location.Add(velocity)
-        this.setDirection(this.findDirection(velocity))
+        this.setFacing(this.findFacing(velocity))
     }
 
     UpdateDiscStatus() {
