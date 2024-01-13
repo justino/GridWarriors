@@ -5,3 +5,21 @@
   * Bodies instead of squares
   * Body animation sequences for running
   * Scale units + discs to accomodate new graphics
+
+* Sounds
+  * Disc throw
+  * Disc bounce
+  * Unit hit
+  * Unit derez
+  * Door jammed
+
+# Doors
+
+In set positions at the edges of the grid
+Can be in one of 3 states: open, closed, jammed
+
+Player hits opened door with disc, jams it.
+Enemy hits jammed door with disc, closes it.
+
+Opened doors close after a set period of time.
+Occassionally, enemies will target a jammed door to be closed.
