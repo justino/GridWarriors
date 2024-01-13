@@ -1,4 +1,5 @@
 import { Player } from "./units/player.js"
+import { DiscStates } from "./discs/disc.js"
 import { Vector } from "./vector.js"
 
 export class GameGrid {
@@ -57,7 +58,7 @@ export class GameGrid {
         if (!this.player) return
 
         // Check for hits/deaths by player
-        if (this.player.disc.status === this.player.disc.DEADLY) {
+        if (this.player.disc.status === DiscStates.DEADLY) {
             for (const enemy of this.enemies) {
                 this.player.disc.checkCollide(enemy)
             }

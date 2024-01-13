@@ -1,5 +1,5 @@
 import { Vector } from "../vector.js"
-import { Disc } from "./disc.js"
+import { Disc, DiscStates } from "./disc.js"
 
 export class HomingDisc extends Disc {
     constructor(unit) {
@@ -11,19 +11,19 @@ export class HomingDisc extends Disc {
 
     Update() {
         switch (this.status) {
-            case this.HELD:
+            case DiscStates.HELD:
                 // Follow owner around
                 this.location = Vector.Clone(this.owner.location)
                 break
-            case this.RETURNING:
+            case DiscStates.RETURNING:
                 this.Return()
                 break
-            case this.DEADLY:
+            case DiscStates.DEADLY:
                 if (this.homing) {
                     this.homeInOnPlayer()
                     break
                 }
-            case this.BOUNCING:
+            case DiscStates.BOUNCING:
                 // Basic Straight Lines
                 this.location.Add(this.velocity)
                 break

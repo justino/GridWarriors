@@ -1,5 +1,6 @@
 import { Sprite } from "../sprite.js"
 import { Vector } from "../vector.js"
+import { DiscStates } from "../discs/disc.js"
 
 export class Unit extends Sprite {
     UP = Symbol("up")
@@ -75,7 +76,7 @@ export class Unit extends Sprite {
     }
 
     UpdateDiscStatus() {
-        if (this.disc.status === this.disc.HELD && !this.disc.primed) {
+        if (this.disc.status === DiscStates.HELD && !this.disc.primed) {
             this.disc.primed = true
 
             const distance = this.location.Distance(this.gameGrid.player.location)
@@ -103,9 +104,9 @@ export class Unit extends Sprite {
     }
 
     CatchDisc() {
-        if (this.disc.status === this.disc.RETURNING && this.Collision(this.disc)) {
+        if (this.disc.status === DiscStates.RETURNING && this.Collision(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc')
-            this.disc.status = this.disc.HELD
+            this.disc.status = DiscStates.HELD
             this.disc.primed = false
             this.disc.returnable = false
         }

@@ -1,19 +1,21 @@
 import { Sprite } from "../sprite.js"
 import { Vector } from "../vector.js"
 
-export class Disc extends Sprite {
-    HELD = Symbol("held")
-    DEADLY = Symbol("deadly")
-    BOUNCING = Symbol("bouncing")
-    RETURNING = Symbol("returning")
+export const DiscStates = Object.freeze({
+    HELD:      Symbol("held"),
+    DEADLY:    Symbol("deadly"),
+    BOUNCING:  Symbol("bouncing"),
+    RETURNING: Symbol("returning")
+})
 
+export class Disc extends Sprite {
     constructor(name, color, unit) {
         super(unit.gameGrid, name, config.discSize, config.discSize, color, unit.location)
 
         this.owner = unit
 
         this.strength = 1
-        this.status = this.HELD // deadly, bouncing, returning
+        this.status = DiscStates.HELD
         this.speedModifier = 0
         this.velocity = null
 
@@ -24,15 +26,15 @@ export class Disc extends Sprite {
 
     Update() {
         switch (this.status) {
-            case this.HELD:
+            case DiscStates.HELD:
                 // Follow owner around
                 this.location = Vector.Clone(this.owner.location)
                 break
-            case this.RETURNING:
+            case DiscStates.RETURNING:
                 this.Return()
                 break
-            case this.DEADLY:
-            case this.BOUNCING:
+            case DiscStates.DEADLY:
+            case DiscStates.BOUNCING:
                 // Basic Straight Lines
                 this.location.Add(this.velocity)
                 break
@@ -47,8 +49,8 @@ export class Disc extends Sprite {
             if (bounced[0]) this.BounceX()
             if (bounced[1]) this.BounceY()
 
-            if (this.status !== this.BOUNCING) {
-                this.status = this.BOUNCING
+            if (this.status !== DiscStates.BOUNCING) {
+                this.status = DiscStates.BOUNCING
                 setTimeout(this.Return.bind(this), config.discReturnTime)
             }
         }
@@ -56,14 +58,14 @@ export class Disc extends Sprite {
 
     Draw() {
         switch (this.status) {
-            case this.HELD:
-            case this.BOUNCING:
-            case this.RETURNING:
+            case DiscStates.HELD:
+            case DiscStates.BOUNCING:
+            case DiscStates.RETURNING:
                 // Square
                 if (this.height !== config.discSize) this.changeHeight(config.discSize)
                 this.DrawSprite()
                 break
-            case this.DEADLY:
+            case DiscStates.DEADLY:
                 // Flat
                 if (this.height !== config.discSize / 2) this.changeHeight(config.discSize / 2)
                 this.DrawSprite()
@@ -73,7 +75,7 @@ export class Disc extends Sprite {
 
     checkCollide(unit) {
         // We don't care about non-deadly discs
-        if (this.status !== this.DEADLY) return
+        if (this.status !== DiscStates.DEADLY) return
 
         const collision = this.Collision(unit)
 
@@ -105,7 +107,7 @@ export class Disc extends Sprite {
     }
 
     Thrown(direction) {
-        this.status = this.DEADLY
+        this.status = DiscStates.DEADLY
 
         const velocity = new Vector([0, 0])
 
@@ -117,7 +119,7 @@ export class Disc extends Sprite {
     }
 
     Return() {
-        this.status = this.RETURNING
+        this.status = DiscStates.RETURNING
         this.returnable = false
 
         this.velocity = new Vector([0, 0])

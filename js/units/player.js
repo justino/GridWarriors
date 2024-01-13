@@ -1,4 +1,5 @@
 import { Unit } from "./unit.js"
+import { DiscStates } from "../discs/disc.js"
 import { PlayerDisc } from "../discs/player.js"
 import { Vector } from "../vector.js"
 import { KeyboardState } from "../keyboard.js"
@@ -53,7 +54,7 @@ export class Player extends Unit {
     }
 
     ThrowDisc() {
-        if (this.disc.status !== this.disc.HELD) return
+        if (this.disc.status !== DiscStates.HELD) return
 
         const direction = KeyboardState.discKeyPressed()
         if (! direction) return
@@ -69,7 +70,7 @@ export class Player extends Unit {
     }
 
     ReturnDisc() {
-        if (this.disc.status !== this.disc.DEADLY) return
+        if (this.disc.status !== DiscStates.DEADLY) return
 
         const direction = KeyboardState.discKeyPressed()
         if (! direction) {
