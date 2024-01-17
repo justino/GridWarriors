@@ -125,6 +125,7 @@ export class GameGrid {
             door.Open()
 
             const enemy = new unit(this, door.spawnLocation)
+            enemy.TeleportTo(door)
             this.enemies.push(enemy)
         }
     }
