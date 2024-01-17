@@ -14,16 +14,16 @@ export default {
     minimumDistance: 250,
 
     playerColor: 'rgba(255, 0, 0, 1)',
-    playerSpeed: 1,
+    playerSpeed: 2,
     warriorColor: 'rgba(97, 170, 200, 1)',
     warriorAccuracy: 85, // Percent
-    warriorSpeed: 1,
+    warriorSpeed: 2,
     bulldogAccuracy: 90, // Percent
     bulldogColor: 'rgba(255, 0, 255, 1)',
-    bulldogSpeed: .75,
+    bulldogSpeed: 1.75,
     leaderAccuracy: 95, // Percent
     leaderColor: 'rgba(0, 127, 255, 1)',
-    leaderSpeed: 2,
+    leaderSpeed: 3,
 
     // Discs
     discReturnTime: 1000,  // Seconds
