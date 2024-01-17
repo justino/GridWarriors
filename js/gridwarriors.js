@@ -28,6 +28,7 @@ export class GridWarriors {
         this.gameGrid.Reset()
         this.gameGrid.Setup()
 
+        this.waveManager.reset()
         this.waveManager.trigger(config.gameStartTime)
 
         this.playing = true

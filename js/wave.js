@@ -9,6 +9,11 @@ export class WaveManager {
         this.count = 0
     }
 
+    reset() {
+        this.end()
+        this.count = 0
+    }
+
     next() {
         if (this.gameGrid.enemies.length >= config.enemyCount)
             return
