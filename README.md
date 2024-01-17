@@ -1,8 +1,8 @@
-# TRAN
+# Grid Warriors
 
 WORK IN PROGRESS - WILL PROBABLY NEVER BE FINISHED
 
-This is a shitty "clone" of an old Intellivison game I loved.
+This is a "clone" of an old Intellivison game I loved.
 
 Features:
 * Terrible graphics
@@ -62,11 +62,11 @@ Your disc is your weapon. Throw it around the board and hit your enemies to kill
 
 Watch out though, your enemies have discs too!
 
-Use your control keys to move Tran around the board. Throw your deadly disc at enemies using the number pad.
+Use your control keys to move Adora around the board. Throw your deadly disc at enemies using the number pad.
 
 Recall your disc by pressing the number pad keys again.
 
-DEREZ EVERYTHING THAT MOVES
+KILL EVERYTHING THAT MOVES
 
 ## Scoring
 
@@ -74,13 +74,9 @@ Each enemy type in the game is worth a certain amount of points.
 Killing them will earn you points.
 Get hit though, and you'll lose points.
 
-## Enemies
+## Enemy Types
 
 * Warrior: normal speed, bad disc accuracy, kill with one hit
 * Bulldog: slow speed, better accuracy, kill with 2 hits, regenerates
 * Leader: fast speed, best accuracy, harder hitting. Watch out, they have 2 different kinds of discs
 * Guard: (not in game yet)
-
-## Roadmap
-
-You see where I am with development here: https://trello.com/b/p9YvADPz/tran-roadmap

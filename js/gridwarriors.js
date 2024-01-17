@@ -3,7 +3,7 @@ import { Scoreboard } from "./scoreboard.js"
 import { Overlay } from "./overlay.js"
 import { WaveManager } from "./wave.js"
 
-export class Tran {
+export class GridWarriors {
     constructor() {
         this.scoreBoard = new Scoreboard()
         this.overlay = new Overlay()

@@ -1,7 +1,7 @@
 import config from "./config.js"
-import { Tran } from "./tran.js"
+import { GridWarriors } from "./gridwarriors.js"
 
 window.onload = function() {
     window.config = config
-    window.tran = new Tran()
+    window.gridwarriors = new GridWarriors()
 }

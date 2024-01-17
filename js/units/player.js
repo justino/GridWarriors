@@ -6,7 +6,7 @@ import { KeyboardState } from "../keyboard.js"
 
 export class Player extends Unit {
     constructor(gameGrid, location) {
-        super(gameGrid, 'Tran', config.tranColor, location)
+        super(gameGrid, 'Adora', config.playerColor, location)
 
         this.gameGrid = gameGrid
 
