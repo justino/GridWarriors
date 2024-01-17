@@ -1,5 +1,6 @@
 import { Player } from "./units/player.js"
 import { DiscStates } from "./discs/disc.js"
+import { Door, DoorPositions, DoorStates } from "./door.js"
 import { Vector } from "./vector.js"
 
 export class GameGrid {
@@ -13,6 +14,7 @@ export class GameGrid {
 
         this.diagonal = Math.sqrt((config.width ^ 2) + (config.height ^ 2))
 
+        this.doors = []
         this.enemies = []
         this.player = null
     }
@@ -20,6 +22,7 @@ export class GameGrid {
     Reset() {
         this.enemies = []
         this.player = null
+        this.doors = []
     }
 
     Setup() {
@@ -28,6 +31,9 @@ export class GameGrid {
             this,
             new Vector([this.canvas.width / 2, this.canvas.height / 2])
         )
+        for (const position in DoorPositions) {
+            this.doors.push(new Door(this, DoorPositions[position]))
+        }
     }
 
     Draw() {
@@ -36,6 +42,9 @@ export class GameGrid {
         if (this.player) this.player.Draw()
         for (const enemy of this.enemies) {
             enemy.Draw()
+        }
+        for (const door of this.doors) {
+            door.Draw()
         }
     }
 
@@ -74,24 +83,50 @@ export class GameGrid {
             enemy.disc.checkCollide(this.player)
         }
 
-        // Movement
-        if (this.player) {
-            this.player.Update()
+        // Player might not exist after collisions
+        if (! this.player) return
 
-            for (const enemy of this.enemies) {
-                enemy.Update()
+        // Door Jamming
+        for (const unit of [...this.enemies, this.player]) {
+            for (const door of this.doors) {
+                // Did units disc hit a door
+                if (door.state === DoorStates.OPEN && unit.disc.status === DiscStates.DEADLY && door.isCollided(unit.disc)) {
+                    unit.isPlayer ? door.Jam() : door.Close()
+                }
+            }
+        }
+
+        // Movement
+        this.player.Update()
+        for (const enemy of this.enemies) {
+            enemy.Update()
+        }
+
+        // Teleportation
+        for (const unit of [...this.enemies, this.player]) {
+            for (const door of this.doors) {
+                if (door.state === DoorStates.JAMMED && door.isCollided(unit) && ! unit.isTeleporting) {
+                    const teleportsTo = DoorPositions[door.position.teleportsTo]
+                    const teleportDoor = this.doors.find(door => door.position === teleportsTo)
+                    if (teleportDoor.state !== DoorStates.JAMMED) break
+
+                    unit.TeleportTo(teleportDoor)
+                }
             }
         }
     }
 
-    AddEnemy(enemyUnit) {
-        const location = new Vector([
-            Math.random() * (this.canvas.width - config.unitSize * 2) + config.unitSize,
-            Math.random() * (this.canvas.height - config.unitSize * 2) + config.unitSize
-        ])
+    AddEnemies(enemyUnits, doorSide) {
+        this.closeDoors()
+        const doors = this.doors.filter(door => door.position.side === doorSide )
 
-        const enemy = new enemyUnit(this, location)
-        this.enemies.push(enemy)
+        for (const unit of enemyUnits) {
+            const door = doors.splice(Math.floor(Math.random() * doors.length), 1)[0]
+            door.Open()
+
+            const enemy = new unit(this, door.spawnLocation)
+            this.enemies.push(enemy)
+        }
     }
 
     RemoveEnemy(enemy) {
@@ -103,5 +138,11 @@ export class GameGrid {
 
     RemovePlayer() {
         this.player = null
+    }
+
+    closeDoors() {
+        for (const door of this.doors) {
+            door.Close()
+        }
     }
 }

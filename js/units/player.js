@@ -26,6 +26,7 @@ export class Player extends Unit {
 
         this.UpdateDiscStatus()
         this.disc.Update()
+        this.resolveTeleportation()
     }
 
     UpdateLocation() {
@@ -81,4 +82,6 @@ export class Player extends Unit {
 
         if (this.disc.returnable) this.disc.Return()
     }
+
+    setDestination() { } // null operation for player
 }

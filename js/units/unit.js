@@ -2,7 +2,7 @@ import { Sprite } from "../sprite.js"
 import { Vector } from "../vector.js"
 import { DiscStates } from "../discs/disc.js"
 
-const UnitFacings = Object.freeze({
+export const UnitFacings = Object.freeze({
     UP:    Symbol("up"),
     DOWN:  Symbol("down"),
     LEFT:  Symbol("left"),
@@ -32,6 +32,9 @@ export class Unit extends Sprite {
         this.facing = null
 
         this.isBlocking = false
+
+        this.isTeleporting = false
+        this.teleportDoor = null
     }
 
     Draw() {
@@ -72,6 +75,17 @@ export class Unit extends Sprite {
             this.UpdateDiscStatus()
             this.disc.Update()
         }
+
+        this.resolveTeleportation()
+    }
+
+    TeleportTo(door) {
+        if (this.isTeleporting) return
+
+        this.isTeleporting = true
+        this.teleportDoor = door
+        this.location = Vector.Clone(door.spawnLocation)
+        this.setDestination()
     }
 
     UpdateLocation() {
@@ -96,7 +110,7 @@ export class Unit extends Sprite {
         // Aim at player
         const aimFor = Vector.Clone(this.gameGrid.player.location)
 
-        // Apply Accuracy (somewhere around the player)
+        // Apply Accuracy
         aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
         aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
 
@@ -192,5 +206,14 @@ export class Unit extends Sprite {
 
     isDead() {
         return this.hits >= this.maxHits
+    }
+
+    resolveTeleportation() {
+        if (this.isTeleporting) {
+            if (! this.teleportDoor.isCollided(this)) {
+                this.isTeleporting = false
+                this.teleportDoor = null
+            }
+        }
     }
 }
