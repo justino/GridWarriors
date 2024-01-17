@@ -23,9 +23,9 @@ export class GridWarriors {
     }
 
     startGame() {
+        this.scoreBoard.reset()
         this.gameGrid.Setup()
         this.waveManager.trigger(config.gameStartTime)
-        this.score = 0
         this.playing = true
         this.play()
     }

@@ -9,6 +9,11 @@ export class Scoreboard {
         this._updateBoard()
     }
 
+    reset() {
+        this.currentScore = 0
+        this.highScore = this._getHighScore()
+    }
+
     score(points) {
         const newScore = this.currentScore + points
         if (newScore >= 0)
