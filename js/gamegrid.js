@@ -17,6 +17,11 @@ export class GameGrid {
         this.player = null
     }
 
+    Reset() {
+        this.enemies = []
+        this.player = null
+    }
+
     Setup() {
         this.enemies = []
         this.player = new Player(
