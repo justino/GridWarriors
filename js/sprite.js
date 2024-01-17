@@ -31,7 +31,7 @@ export class Sprite {
             this.location.points[0] - Math.round(this.width / 2),
             this.location.points[1] - Math.round(this.height / 2),
             this.location.points[0] + Math.round(this.width / 2),
-            this.location.points[1] + Math.round(this.height / 2) // Bottom
+            this.location.points[1] + Math.round(this.height / 2)
         ]
     }
 
@@ -84,18 +84,8 @@ export class Sprite {
 
     TouchLocation(location) {
         this.gameGrid.context.beginPath()
-        this.gameGrid.context.rect(
-            location.points[0], location.points[1],
-            location.points[0], location.points[1]
-        )
-
-        return (
-            this.gameGrid.context.isPointInPath(this.boundingBox[0], this.boundingBox[1]) ||
-            this.gameGrid.context.isPointInPath(this.boundingBox[2], this.boundingBox[1]) ||
-            this.gameGrid.context.isPointInPath(this.boundingBox[0], this.boundingBox[3]) ||
-            this.gameGrid.context.isPointInPath(this.boundingBox[2], this.boundingBox[3]) ||
-            this.gameGrid.context.isPointInPath(this.location.points[0], this.location.points[1])
-        )
+        this.gameGrid.context.rect(...this.boundingBox)
+        return this.gameGrid.context.isPointInPath(...location.points)
     }
 
     DrawSprite() {
