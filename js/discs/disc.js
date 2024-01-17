@@ -40,10 +40,9 @@ export class Disc extends Sprite {
             case DiscStates.BOUNCING:
                 // Basic Straight Lines
                 this.location.Add(this.velocity)
+                this.checkBounce()
                 break
         }
-
-        this.checkBounce()
     }
 
     checkBounce() {
