@@ -5,7 +5,7 @@ export class HomingDisc extends Disc {
     constructor(unit) {
         super('Homing', config.homingDiscColor, unit)
 
-        this.baseSpeed = 2
+        this.baseSpeed = config.homingDiscSpeed
         this.homing = false
     }
 

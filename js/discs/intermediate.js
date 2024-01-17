@@ -4,7 +4,7 @@ export class IntermediateDisc extends Disc {
     constructor(unit) {
         super('Intermediate', config.intermediateDiscColor, unit)
 
-        this.baseSpeed = 4
+        this.baseSpeed = config.intermediateDiscSpeed
         this.strength = 2
     }
 }

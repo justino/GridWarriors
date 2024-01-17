@@ -4,6 +4,6 @@ export class BeginnerDisc extends Disc {
     constructor(unit) {
         super('Beginner', config.beginnerDiscColor, unit)
 
-        this.baseSpeed = 4
+        this.baseSpeed = config.beginnerDiscSpeed
     }
 }

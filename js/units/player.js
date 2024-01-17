@@ -14,6 +14,7 @@ export class Player extends Unit {
         this.canBlock = true
         this.regenerates = true
         this.maxHits = 3
+        this.baseSpeed = config.playerSpeed
 
         this.disc = new PlayerDisc(this)
     }

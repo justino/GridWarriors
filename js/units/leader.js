@@ -6,7 +6,7 @@ export class Leader extends Unit {
     constructor(gameGrid, location) {
         super(gameGrid, 'Leader', config.leaderColor, location)
 
-        this.baseSpeed = 2
+        this.baseSpeed = config.leaderSpeed
         this.throwFrequencyModifier = -2
         this.baseAccuracy = config.leaderAccuracy
         this.points = 1000
