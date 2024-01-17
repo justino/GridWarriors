@@ -21,15 +21,15 @@ export class HomingDisc extends Disc {
             case DiscStates.DEADLY:
                 if (this.homing) {
                     this.homeInOnPlayer()
+                    this.checkBounce()
                     break
                 }
             case DiscStates.BOUNCING:
                 // Basic Straight Lines
                 this.location.Add(this.velocity)
+                this.checkBounce()
                 break
         }
-
-        this.checkBounce()
     }
 
     Thrown(direction) {
