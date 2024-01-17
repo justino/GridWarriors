@@ -10,7 +10,10 @@ export const DiscStates = Object.freeze({
 
 export class Disc extends Sprite {
     constructor(name, color, unit) {
-        super(unit.gameGrid, name, config.discSize, config.discSize, color, unit.location)
+        const discSize = config.unitSize / 4
+        super(unit.gameGrid, name, discSize, discSize, color, unit.location)
+
+        this.discSize = discSize
 
         this.owner = unit
 
@@ -62,12 +65,12 @@ export class Disc extends Sprite {
             case DiscStates.BOUNCING:
             case DiscStates.RETURNING:
                 // Square
-                if (this.height !== config.discSize) this.changeHeight(config.discSize)
+                if (this.height !== this.discSize) this.changeHeight(this.discSize)
                 this.DrawSprite()
                 break
             case DiscStates.DEADLY:
                 // Flat
-                if (this.height !== config.discSize / 2) this.changeHeight(config.discSize / 2)
+                if (this.height !== this.discSize / 2) this.changeHeight(this.discSize / 2)
                 this.DrawSprite()
                 break
         }

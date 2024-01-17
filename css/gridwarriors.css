@@ -29,12 +29,13 @@ body {
     min-height: 100vh;
 }
 
-header, main {
+header {
     margin: 1rem auto 0 auto;
     width: 800px;
 }
 
 main {
+    margin: 1rem auto 0 auto;
     flex: 1;
 }
 

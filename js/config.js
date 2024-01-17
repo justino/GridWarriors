@@ -1,9 +1,8 @@
 export default {
     // Game Window Metrics
-    width: 800,
-    height: 600,
-    unitSize: 16,
-    discSize: 4, // Should be divisible by 2
+    width: 1200,
+    height: 800,
+    unitSize: 32, // Should be divisible by 2
 
     gameStartTime: 2,
 
