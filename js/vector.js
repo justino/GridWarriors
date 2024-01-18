@@ -4,7 +4,7 @@ export class Vector {
         this.dimensions = this.points.length
     }
 
-    Add(vector) {
+    add(vector) {
         if (this.dimensions !== vector.dimensions) {
             throw "Cannot add vectors of different dimensions"
         }
@@ -14,7 +14,7 @@ export class Vector {
         }
     }
 
-    Sub(vector) {
+    sub(vector) {
         if (this.dimensions !== vector.dimensions) {
             throw "Cannot subtract vectors of different dimensions"
         }
@@ -24,13 +24,13 @@ export class Vector {
         }
     }
 
-    Mul(n) {
+    mul(n) {
         for (let i = 0; i < this.dimensions; i++) {
             this.points[i] *= n
         }
     }
 
-    Div(n) {
+    div(n) {
         if (n === 0) {
             throw "Cannot divide a vector by zero"
         }
@@ -40,7 +40,7 @@ export class Vector {
         }
     }
 
-    Magnitude() {
+    magnitude() {
         let x = 0
         for (let i = 0; i < this.dimensions; i++) {
             x += Math.pow(this.points[i], 2)
@@ -49,28 +49,28 @@ export class Vector {
         return Math.sqrt(x)
     }
 
-    Normalize() {
-        const mag = this.Magnitude()
+    normalize() {
+        const mag = this.magnitude()
 
         if (mag !== 0) {
-            this.Div(mag)
+            this.div(mag)
         }
     }
 
-    Angle() {
+    angle() {
         const rads = Math.atan2(this.points[0], this.points[1])
         const degs = (180 * rads / Math.PI) - 90
         return (360 + Math.round(degs)) % 360
     }
 
-    Limit(max) {
-        if (this.Magnitude() > max) {
-            this.Normalize()
-            this.Mul(max)
+    limit(max) {
+        if (this.magnitude() > max) {
+            this.normalize()
+            this.mul(max)
         }
     }
 
-    Distance(vector) {
+    distance(vector) {
         return Math.sqrt(
             Math.abs(
                 Math.pow(vector.points[0] - this.points[0], 2) +
@@ -79,7 +79,7 @@ export class Vector {
         )
     }
 
-    static Random2D(width, height) {
+    static random2D(width, height) {
         const vector = new Vector([
             Math.round(Math.random() * width),
             Math.round(Math.random() * height)
@@ -88,21 +88,21 @@ export class Vector {
         return vector
     }
 
-    static AddFactory(a, b) {
-        const vector = Vector.Clone(a)
-        vector.Add(b)
+    static addFactory(a, b) {
+        const vector = Vector.clone(a)
+        vector.add(b)
 
         return vector
     }
 
-    static SubFactory(a, b) {
-        const vector = Vector.Clone(a)
-        vector.Sub(b)
+    static subFactory(a, b) {
+        const vector = Vector.clone(a)
+        vector.sub(b)
 
         return vector
     }
 
-    static Clone(oldVector) {
+    static clone(oldVector) {
         return new Vector(oldVector.points.slice(0))
     }
 }

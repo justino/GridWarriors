@@ -19,13 +19,13 @@ export class GameGrid {
         this.player = null
     }
 
-    Reset() {
+    reset() {
         this.enemies = []
         this.player = null
         this.doors = []
     }
 
-    Setup() {
+    setup() {
         this.enemies = []
         this.player = new Player(
             this,
@@ -36,19 +36,19 @@ export class GameGrid {
         }
     }
 
-    Draw() {
-        this.DrawBackground()
+    draw() {
+        this.drawBackground()
 
-        if (this.player) this.player.Draw()
+        if (this.player) this.player.draw()
         for (const enemy of this.enemies) {
-            enemy.Draw()
+            enemy.draw()
         }
         for (const door of this.doors) {
-            door.Draw()
+            door.draw()
         }
     }
 
-    DrawBackground() {
+    drawBackground() {
         this.context.fillStyle = config.gridColor
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
@@ -68,7 +68,7 @@ export class GameGrid {
         this.context.stroke()
     }
 
-    Update() {
+    update() {
         if (!this.player) return
 
         // Check for hits/deaths by player
@@ -91,15 +91,15 @@ export class GameGrid {
             for (const door of this.doors) {
                 // Did units disc hit a door
                 if (door.state === DoorStates.OPEN && unit.disc.status === DiscStates.DEADLY && door.isCollided(unit.disc)) {
-                    unit.isPlayer ? door.Jam() : door.Close()
+                    unit.isPlayer ? door.jam() : door.close()
                 }
             }
         }
 
         // Movement
-        this.player.Update()
+        this.player.update()
         for (const enemy of this.enemies) {
-            enemy.Update()
+            enemy.update()
         }
 
         // Teleportation
@@ -110,40 +110,40 @@ export class GameGrid {
                     const teleportDoor = this.doors.find(door => door.position === teleportsTo)
                     if (teleportDoor.state !== DoorStates.JAMMED) break
 
-                    unit.TeleportTo(teleportDoor)
+                    unit.teleportTo(teleportDoor)
                 }
             }
         }
     }
 
-    AddEnemies(enemyUnits, doorSide) {
+    addEnemies(enemyUnits, doorSide) {
         this.closeDoors()
         const doors = this.doors.filter(door => door.position.side === doorSide )
 
         for (const unit of enemyUnits) {
             const door = doors.splice(Math.floor(Math.random() * doors.length), 1)[0]
-            door.Open()
+            door.open()
 
             const enemy = new unit(this, door.spawnLocation)
-            enemy.TeleportTo(door)
+            enemy.teleportTo(door)
             this.enemies.push(enemy)
         }
     }
 
-    RemoveEnemy(enemy) {
+    removeEnemy(enemy) {
         console.log(`${enemy.name} derezzed`)
         this.enemies = this.enemies.filter((unit) => {
             return unit != enemy
         })
     }
 
-    RemovePlayer() {
+    removePlayer() {
         this.player = null
     }
 
     closeDoors() {
         for (const door of this.doors) {
-            door.Close()
+            door.close()
         }
     }
 }

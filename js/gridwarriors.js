@@ -25,8 +25,8 @@ export class GridWarriors {
     startGame() {
         this.scoreBoard.reset()
 
-        this.gameGrid.Reset()
-        this.gameGrid.Setup()
+        this.gameGrid.reset()
+        this.gameGrid.setup()
 
         this.waveManager.reset()
         this.waveManager.trigger(config.gameStartTime)
@@ -39,11 +39,11 @@ export class GridWarriors {
         if (! this.playing) return
 
         if (this.paused) {
-            this.gameGrid.DrawBackground()
+            this.gameGrid.drawBackground()
         }
         else {
-            this.gameGrid.Update()
-            this.gameGrid.Draw()
+            this.gameGrid.update()
+            this.gameGrid.draw()
         }
 
         requestAnimationFrame(this.play.bind(this))
@@ -63,8 +63,8 @@ export class GridWarriors {
         const loser = e.detail.loser
         console.log(`${winner.name} hit ${loser.name}`)
 
-        this._playerHit(winner, loser)
-        this._enemyHit(winner, loser)
+        this._playerhit(winner, loser)
+        this._enemyhit(winner, loser)
     }
 
     score(e) {
@@ -79,7 +79,7 @@ export class GridWarriors {
 
     // -----------------------------------
 
-    _playerHit(winner, loser) {
+    _playerhit(winner, loser) {
         if (! loser.isPlayer) return
 
         // Lose points when the player is hit
@@ -92,18 +92,18 @@ export class GridWarriors {
         )
 
         if (loser.isDead()) {
-            this.gameGrid.RemovePlayer()
+            this.gameGrid.removePlayer()
             dispatchEvent(
                 new CustomEvent('GameOver')
             )
         }
     }
 
-    _enemyHit(winner, loser) {
+    _enemyhit(winner, loser) {
         if (loser.isPlayer) return
         if (! loser.isDead()) return
 
-        this.gameGrid.RemoveEnemy(loser)
+        this.gameGrid.removeEnemy(loser)
         this.waveManager.trigger(config.respawnInterval)
         dispatchEvent(
             new CustomEvent('Score', {

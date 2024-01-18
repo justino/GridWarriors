@@ -75,7 +75,7 @@ export class WaveManager {
             newUnits.push(eligibleUnits[Math.floor(Math.random() * eligibleUnits.length)])
         }
 
-        this.gameGrid.AddEnemies(newUnits, side)
+        this.gameGrid.addEnemies(newUnits, side)
     }
 
     isCleared() {

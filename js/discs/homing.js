@@ -9,14 +9,14 @@ export class HomingDisc extends Disc {
         this.homing = false
     }
 
-    Update() {
+    update() {
         switch (this.status) {
             case DiscStates.HELD:
                 // Follow owner around
-                this.location = Vector.Clone(this.owner.location)
+                this.location = Vector.clone(this.owner.location)
                 break
             case DiscStates.RETURNING:
-                this.Return()
+                this.return()
                 break
             case DiscStates.DEADLY:
                 if (this.homing) {
@@ -26,21 +26,21 @@ export class HomingDisc extends Disc {
                 }
             case DiscStates.BOUNCING:
                 // Basic Straight Lines
-                this.location.Add(this.velocity)
+                this.location.add(this.velocity)
                 this.checkBounce()
                 break
         }
     }
 
-    Thrown(direction) {
+    thrown(direction) {
         // After one second of regular movement, start homing
         setTimeout(this.startHoming.bind(this), 1000)
-        super.Thrown(direction)
+        super.thrown(direction)
     }
 
-    Return() {
+    return() {
         this.homing = false
-        super.Return()
+        super.return()
     }
 
     startHoming() {
@@ -50,13 +50,13 @@ export class HomingDisc extends Disc {
     homeInOnPlayer() {
         this.velocity = new Vector([0, 0])
 
-        const playerForce = Vector.SubFactory(this.gameGrid.player.location, this.location)
-        playerForce.Normalize()
-        playerForce.Mul(this.baseSpeed + this.speedModifier)
+        const playerForce = Vector.subFactory(this.gameGrid.player.location, this.location)
+        playerForce.normalize()
+        playerForce.mul(this.baseSpeed + this.speedModifier)
 
-        this.velocity.Add(playerForce)
-        this.velocity.Limit(this.baseSpeed + this.speedModifier)
+        this.velocity.add(playerForce)
+        this.velocity.limit(this.baseSpeed + this.speedModifier)
 
-        this.location.Add(this.velocity)
+        this.location.add(this.velocity)
     }
 }

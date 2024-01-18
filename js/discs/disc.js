@@ -27,19 +27,19 @@ export class Disc extends Sprite {
         this.collided = null
     }
 
-    Update() {
+    update() {
         switch (this.status) {
             case DiscStates.HELD:
                 // Follow owner around
-                this.location = Vector.Clone(this.owner.location)
+                this.location = Vector.clone(this.owner.location)
                 break
             case DiscStates.RETURNING:
-                this.Return()
+                this.return()
                 break
             case DiscStates.DEADLY:
             case DiscStates.BOUNCING:
                 // Basic Straight Lines
-                this.location.Add(this.velocity)
+                this.location.add(this.velocity)
                 this.checkBounce()
                 break
         }
@@ -48,29 +48,29 @@ export class Disc extends Sprite {
     checkBounce() {
         const bounced = this.bindToGameGrid()
         if (bounced[0] || bounced[1]) {
-            if (bounced[0]) this.BounceX()
-            if (bounced[1]) this.BounceY()
+            if (bounced[0]) this.bounceX()
+            if (bounced[1]) this.bounceY()
 
             if (this.status !== DiscStates.BOUNCING) {
                 this.status = DiscStates.BOUNCING
-                setTimeout(this.Return.bind(this), config.discReturnTime)
+                setTimeout(this.return.bind(this), config.discReturnTime)
             }
         }
     }
 
-    Draw() {
+    draw() {
         switch (this.status) {
             case DiscStates.HELD:
             case DiscStates.BOUNCING:
             case DiscStates.RETURNING:
                 // Square
                 if (this.height !== this.discSize) this.changeHeight(this.discSize)
-                this.DrawSprite()
+                this.drawSprite()
                 break
             case DiscStates.DEADLY:
                 // Flat
                 if (this.height !== this.discSize / 2) this.changeHeight(this.discSize / 2)
-                this.DrawSprite()
+                this.drawSprite()
                 break
         }
     }
@@ -79,7 +79,7 @@ export class Disc extends Sprite {
         // We don't care about non-deadly discs
         if (this.status !== DiscStates.DEADLY) return
 
-        const collision = this.Collision(unit)
+        const collision = this.collision(unit)
 
         /* If the disc has already collided with the current unit
            ignore, we don't want to hit them again until we've stopped colliding
@@ -95,9 +95,9 @@ export class Disc extends Sprite {
         if (collision) this.collided = unit
 
         if (collision) {
-            const isDead = unit.Hit(this.strength)
-            this.owner.Regenerate()
-            if (! isDead) this.Return()
+            const isDead = unit.hit(this.strength)
+            this.owner.regenerate()
+            if (! isDead) this.return()
 
             dispatchEvent(new CustomEvent('UnitHit', {
                 detail: {
@@ -108,39 +108,39 @@ export class Disc extends Sprite {
         }
     }
 
-    Thrown(direction) {
+    thrown(direction) {
         this.status = DiscStates.DEADLY
 
         const velocity = new Vector([0, 0])
 
-        direction.Mul(this.baseSpeed + this.speedModifier)
+        direction.mul(this.baseSpeed + this.speedModifier)
 
-        velocity.Add(direction)
-        velocity.Limit(this.baseSpeed + this.speedModfier)
+        velocity.add(direction)
+        velocity.limit(this.baseSpeed + this.speedModfier)
         this.velocity = velocity
     }
 
-    Return() {
+    return() {
         this.status = DiscStates.RETURNING
         this.returnable = false
 
         this.velocity = new Vector([0, 0])
 
-        const ownerForce = Vector.SubFactory(this.owner.location, this.location)
-        ownerForce.Normalize()
-        ownerForce.Mul(this.baseSpeed + this.speedModifier)
+        const ownerForce = Vector.subFactory(this.owner.location, this.location)
+        ownerForce.normalize()
+        ownerForce.mul(this.baseSpeed + this.speedModifier)
 
-        this.velocity.Add(ownerForce)
-        this.velocity.Limit(this.baseSpeed + this.speedModifier)
+        this.velocity.add(ownerForce)
+        this.velocity.limit(this.baseSpeed + this.speedModifier)
 
-        this.location.Add(this.velocity)
+        this.location.add(this.velocity)
     }
 
-    BounceX() {
+    bounceX() {
         this.velocity.points[0] *= -1
     }
 
-    BounceY() {
+    bounceY() {
         this.velocity.points[1] *= -1
     }
 }

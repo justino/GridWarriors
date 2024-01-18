@@ -37,27 +37,27 @@ export class Unit extends Sprite {
         this.teleportDoor = null
     }
 
-    Draw() {
-        this.DrawSprite()
+    draw() {
+        this.drawSprite()
 
         // Draw units disc too
         if (this.disc) {
-            this.disc.Draw()
+            this.disc.draw()
         }
     }
 
-    Update() {
+    update() {
         // Did we catch our own disc
-        if (this.disc) this.CatchDisc()
+        if (this.disc) this.catchDisc()
 
         // If we don't have a velocity set, do it now
         if (!this.velocity) this.setDestination()
 
         // Move Unit towards destination
-        this.UpdateLocation()
+        this.updateLocation()
 
         // Are we at our destination
-        if (this.TouchLocation(this.destination)) {
+        if (this.touchLocation(this.destination)) {
             // console.log(`Unit: ${this.name} got to destination, setting new destination`)
             this.setDestination()
         }
@@ -72,56 +72,56 @@ export class Unit extends Sprite {
 
         // Maintain Disc
         if (this.disc) {
-            this.UpdateDiscStatus()
-            this.disc.Update()
+            this.updateDiscStatus()
+            this.disc.update()
         }
 
         this.resolveTeleportation()
     }
 
-    TeleportTo(door) {
+    teleportTo(door) {
         if (this.isTeleporting) return
 
         this.isTeleporting = true
         this.teleportDoor = door
-        this.location = Vector.Clone(door.spawnLocation)
+        this.location = Vector.clone(door.spawnLocation)
         this.setDestination()
     }
 
-    UpdateLocation() {
-        this.location.Add(this.velocity)
+    updateLocation() {
+        this.location.add(this.velocity)
     }
 
-    UpdateDiscStatus() {
+    updateDiscStatus() {
         if (this.disc.status === DiscStates.HELD && !this.disc.primed) {
             this.disc.primed = true
 
-            const distance = this.location.Distance(this.gameGrid.player.location)
+            const distance = this.location.distance(this.gameGrid.player.location)
             const modifier = distance / this.gameGrid.diagonal
             const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier
 
-            window.setTimeout(this.ThrowDisc.bind(this), time * 1000)
+            window.setTimeout(this.throwDisc.bind(this), time * 1000)
         }
     }
 
-    ThrowDisc() {
+    throwDisc() {
         if (! this.gameGrid.player) return
 
         // Aim at player
-        const aimFor = Vector.Clone(this.gameGrid.player.location)
+        const aimFor = Vector.clone(this.gameGrid.player.location)
 
         // Apply Accuracy
         aimFor.points[0] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
         aimFor.points[1] += Math.floor(Math.random() * (100 - this.baseAccuracy + this.accuracyModifier) * 2) - (100 - this.baseAccuracy + this.accuracyModifier)
 
-        const direction = Vector.SubFactory(aimFor, this.disc.location)
-        direction.Normalize()
+        const direction = Vector.subFactory(aimFor, this.disc.location)
+        direction.normalize()
 
-        this.disc.Thrown(direction)
+        this.disc.thrown(direction)
     }
 
-    CatchDisc() {
-        if (this.disc.status === DiscStates.RETURNING && this.Collision(this.disc)) {
+    catchDisc() {
+        if (this.disc.status === DiscStates.RETURNING && this.collision(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc')
             this.disc.status = DiscStates.HELD
             this.disc.primed = false
@@ -129,7 +129,7 @@ export class Unit extends Sprite {
         }
     }
 
-    Blocking() {
+    blocking() {
 
     }
 
@@ -142,16 +142,16 @@ export class Unit extends Sprite {
             attempts++
 
             // Random location on game grid
-            this.destination = Vector.Random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
-        } while (this.location.Distance(this.destination) < config.minimumDistance || attempts <= 3)
+            this.destination = Vector.random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
+        } while (this.location.distance(this.destination) < config.minimumDistance || attempts <= 3)
 
-        const destinationForce = Vector.SubFactory(this.destination, this.location)
-        destinationForce.Normalize()
-        destinationForce.Mul(this.baseSpeed * this.speedModifier)
+        const destinationForce = Vector.subFactory(this.destination, this.location)
+        destinationForce.normalize()
+        destinationForce.mul(this.baseSpeed * this.speedModifier)
 
         this.velocity = new Vector([0, 0])
-        this.velocity.Add(destinationForce)
-        this.velocity.Limit(this.baseSpeed * this.speedModifier)
+        this.velocity.add(destinationForce)
+        this.velocity.limit(this.baseSpeed * this.speedModifier)
 
         this.setFacing(this.findFacing(this.velocity))
     }
@@ -159,7 +159,7 @@ export class Unit extends Sprite {
     findFacing(vector) {
         let facing = UnitFacings.DOWN
 
-        const angle = vector.Angle()
+        const angle = vector.angle()
 
         if (angle <= 45 || angle > 315) {
             facing = UnitFacings.RIGHT
@@ -179,7 +179,7 @@ export class Unit extends Sprite {
         }
     }
 
-    Hit(strength) {
+    hit(strength) {
         this.hits += strength || 1
         console.log(`${this.name} hit. ${this.maxHits - this.hits} left`)
 
@@ -192,7 +192,7 @@ export class Unit extends Sprite {
         return dead
     }
 
-    Regenerate() {
+    regenerate() {
         if (!this.regenerates) return
 
         if (this.hits > 0) {

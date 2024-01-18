@@ -8,7 +8,7 @@ export class Sprite {
         this.height = height
         this.color = color
 
-        this.location = Vector.Clone(location)
+        this.location = Vector.clone(location)
 
         this.buildBoundingBox()
 
@@ -65,7 +65,7 @@ export class Sprite {
         return bounded
     }
 
-    Collision(sprite) {
+    collision(sprite) {
         // See if the 2 boxes intersect in any way
         this.gameGrid.context.beginPath()
         this.gameGrid.context.rect(
@@ -82,13 +82,13 @@ export class Sprite {
         )
     }
 
-    TouchLocation(location) {
+    touchLocation(location) {
         this.gameGrid.context.beginPath()
         this.gameGrid.context.rect(...this.boundingBox)
         return this.gameGrid.context.isPointInPath(...location.points)
     }
 
-    DrawSprite() {
+    drawSprite() {
         this.buildBoundingBox()
 
         this.gameGrid.context.fillStyle = this.color

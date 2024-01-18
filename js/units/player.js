@@ -19,17 +19,17 @@ export class Player extends Unit {
         this.disc = new PlayerDisc(this)
     }
 
-    Update() {
-        this.CatchDisc()
-        this.UpdateLocation()
+    update() {
+        this.catchDisc()
+        this.updateLocation()
         this.bindToGameGrid()
 
-        this.UpdateDiscStatus()
-        this.disc.Update()
+        this.updateDiscStatus()
+        this.disc.update()
         this.resolveTeleportation()
     }
 
-    UpdateLocation() {
+    updateLocation() {
         // Can't move while blocking
         if (this.isBlocking) { return }
 
@@ -41,21 +41,21 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= (this.baseSpeed * this.speedModifier)
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += (this.baseSpeed * this.speedModifier)
 
-        this.location.Add(velocity)
+        this.location.add(velocity)
         this.setFacing(this.findFacing(velocity))
     }
 
-    UpdateDiscStatus() {
-        this.Blocking()
-        this.ThrowDisc()
-        this.ReturnDisc()
+    updateDiscStatus() {
+        this.blocking()
+        this.throwDisc()
+        this.returnDisc()
     }
 
-    Blocking() {
+    blocking() {
         this.isBlocking = KeyboardState.isDown(KeyboardState.BLOCK)
     }
 
-    ThrowDisc() {
+    throwDisc() {
         if (this.disc.status !== DiscStates.HELD) return
 
         const direction = KeyboardState.discKeyPressed()
@@ -68,10 +68,10 @@ export class Player extends Unit {
         if (direction.includes('LEFT'))  velocity.points[0] = -1
         if (direction.includes('RIGHT')) velocity.points[0] =  1
 
-        this.disc.Thrown(velocity)
+        this.disc.thrown(velocity)
     }
 
-    ReturnDisc() {
+    returnDisc() {
         if (this.disc.status !== DiscStates.DEADLY) return
 
         const direction = KeyboardState.discKeyPressed()
@@ -80,7 +80,7 @@ export class Player extends Unit {
             return
         }
 
-        if (this.disc.returnable) this.disc.Return()
+        if (this.disc.returnable) this.disc.return()
     }
 
     setDestination() { } // null operation for player

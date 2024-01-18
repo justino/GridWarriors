@@ -51,10 +51,10 @@ export class Door {
 
         this.spawnLocation
 
-        this.Setup()
+        this.setup()
     }
 
-    Setup() {
+    setup() {
         const sectorWidth = this.canvas.width / 13
         const sectorHeight = this.canvas.height / 13
         const doorThickness = config.doorThickness
@@ -150,7 +150,7 @@ export class Door {
         ]
     }
 
-    Draw() {
+    draw() {
         this.context.fillStyle = this.state.color
         this.context.fillRect(
             this.rect[0], this.rect[1],
@@ -158,25 +158,25 @@ export class Door {
         )
     }
 
-    Open() {
+    open() {
         if (this.state !== DoorStates.CLOSED) return
 
         this.state = DoorStates.OPEN
     }
 
-    Jam() {
+    jam() {
         if (this.state !== DoorStates.OPEN) return
 
         this.state = DoorStates.JAMMED
     }
 
-    Close() {
+    close() {
         if (this.state !== DoorStates.OPEN) return
 
-        this.Reset()
+        this.reset()
     }
 
-    Reset() {
+    reset() {
         this.state = DoorStates.CLOSED
     }
 
