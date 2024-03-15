@@ -168,6 +168,7 @@ export class Door {
         if (this.state !== DoorStates.OPEN) return
 
         this.state = DoorStates.JAMMED
+        dispatchEvent(new CustomEvent("Score", { detail: { points: 100 } }))
     }
 
     close() {
