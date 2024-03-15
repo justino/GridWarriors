@@ -50,8 +50,8 @@ export class GridWarriors {
     }
 
     pause(e) {
-        // Look for 'p' or 'P' keys
-        if (![80, 112].includes(e.keyCode)) return
+        // Look for 'P' key'
+        if (!['KeyP'].includes(e.code)) return
 
         e.stopPropagation()
         this.paused = !this.paused

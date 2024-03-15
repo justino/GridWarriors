@@ -4,23 +4,23 @@ export const KeyboardState = {
     pressed: {},
 
     movement: {
-        UP: [87],
-        DOWN: [83],
-        LEFT: [65],
-        RIGHT: [68]
+        UP: ['KeyW'],
+        DOWN: ['KeyS'],
+        LEFT: ['KeyA'],
+        RIGHT: ['KeyD']
     },
 
-    BLOCK: [101, 53],
+    BLOCK: ['Numpad5'],
 
     disc: {
-        UP: [104, 56],
-        UPRIGHT: [105, 57],
-        RIGHT: [102, 54],
-        DOWNRIGHT: [99, 51],
-        DOWN: [98, 50],
-        DOWNLEFT: [97, 49],
-        LEFT: [100, 52],
-        UPLEFT: [103, 55]
+        UP: ['Numpad8'],
+        UPRIGHT: ['Numpad9'],
+        RIGHT: ['Numpad6'],
+        DOWNRIGHT: ['Numpad3'],
+        DOWN: ['Numpad2'],
+        DOWNLEFT: ['Numpad1'],
+        LEFT: ['Numpad4'],
+        UPLEFT: ['Numpad7']
     },
 
     isDown: function(keyList) {
@@ -51,5 +51,5 @@ export const KeyboardState = {
     }
 }
 
-addEventListener('keyup',   e => { KeyboardState.keyUp(e.keyCode) })
-addEventListener('keydown', e => { KeyboardState.keyDown(e.keyCode) })
+addEventListener('keyup',   e => { KeyboardState.keyUp(e.code) })
+addEventListener('keydown', e => { KeyboardState.keyDown(e.code) })

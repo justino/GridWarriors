@@ -32,7 +32,7 @@ You can move diagonally with combinations of the keys.
 
 ### Disc throwing
 
-You should use the number pad to throw your disc. You could use the numbers above the letters, but it would make for a bad time.
+Use the number pad to throw your disc.
 
 * `8`: North
 * `2`: South
