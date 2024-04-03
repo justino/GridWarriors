@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "isolatedModules": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "strict": true,
+        "allowJs": false,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    }
+}

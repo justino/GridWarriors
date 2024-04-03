@@ -1,9 +1,13 @@
-import { Unit } from "./unit.js"
-import { IntermediateDisc } from "../discs/intermediate.js"
-import { HomingDisc } from "../discs/homing.js"
+import { config } from "@/config"
+
+import { Unit } from "@/units/unit"
+import { Vector } from "@/vector"
+import { GameGrid } from "@/gamegrid"
+import { IntermediateDisc } from "@/discs/intermediate"
+import { HomingDisc } from "@/discs/homing"
 
 export class Leader extends Unit {
-    constructor(gameGrid, location) {
+    constructor(gameGrid: GameGrid, location: Vector) {
         super(gameGrid, 'Leader', config.leaderColor, location)
 
         this.baseSpeed = config.leaderSpeed

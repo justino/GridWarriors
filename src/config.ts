@@ -1,4 +1,4 @@
-export default {
+export const config = {
     /// Grid
     width: 1200,
     height: 800,

@@ -1,12 +1,16 @@
-import { Warrior } from "./units/warrior.js"
-import { Bulldog } from "./units/bulldog.js"
-import { Leader } from "./units/leader.js"
-import { DoorSides } from "./door.js"
+import { config } from "@/config"
+
+import { GameGrid } from "@/gamegrid"
+import { Warrior, Bulldog, Leader } from "@/units/index"
+import { DoorSides, DoorSideNames } from "@/door"
 
 export class WaveManager {
-    constructor(gameGrid) {
+    private gameGrid: GameGrid
+    private timer: NodeJS.Timeout | undefined
+    private count: number
+
+    constructor(gameGrid: GameGrid) {
         this.gameGrid = gameGrid
-        this.timer
         this.count = 0
     }
 
@@ -29,11 +33,11 @@ export class WaveManager {
     end() {
         if (this.timer) {
             clearTimeout(this.timer)
-            this.timer = null
+            this.timer = undefined
         }
     }
 
-    trigger(interval) {
+    trigger(interval: number) {
         this.end()
 
         this.timer = setTimeout(this.next.bind(this), interval * 1000)
@@ -61,9 +65,7 @@ export class WaveManager {
     randomSide() {
         const sideNames = Object.keys(DoorSides)
 
-        return DoorSides[
-            sideNames[Math.floor(Math.random() * sideNames.length)]
-        ]
+        return DoorSides[sideNames[Math.floor(Math.random() * sideNames.length)] as DoorSideNames ]
     }
 
     spawnUnits(count = 1) {

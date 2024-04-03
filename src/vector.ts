@@ -1,10 +1,15 @@
+type twod = [number, number]
+
 export class Vector {
-    constructor(points) {
+    public points: twod
+    public dimensions: number
+
+    constructor(points: twod) {
         this.points = points
         this.dimensions = this.points.length
     }
 
-    add(vector) {
+    add(vector: Vector) {
         if (this.dimensions !== vector.dimensions) {
             throw "Cannot add vectors of different dimensions"
         }
@@ -14,7 +19,7 @@ export class Vector {
         }
     }
 
-    sub(vector) {
+    sub(vector: Vector) {
         if (this.dimensions !== vector.dimensions) {
             throw "Cannot subtract vectors of different dimensions"
         }
@@ -24,13 +29,13 @@ export class Vector {
         }
     }
 
-    mul(n) {
+    mul(n: number) {
         for (let i = 0; i < this.dimensions; i++) {
             this.points[i] *= n
         }
     }
 
-    div(n) {
+    div(n: number) {
         if (n === 0) {
             throw "Cannot divide a vector by zero"
         }
@@ -63,14 +68,14 @@ export class Vector {
         return (360 + Math.round(degs)) % 360
     }
 
-    limit(max) {
+    limit(max: number) {
         if (this.magnitude() > max) {
             this.normalize()
             this.mul(max)
         }
     }
 
-    distance(vector) {
+    distance(vector: Vector) {
         return Math.sqrt(
             Math.abs(
                 Math.pow(vector.points[0] - this.points[0], 2) +
@@ -79,7 +84,7 @@ export class Vector {
         )
     }
 
-    static random2D(width, height) {
+    static random2D(width: number, height: number) {
         const vector = new Vector([
             Math.round(Math.random() * width),
             Math.round(Math.random() * height)
@@ -88,21 +93,21 @@ export class Vector {
         return vector
     }
 
-    static addFactory(a, b) {
+    static addFactory(a: Vector, b: Vector) {
         const vector = Vector.clone(a)
         vector.add(b)
 
         return vector
     }
 
-    static subFactory(a, b) {
+    static subFactory(a: Vector, b: Vector) {
         const vector = Vector.clone(a)
         vector.sub(b)
 
         return vector
     }
 
-    static clone(oldVector) {
-        return new Vector(oldVector.points.slice(0))
+    static clone(oldVector: Vector) {
+        return new Vector([...oldVector.points])
     }
 }

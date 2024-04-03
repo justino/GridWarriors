@@ -1,8 +1,12 @@
-import { Unit } from "./unit.js"
-import { BeginnerDisc } from "../discs/beginner.js"
+import { config } from "@/config"
+
+import { Unit } from "@/units/unit"
+import { Vector } from "@/vector"
+import { GameGrid } from "@/gamegrid"
+import { BeginnerDisc } from "@/discs/beginner"
 
 export class Bulldog extends Unit {
-    constructor(gameGrid, location) {
+    constructor(gameGrid: GameGrid, location: Vector) {
         super(gameGrid, 'Bulldog', config.bulldogColor, location)
 
         this.baseSpeed = config.bulldogSpeed
