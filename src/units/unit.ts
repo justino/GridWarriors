@@ -1,40 +1,65 @@
-import { Sprite } from "../sprite.js"
-import { Vector } from "../vector.js"
-import { DiscStates } from "../discs/disc.js"
+import { config } from "@/config"
 
-export const UnitFacings = Object.freeze({
-    UP:    Symbol("up"),
-    DOWN:  Symbol("down"),
-    LEFT:  Symbol("left"),
-    RIGHT: Symbol("right")
-})
+import { Sprite } from "@/sprite"
+import { Vector } from "@/vector"
+import { DiscStates } from "@/discs/disc"
+import { GameGrid } from "@/gamegrid"
+import { Disc } from "@/discs/disc"
+import { Door } from "@/door"
+
+export enum UnitFacings {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+}
 
 export class Unit extends Sprite {
-    constructor(gameGrid, name, color, location) {
+    public isPlayer: boolean
+    protected canBlock: boolean
+    protected regenerates: boolean
+    protected baseSpeed: number
+    protected speedModifier: number
+    protected throwFrequencyModifier: number
+    protected recoveryRate: number
+    protected maxHits: number
+    protected baseAccuracy: number
+    protected accuracyModifier: number
+    public points: number
+
+    private regenerateTimer: number | null
+    private hits: number
+    public isBlocking: boolean
+    public isTeleporting: boolean
+    private teleportDoor: Door | null
+    private facing: UnitFacings
+    public disc: Disc | null
+    private destination: Vector | null
+
+    constructor(gameGrid: GameGrid, name: string, color: string, location: Vector) {
         super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
         this.isPlayer = false
         this.canBlock = false
         this.regenerates = false
-
         this.baseSpeed = 1
         this.speedModifier = 1
         this.throwFrequencyModifier = 0
         this.recoveryRate = 4
         this.maxHits = 1
-        this.hits = 0
         this.baseAccuracy = config.warriorAccuracy
         this.accuracyModifier = 0
-        this.regenerateTimer = null
         this.points = 100
 
-        // General direction unit is facing
-        this.facing = null
-
+        // Stateful
+        this.regenerateTimer = null
+        this.hits = 0
         this.isBlocking = false
-
         this.isTeleporting = false
         this.teleportDoor = null
+        this.facing = UnitFacings.DOWN
+        this.disc = null
+        this.destination = null
     }
 
     draw() {
@@ -57,7 +82,7 @@ export class Unit extends Sprite {
         this.updateLocation()
 
         // Are we at our destination
-        if (this.touchLocation(this.destination)) {
+        if (this.destination && this.touchLocation(this.destination)) {
             // console.log(`Unit: ${this.name} got to destination, setting new destination`)
             this.setDestination()
         }
@@ -79,7 +104,7 @@ export class Unit extends Sprite {
         this.resolveTeleportation()
     }
 
-    teleportTo(door) {
+    teleportTo(door: Door) {
         if (this.isTeleporting) return
 
         this.isTeleporting = true
@@ -93,6 +118,9 @@ export class Unit extends Sprite {
     }
 
     updateDiscStatus() {
+        if (! this.disc) return
+        if (! this.gameGrid.player) return
+
         if (this.disc.status === DiscStates.HELD && !this.disc.primed) {
             this.disc.primed = true
 
@@ -106,6 +134,7 @@ export class Unit extends Sprite {
 
     throwDisc() {
         if (! this.gameGrid.player) return
+        if (! this.disc) return
 
         // Aim at player
         const aimFor = Vector.clone(this.gameGrid.player.location)
@@ -121,6 +150,8 @@ export class Unit extends Sprite {
     }
 
     catchDisc() {
+        if (! this.disc) return
+
         if (this.disc.status === DiscStates.RETURNING && this.collision(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc')
             this.disc.status = DiscStates.HELD
@@ -156,7 +187,7 @@ export class Unit extends Sprite {
         this.setFacing(this.findFacing(this.velocity))
     }
 
-    findFacing(vector) {
+    findFacing(vector: Vector) {
         let facing = UnitFacings.DOWN
 
         const angle = vector.angle()
@@ -172,14 +203,14 @@ export class Unit extends Sprite {
         return facing
     }
 
-    setFacing(facing) {
+    setFacing(facing: UnitFacings) {
         if (this.facing !== facing) {
             this.facing = facing
             // console.log(`${this.name} - Facing: ${this.facing.toString()}`)
         }
     }
 
-    hit(strength) {
+    hit(strength: number) {
         this.hits += strength || 1
         console.log(`${this.name} hit. ${this.maxHits - this.hits} left`)
 
@@ -209,7 +240,7 @@ export class Unit extends Sprite {
     }
 
     resolveTeleportation() {
-        if (this.isTeleporting) {
+        if (this.isTeleporting && this.teleportDoor) {
             if (! this.teleportDoor.isCollided(this)) {
                 this.isTeleporting = false
                 this.teleportDoor = null

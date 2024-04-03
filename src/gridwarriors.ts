@@ -1,9 +1,30 @@
-import { GameGrid } from "./gamegrid.js"
-import { Scoreboard } from "./scoreboard.js"
-import { Overlay } from "./overlay.js"
-import { WaveManager } from "./wave.js"
+import { config } from "@/config"
+
+import { GameGrid } from "@/gamegrid"
+import { Scoreboard } from "@/scoreboard"
+import { Overlay } from "@/overlay"
+import { WaveManager } from "@/wave"
+
+import { Unit } from "@/units/unit"
+
+type UnitHit = {
+    winner: Unit,
+    loser: Unit
+}
+
+type Score = {
+    points: number
+}
 
 export class GridWarriors {
+    private scoreBoard: Scoreboard
+    private overlay: Overlay
+    private gameGrid: GameGrid
+    private waveManager: WaveManager
+
+    private playing: boolean
+    private paused: boolean
+
     constructor() {
         this.scoreBoard = new Scoreboard()
         this.overlay = new Overlay()
@@ -16,26 +37,26 @@ export class GridWarriors {
         addEventListener('keypress', this.pause.bind(this))
         addEventListener('GameStart', this.startGame.bind(this))
         addEventListener('GameOver', this.gameOver.bind(this))
-        addEventListener('UnitHit', this.unitHit.bind(this))
-        addEventListener('Score', this.score.bind(this))
+        addEventListener('UnitHit', this.unitHit.bind(this) as EventListener)
+        addEventListener('Score', this.score.bind(this) as EventListener)
 
         this.overlay.show()
     }
 
-    startGame() {
+    private startGame() {
         this.scoreBoard.reset()
 
         this.gameGrid.reset()
         this.gameGrid.setup()
 
         this.waveManager.reset()
-        this.waveManager.trigger(config.gameStartTime)
+        this.waveManager.trigger(window.config.gameStartTime)
 
         this.playing = true
         this.play()
     }
 
-    play() {
+    private play() {
         if (! this.playing) return
 
         if (this.paused) {
@@ -49,7 +70,7 @@ export class GridWarriors {
         requestAnimationFrame(this.play.bind(this))
     }
 
-    pause(e) {
+    private pause(e: KeyboardEvent) {
         // Look for 'P' key'
         if (!['KeyP'].includes(e.code)) return
 
@@ -58,33 +79,31 @@ export class GridWarriors {
         console.log(this.paused ? 'Paused' : 'Unpaused')
     }
 
-    unitHit(e) {
+    private unitHit(e: CustomEvent<UnitHit>) {
         const winner = e.detail.winner
         const loser = e.detail.loser
         console.log(`${winner.name} hit ${loser.name}`)
 
-        this._playerhit(winner, loser)
-        this._enemyhit(winner, loser)
+        this.playerhit(winner, loser)
+        this.enemyhit(winner, loser)
     }
 
-    score(e) {
+    private score(e: CustomEvent<Score>) {
         this.scoreBoard.score(e.detail.points)
     }
 
-    gameOver() {
+    private gameOver() {
         console.log('Game Over')
         this.playing = false
         this.overlay.show()
     }
 
-    // -----------------------------------
-
-    _playerhit(winner, loser) {
+    private playerhit(winner: Unit, loser: Unit) {
         if (! loser.isPlayer) return
 
         // Lose points when the player is hit
         dispatchEvent(
-            new CustomEvent('Score', {
+            new CustomEvent<Score>('Score', {
                 detail: {
                     points: -winner.points
                 }
@@ -99,14 +118,14 @@ export class GridWarriors {
         }
     }
 
-    _enemyhit(winner, loser) {
+    private enemyhit(winner: Unit, loser: Unit) {
         if (loser.isPlayer) return
         if (! loser.isDead()) return
 
         this.gameGrid.removeEnemy(loser)
         this.waveManager.trigger(config.respawnInterval)
         dispatchEvent(
-            new CustomEvent('Score', {
+            new CustomEvent<Score>('Score', {
                 detail: {
                     points: winner.points
                 }

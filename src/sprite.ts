@@ -1,7 +1,19 @@
-import { Vector } from "./vector.js"
+import { Vector } from "@/vector"
+import { GameGrid } from "@/gamegrid"
 
 export class Sprite {
-    constructor(gameGrid, name, width, height, color, location) {
+    public gameGrid: GameGrid
+    public name: string
+    protected width: number
+    protected height: number
+    protected color: string
+    public location: Vector
+
+    protected velocity: Vector
+
+    public boundingBox: [number, number, number, number]
+
+    constructor(gameGrid: GameGrid, name: string, width: number, height: number, color: string, location: Vector) {
         this.gameGrid = gameGrid
         this.name = name
         this.width = width
@@ -10,24 +22,24 @@ export class Sprite {
 
         this.location = Vector.clone(location)
 
-        this.buildBoundingBox()
+        this.boundingBox = this.buildBoundingBox()
 
         // Filled in by child class
-        this.velocity = null
+        this.velocity = new Vector([0, 0])
 
         console.log('Sprite: ' + this.name + ' Rezzed')
     }
 
-    changeWidth(width) {
+    changeWidth(width: number) {
         this.width = width
     }
 
-    changeHeight(height) {
+    changeHeight(height: number) {
         this.height = height
     }
 
-    buildBoundingBox() {
-        this.boundingBox = [
+    buildBoundingBox(): [number, number, number, number] {
+        return [
             this.location.points[0] - Math.round(this.width / 2),
             this.location.points[1] - Math.round(this.height / 2),
             this.location.points[0] + Math.round(this.width / 2),
@@ -65,7 +77,7 @@ export class Sprite {
         return bounded
     }
 
-    collision(sprite) {
+    collision(sprite: Sprite) {
         // See if the 2 boxes intersect in any way
         this.gameGrid.context.beginPath()
         this.gameGrid.context.rect(
@@ -82,14 +94,14 @@ export class Sprite {
         )
     }
 
-    touchLocation(location) {
+    touchLocation(location: Vector) {
         this.gameGrid.context.beginPath()
         this.gameGrid.context.rect(...this.boundingBox)
         return this.gameGrid.context.isPointInPath(...location.points)
     }
 
     drawSprite() {
-        this.buildBoundingBox()
+        this.boundingBox = this.buildBoundingBox()
 
         this.gameGrid.context.fillStyle = this.color
         this.gameGrid.context.fillRect(

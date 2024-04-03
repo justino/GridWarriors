@@ -1,26 +1,49 @@
-import config from "./config.js"
-import { Vector } from "./vector.js"
-import { UnitFacings } from "./units/unit.js"
+import { config } from "@/config"
 
-export const DoorStates = Object.freeze({
-    CLOSED: { color: config.doorClosedColor },
-    OPEN:   { color: config.doorOpenColor },
-    JAMMED: { color: config.doorJammedColor }
-})
+import { Sprite } from "@/sprite"
+import { Vector } from "@/vector"
+import { UnitFacings } from "@/units/unit"
+import { GameGrid } from "@/gamegrid"
 
-export const DoorOrientations = Object.freeze({
+type DoorStateNames = "CLOSED" | "OPEN" | "JAMMED"
+type DoorStateInfo = Symbol
+export type DoorStates = Record<DoorStateNames, DoorStateInfo>
+export const DoorStates: DoorStates = {
+    CLOSED: Symbol('closed'),
+    OPEN:   Symbol('open'),
+    JAMMED: Symbol('jammed')
+}
+
+type DoorOrientationNames = "HORIZONTAL" | "VERTICAL"
+type DoorOrientationInfo = Symbol
+export type DoorOrientations = Record<DoorOrientationNames, DoorOrientationInfo>
+export const DoorOrientations: DoorOrientations = {
     HORIZONTAL: Symbol("horizontal"),
     VERTICAL:   Symbol("vertical")
-})
+}
 
-export const DoorSides = Object.freeze({
+export type DoorSideNames = "TOP" | "BOTTOM" | "LEFT" | "RIGHT"
+export type DoorSideInfo = Symbol
+export type DoorSides = Record<DoorSideNames, DoorSideInfo>
+export const DoorSides: DoorSides = {
     TOP:    Symbol("top"),
     BOTTOM: Symbol("bottom"),
     LEFT:   Symbol("left"),
     RIGHT:  Symbol("right")
-})
+}
 
-export const DoorPositions = Object.freeze({
+export type DoorPositionNames = "TOPLEFT"    | "TOPCENTER"    | "TOPRIGHT"
+                       | "BOTTOMLEFT" | "BOTTOMCENTER" | "BOTTOMRIGHT"
+                       | "LEFTTOP"    | "LEFTCENTER"   | "LEFTBOTTOM"
+                       | "RIGHTTOP"   | "RIGHTCENTER"  | "RIGHTBOTTOM"
+export type DoorPositionInfo = {
+    side: DoorStateInfo,
+    orientation: DoorOrientationInfo,
+    facing: UnitFacings,
+    teleportsTo: DoorPositionNames
+}
+export type DoorPositions = Record<DoorPositionNames, DoorPositionInfo>
+export const DoorPositions: DoorPositions = {
     TOPLEFT:      { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMLEFT' },
     TOPCENTER:    { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMCENTER' },
     TOPRIGHT:     { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMRIGHT' },
@@ -33,23 +56,39 @@ export const DoorPositions = Object.freeze({
     RIGHTTOP:     { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTTOP' },
     RIGHTCENTER:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTCENTER' },
     RIGHTBOTTOM:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTBOTTOM' },
-})
+}
 
 export class Door {
-    constructor(gameGrid, position) {
+    private gameGrid: GameGrid
+    private canvas: HTMLCanvasElement
+    private context: CanvasRenderingContext2D
+
+    public position: DoorPositionInfo
+    private rect: number[]
+    private color: string
+    private location: Vector
+    private width: number
+    private height: number
+
+    public state: DoorStateInfo
+
+    public spawnLocation: Vector
+
+    constructor(gameGrid: GameGrid, position: DoorPositionInfo) {
         this.gameGrid = gameGrid
         this.canvas = this.gameGrid.canvas
         this.context = this.gameGrid.context
 
         this.position = position
         this.rect = []
-        this.location
+        this.color = config.doorClosedColor
+        this.location = new Vector([0, 0])
         this.width = 0
         this.height = 0
 
         this.state = DoorStates.CLOSED
 
-        this.spawnLocation
+        this.spawnLocation = new Vector([0, 0])
 
         this.setup()
     }
@@ -151,7 +190,7 @@ export class Door {
     }
 
     draw() {
-        this.context.fillStyle = this.state.color
+        this.context.fillStyle = this.color
         this.context.fillRect(
             this.rect[0], this.rect[1],
             this.width, this.height
@@ -162,12 +201,14 @@ export class Door {
         if (this.state !== DoorStates.CLOSED) return
 
         this.state = DoorStates.OPEN
+        this.color = config.doorOpenColor
     }
 
     jam() {
         if (this.state !== DoorStates.OPEN) return
 
         this.state = DoorStates.JAMMED
+        this.color = config.doorJammedColor
         dispatchEvent(new CustomEvent("Score", { detail: { points: 100 } }))
     }
 
@@ -179,9 +220,10 @@ export class Door {
 
     reset() {
         this.state = DoorStates.CLOSED
+        this.color = config.doorClosedColor
     }
 
-    isCollided(sprite) {
+    isCollided(sprite: Sprite) {
         if (
             this.rect[0] > sprite.boundingBox[2] ||
             sprite.boundingBox[0] > this.rect[2]

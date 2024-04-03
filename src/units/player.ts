@@ -1,11 +1,14 @@
-import { Unit } from "./unit.js"
-import { DiscStates } from "../discs/disc.js"
-import { PlayerDisc } from "../discs/player.js"
-import { Vector } from "../vector.js"
-import { KeyboardState } from "../keyboard.js"
+import { config } from "@/config"
+
+import { Unit } from "@/units/unit"
+import { DiscStates } from "@/discs/disc"
+import { PlayerDisc } from "@/discs/player"
+import { Vector } from "@/vector"
+import { GameGrid } from "@/gamegrid"
+import { KeyboardState } from "@/keyboard"
 
 export class Player extends Unit {
-    constructor(gameGrid, location) {
+    constructor(gameGrid: GameGrid, location: Vector) {
         super(gameGrid, 'Adora', config.playerColor, location)
 
         this.gameGrid = gameGrid
@@ -25,7 +28,7 @@ export class Player extends Unit {
         this.bindToGameGrid()
 
         this.updateDiscStatus()
-        this.disc.update()
+        this.disc?.update()
         this.resolveTeleportation()
     }
 
@@ -56,7 +59,7 @@ export class Player extends Unit {
     }
 
     throwDisc() {
-        if (this.disc.status !== DiscStates.HELD) return
+        if (this.disc?.status !== DiscStates.HELD) return
 
         const direction = KeyboardState.discKeyPressed()
         if (! direction) return
@@ -72,7 +75,7 @@ export class Player extends Unit {
     }
 
     returnDisc() {
-        if (this.disc.status !== DiscStates.DEADLY) return
+        if (this.disc?.status !== DiscStates.DEADLY) return
 
         const direction = KeyboardState.discKeyPressed()
         if (! direction) {

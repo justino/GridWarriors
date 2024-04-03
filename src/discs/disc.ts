@@ -1,27 +1,41 @@
-import { Sprite } from "../sprite.js"
-import { Vector } from "../vector.js"
+import { config } from "@/config"
 
-export const DiscStates = Object.freeze({
-    HELD:      Symbol("held"),
-    DEADLY:    Symbol("deadly"),
-    BOUNCING:  Symbol("bouncing"),
-    RETURNING: Symbol("returning")
-})
+import { Sprite } from "@/sprite"
+import { Vector } from "@/vector"
+import { Unit } from "@/units/unit"
+
+export enum DiscStates {
+    HELD,
+    DEADLY,
+    BOUNCING,
+    RETURNING
+}
 
 export class Disc extends Sprite {
-    constructor(name, color, unit) {
+    private discSize: number
+    protected owner: Unit
+    protected strength: number
+    protected speedModifier: number
+    protected baseSpeed: number
+
+    public status: DiscStates
+    public returnable: boolean
+    public primed: boolean
+    private collided: Unit | null
+
+    constructor(name: string, color: string, unit: Unit) {
         const discSize = config.unitSize / 4
         super(unit.gameGrid, name, discSize, discSize, color, unit.location)
 
         this.discSize = discSize
-
         this.owner = unit
-
         this.strength = 1
-        this.status = DiscStates.HELD
         this.speedModifier = 0
-        this.velocity = null
 
+        this.baseSpeed = 0
+
+        // Stateful
+        this.status = DiscStates.HELD
         this.returnable = false
         this.primed = false
         this.collided = null
@@ -75,7 +89,7 @@ export class Disc extends Sprite {
         }
     }
 
-    checkCollide(unit) {
+    checkCollide(unit: Unit) {
         // We don't care about non-deadly discs
         if (this.status !== DiscStates.DEADLY) return
 
@@ -108,7 +122,7 @@ export class Disc extends Sprite {
         }
     }
 
-    thrown(direction) {
+    thrown(direction: Vector) {
         this.status = DiscStates.DEADLY
 
         const velocity = new Vector([0, 0])
@@ -116,7 +130,7 @@ export class Disc extends Sprite {
         direction.mul(this.baseSpeed + this.speedModifier)
 
         velocity.add(direction)
-        velocity.limit(this.baseSpeed + this.speedModfier)
+        velocity.limit(this.baseSpeed + this.speedModifier)
         this.velocity = velocity
     }
 

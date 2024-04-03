@@ -1,8 +1,13 @@
-import { Vector } from "../vector.js"
-import { Disc, DiscStates } from "./disc.js"
+import { config } from "@/config"
+
+import { Vector } from "@/vector"
+import { Disc, DiscStates } from "@/discs/disc"
+import { Unit } from "@/units/unit"
 
 export class HomingDisc extends Disc {
-    constructor(unit) {
+    private homing: boolean
+
+    constructor(unit: Unit) {
         super('Homing', config.homingDiscColor, unit)
 
         this.baseSpeed = config.homingDiscSpeed
@@ -32,7 +37,7 @@ export class HomingDisc extends Disc {
         }
     }
 
-    thrown(direction) {
+    thrown(direction: Vector) {
         // After one second of regular movement, start homing
         setTimeout(this.startHoming.bind(this), 1000)
         super.thrown(direction)
@@ -48,6 +53,8 @@ export class HomingDisc extends Disc {
     }
 
     homeInOnPlayer() {
+        if (! this.gameGrid.player) return
+
         this.velocity = new Vector([0, 0])
 
         const playerForce = Vector.subFactory(this.gameGrid.player.location, this.location)

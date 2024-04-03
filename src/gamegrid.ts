@@ -1,14 +1,26 @@
-import { Player } from "./units/player.js"
-import { DiscStates } from "./discs/disc.js"
-import { Door, DoorPositions, DoorStates } from "./door.js"
-import { Vector } from "./vector.js"
+import { config } from "@/config"
+
+import { Player, Enemy, EnemyTypes, Unit } from "@/units/index"
+import { DiscStates } from "@/discs/disc"
+import { Door, DoorPositionNames, DoorPositions, DoorStates, DoorSideInfo } from "@/door"
+import { Vector } from "@/vector"
 
 export class GameGrid {
+    public canvas: HTMLCanvasElement
+    public context: CanvasRenderingContext2D
+    public diagonal: number
+    private doors: Door[]
+    public enemies: Enemy[]
+    public player: Player | null
+
     constructor() {
         console.log("Grid: Rezzing")
 
-        this.canvas = document.getElementById('gamegrid')
-        this.context = this.canvas.getContext('2d')
+        const canvas = document.getElementById('gamegrid')
+        if (! canvas) throw new Error('Unable to find GameGrid element')
+
+        this.canvas = canvas as HTMLCanvasElement
+        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D
         this.canvas.width = config.width
         this.canvas.height = config.height
 
@@ -32,7 +44,8 @@ export class GameGrid {
             new Vector([this.canvas.width / 2, this.canvas.height / 2])
         )
         for (const position in DoorPositions) {
-            this.doors.push(new Door(this, DoorPositions[position]))
+            const info = DoorPositions[position as DoorPositionNames]
+            this.doors.push(new Door(this, info))
         }
     }
 
@@ -72,7 +85,7 @@ export class GameGrid {
         if (!this.player) return
 
         // Check for hits/deaths by player
-        if (this.player.disc.status === DiscStates.DEADLY) {
+        if (this.player?.disc?.status === DiscStates.DEADLY) {
             for (const enemy of this.enemies) {
                 this.player.disc.checkCollide(enemy)
             }
@@ -80,7 +93,7 @@ export class GameGrid {
 
         // Check for player hits/death
         for (const enemy of this.enemies) {
-            enemy.disc.checkCollide(this.player)
+            enemy?.disc?.checkCollide(this.player)
         }
 
         // Player might not exist after collisions
@@ -90,8 +103,8 @@ export class GameGrid {
         for (const unit of [...this.enemies, this.player]) {
             for (const door of this.doors) {
                 // Did units disc hit a door
-                if (door.state === DoorStates.OPEN && unit.disc.status === DiscStates.DEADLY && door.isCollided(unit.disc)) {
-                    unit.isPlayer ? door.jam() : door.close()
+                if (door.state === DoorStates.OPEN && unit?.disc?.status === DiscStates.DEADLY && door.isCollided(unit.disc)) {
+                    unit?.isPlayer ? door.jam() : door.close()
                 }
             }
         }
@@ -105,10 +118,10 @@ export class GameGrid {
         // Teleportation
         for (const unit of [...this.enemies, this.player]) {
             for (const door of this.doors) {
-                if (door.state === DoorStates.JAMMED && door.isCollided(unit) && ! unit.isTeleporting) {
+                if (door.state === DoorStates.JAMMED && door.isCollided(unit) && ! unit?.isTeleporting) {
                     const teleportsTo = DoorPositions[door.position.teleportsTo]
                     const teleportDoor = this.doors.find(door => door.position === teleportsTo)
-                    if (teleportDoor.state !== DoorStates.JAMMED) break
+                    if (teleportDoor?.state !== DoorStates.JAMMED) break
 
                     unit.teleportTo(teleportDoor)
                 }
@@ -116,7 +129,7 @@ export class GameGrid {
         }
     }
 
-    addEnemies(enemyUnits, doorSide) {
+    addEnemies(enemyUnits: EnemyTypes[], doorSide: DoorSideInfo) {
         this.closeDoors()
         const doors = this.doors.filter(door => door.position.side === doorSide )
 
@@ -130,7 +143,7 @@ export class GameGrid {
         }
     }
 
-    removeEnemy(enemy) {
+    removeEnemy(enemy: Unit) {
         console.log(`${enemy.name} derezzed`)
         this.enemies = this.enemies.filter((unit) => {
             return unit != enemy
