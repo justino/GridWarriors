@@ -1,6 +1,6 @@
 {
     "name": "Grid Warriors",
-    "image": "node:latest",
+    "image": "node:26",
     "containerUser": "node",
     "customizations": {
         "vscode": {
