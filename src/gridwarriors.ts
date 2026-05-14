@@ -50,7 +50,7 @@ export class GridWarriors {
         this.gameGrid.setup()
 
         this.waveManager.reset()
-        this.waveManager.trigger(window.config.gameStartTime)
+        this.waveManager.trigger(config.gameStartTime)
 
         this.playing = true
         this.play()
