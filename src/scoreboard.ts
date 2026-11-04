@@ -23,6 +23,8 @@ export class Scoreboard {
     public reset() {
         this.currentScore = 0
         this.highScore = this.getHighScore()
+
+        this.updateBoard()
     }
 
     public score(points: number) {
