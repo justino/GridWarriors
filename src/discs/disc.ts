@@ -137,15 +137,11 @@ export class Disc extends Sprite {
         this.status = DiscStates.RETURNING
         this.returnable = false
 
-        this.velocity = new Vector([0, 0])
-
         const ownerForce = Vector.subFactory(this.owner.location, this.location)
         ownerForce.normalize()
         ownerForce.mul(this.baseSpeed + this.speedModifier)
 
-        this.velocity.add(ownerForce)
-        this.velocity.limit(this.baseSpeed + this.speedModifier)
-
+        this.velocity = ownerForce
         this.location.add(this.velocity)
     }
 

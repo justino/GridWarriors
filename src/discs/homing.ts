@@ -55,15 +55,11 @@ export class HomingDisc extends Disc {
     homeInOnPlayer() {
         if (! this.gameGrid.player) return
 
-        this.velocity = new Vector([0, 0])
-
         const playerForce = Vector.subFactory(this.gameGrid.player.location, this.location)
         playerForce.normalize()
         playerForce.mul(this.baseSpeed + this.speedModifier)
 
-        this.velocity.add(playerForce)
-        this.velocity.limit(this.baseSpeed + this.speedModifier)
-
+        this.velocity = playerForce
         this.location.add(this.velocity)
     }
 }
