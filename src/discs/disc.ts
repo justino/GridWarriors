@@ -125,12 +125,11 @@ export class Disc extends Sprite {
     thrown(direction: Vector) {
         this.status = DiscStates.DEADLY
 
-        const velocity = new Vector([0, 0])
+        // Normalize so diagonal throws aren't faster, then scale to speed
+        const velocity = Vector.clone(direction)
+        velocity.normalize()
+        velocity.mul(this.baseSpeed + this.speedModifier)
 
-        direction.mul(this.baseSpeed + this.speedModifier)
-
-        velocity.add(direction)
-        velocity.limit(this.baseSpeed + this.speedModifier)
         this.velocity = velocity
     }
 
