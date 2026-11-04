@@ -44,6 +44,9 @@ export class Player extends Unit {
         if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= 1
         if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += 1
 
+        // No movement (no keys, or opposing keys cancel out), keep the current location and facing
+        if (velocity.magnitude() === 0) return
+
         // Normalize so diagonal movement isn't faster, then scale to speed
         velocity.normalize()
         velocity.mul(this.baseSpeed * this.speedModifier)

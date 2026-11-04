@@ -11,7 +11,11 @@ export enum UnitFacings {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    UPLEFT,
+    UPRIGHT,
+    DOWNLEFT,
+    DOWNRIGHT
 }
 
 export class Unit extends Sprite {
@@ -186,19 +190,20 @@ export class Unit extends Sprite {
     }
 
     findFacing(vector: Vector) {
-        let facing = UnitFacings.DOWN
+        // Facings in 45 degree steps, counter-clockwise starting from 0 degrees (right)
+        const facings = [
+            UnitFacings.RIGHT,
+            UnitFacings.UPRIGHT,
+            UnitFacings.UP,
+            UnitFacings.UPLEFT,
+            UnitFacings.LEFT,
+            UnitFacings.DOWNLEFT,
+            UnitFacings.DOWN,
+            UnitFacings.DOWNRIGHT
+        ]
 
-        const angle = vector.angle()
-
-        if (angle <= 45 || angle > 315) {
-            facing = UnitFacings.RIGHT
-        } else if (angle > 45 && angle <= 135) {
-            facing = UnitFacings.UP
-        } else if (angle > 135 && angle <= 225) {
-            facing = UnitFacings.LEFT
-        }
-
-        return facing
+        // Each facing covers 22.5 degrees either side of its direction
+        return facings[Math.round(vector.angle() / 45) % facings.length]
     }
 
     setFacing(facing: UnitFacings) {
