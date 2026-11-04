@@ -22,6 +22,7 @@ export class Disc extends Sprite {
     public returnable: boolean
     public primed: boolean
     private collided: Unit | null
+    private returnTimer: ReturnType<typeof setTimeout> | null
 
     constructor(name: string, color: string, unit: Unit) {
         const discSize = config.unitSize / 4
@@ -39,6 +40,7 @@ export class Disc extends Sprite {
         this.returnable = false
         this.primed = false
         this.collided = null
+        this.returnTimer = null
     }
 
     update() {
@@ -67,7 +69,7 @@ export class Disc extends Sprite {
 
             if (this.status !== DiscStates.BOUNCING) {
                 this.status = DiscStates.BOUNCING
-                setTimeout(this.return.bind(this), config.discReturnTime)
+                this.returnTimer = setTimeout(this.return.bind(this), config.discReturnTime)
             }
         }
     }
@@ -134,6 +136,12 @@ export class Disc extends Sprite {
     }
 
     return() {
+        // Cancel any pending bounce return, so it can't fire on a later throw
+        if (this.returnTimer) {
+            clearTimeout(this.returnTimer)
+            this.returnTimer = null
+        }
+
         this.status = DiscStates.RETURNING
         this.returnable = false
 
