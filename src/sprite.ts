@@ -93,7 +93,10 @@ export class Sprite {
 
     touchLocation(location: Vector) {
         this.gameGrid.context.beginPath()
-        this.gameGrid.context.rect(...this.boundingBox)
+        this.gameGrid.context.rect(
+            this.boundingBox[0], this.boundingBox[1],
+            this.width, this.height
+        )
         return this.gameGrid.context.isPointInPath(...location.points)
     }
 
