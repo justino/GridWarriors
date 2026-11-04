@@ -1,8 +1,8 @@
-type KeyboardMovementKeys = "UP"   | "DOWN" | "LEFT" | "RIGHT"
+type KeyboardMovementKeys = "NORTH" | "SOUTH" | "WEST" | "EAST"
 
-type KeyboardDiscKeys = "UPLEFT"   | "UP"   | "UPRIGHT"
-                      | "LEFT"     |          "RIGHT"
-                      | "DOWNLEFT" | "DOWN" | "DOWNRIGHT"
+type KeyboardDiscKeys = "NORTHWEST" | "NORTH" | "NORTHEAST"
+                      | "WEST"      |           "EAST"
+                      | "SOUTHWEST" | "SOUTH" | "SOUTHEAST"
 
 type KeyboardState = {
     pressed: { [key: string]: boolean }
@@ -25,10 +25,10 @@ export const KeyboardState: KeyboardState = {
     pressed: {},
 
     movement: {
-        UP: 'KeyW',
-        DOWN: 'KeyS',
-        LEFT: 'KeyA',
-        RIGHT: 'KeyD'
+        NORTH: 'KeyW',
+        SOUTH: 'KeyS',
+        WEST: 'KeyA',
+        EAST: 'KeyD'
     },
 
     // Number pad, or B for keyboards without one
@@ -38,14 +38,14 @@ export const KeyboardState: KeyboardState = {
     THROW: 'Space',
 
     disc: {
-        UP: 'Numpad8',
-        UPRIGHT: 'Numpad9',
-        RIGHT: 'Numpad6',
-        DOWNRIGHT: 'Numpad3',
-        DOWN: 'Numpad2',
-        DOWNLEFT: 'Numpad1',
-        LEFT: 'Numpad4',
-        UPLEFT: 'Numpad7'
+        NORTH: 'Numpad8',
+        NORTHEAST: 'Numpad9',
+        EAST: 'Numpad6',
+        SOUTHEAST: 'Numpad3',
+        SOUTH: 'Numpad2',
+        SOUTHWEST: 'Numpad1',
+        WEST: 'Numpad4',
+        NORTHWEST: 'Numpad7'
     },
 
     isDown: function(key: string) {

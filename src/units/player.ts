@@ -39,10 +39,10 @@ export class Player extends Unit {
         // Build a direction from keyboard input, each axis is -1, 0 or 1
         const velocity = new Vector([0, 0])
 
-        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  velocity.points[1] += 1
-        if (KeyboardState.isDown(KeyboardState.movement.UP))    velocity.points[1] -= 1
-        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= 1
-        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += 1
+        if (KeyboardState.isDown(KeyboardState.movement.SOUTH)) velocity.points[1] += 1
+        if (KeyboardState.isDown(KeyboardState.movement.NORTH)) velocity.points[1] -= 1
+        if (KeyboardState.isDown(KeyboardState.movement.WEST))  velocity.points[0] -= 1
+        if (KeyboardState.isDown(KeyboardState.movement.EAST))  velocity.points[0] += 1
 
         // No movement (no keys, or opposing keys cancel out), keep the current location and facing
         if (velocity.magnitude() === 0) return
@@ -80,10 +80,10 @@ export class Player extends Unit {
         if (direction) {
             const velocity = new Vector([0, 0])
 
-            if (direction.includes('UP'))    velocity.points[1] = -1
-            if (direction.includes('DOWN'))  velocity.points[1] =  1
-            if (direction.includes('LEFT'))  velocity.points[0] = -1
-            if (direction.includes('RIGHT')) velocity.points[0] =  1
+            if (direction.includes('NORTH')) velocity.points[1] = -1
+            if (direction.includes('SOUTH')) velocity.points[1] =  1
+            if (direction.includes('WEST'))  velocity.points[0] = -1
+            if (direction.includes('EAST'))  velocity.points[0] =  1
 
             return velocity
         }

@@ -8,26 +8,26 @@ import { Disc } from "@/discs/disc"
 import { Door } from "@/door"
 
 export enum UnitFacings {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    UPLEFT,
-    UPRIGHT,
-    DOWNLEFT,
-    DOWNRIGHT
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST,
+    NORTHWEST,
+    NORTHEAST,
+    SOUTHWEST,
+    SOUTHEAST
 }
 
 // Direction for each facing, each axis is -1, 0 or 1 (normalize before use)
 const FacingDirections: Record<UnitFacings, [number, number]> = {
-    [UnitFacings.UP]:        [ 0, -1],
-    [UnitFacings.DOWN]:      [ 0,  1],
-    [UnitFacings.LEFT]:      [-1,  0],
-    [UnitFacings.RIGHT]:     [ 1,  0],
-    [UnitFacings.UPLEFT]:    [-1, -1],
-    [UnitFacings.UPRIGHT]:   [ 1, -1],
-    [UnitFacings.DOWNLEFT]:  [-1,  1],
-    [UnitFacings.DOWNRIGHT]: [ 1,  1]
+    [UnitFacings.NORTH]:     [ 0, -1],
+    [UnitFacings.SOUTH]:     [ 0,  1],
+    [UnitFacings.WEST]:      [-1,  0],
+    [UnitFacings.EAST]:      [ 1,  0],
+    [UnitFacings.NORTHWEST]: [-1, -1],
+    [UnitFacings.NORTHEAST]: [ 1, -1],
+    [UnitFacings.SOUTHWEST]: [-1,  1],
+    [UnitFacings.SOUTHEAST]: [ 1,  1]
 }
 
 export class Unit extends Sprite {
@@ -77,7 +77,7 @@ export class Unit extends Sprite {
         this.isBlocking = false
         this.isTeleporting = false
         this.teleportDoor = null
-        this.facing = UnitFacings.DOWN
+        this.facing = UnitFacings.SOUTH
         this.disc = null
         this.destination = null
     }
@@ -225,14 +225,14 @@ export class Unit extends Sprite {
     findFacing(vector: Vector) {
         // Facings in 45 degree steps, counter-clockwise starting from 0 degrees (right)
         const facings = [
-            UnitFacings.RIGHT,
-            UnitFacings.UPRIGHT,
-            UnitFacings.UP,
-            UnitFacings.UPLEFT,
-            UnitFacings.LEFT,
-            UnitFacings.DOWNLEFT,
-            UnitFacings.DOWN,
-            UnitFacings.DOWNRIGHT
+            UnitFacings.EAST,
+            UnitFacings.NORTHEAST,
+            UnitFacings.NORTH,
+            UnitFacings.NORTHWEST,
+            UnitFacings.WEST,
+            UnitFacings.SOUTHWEST,
+            UnitFacings.SOUTH,
+            UnitFacings.SOUTHEAST
         ]
 
         // Each facing covers 22.5 degrees either side of its direction

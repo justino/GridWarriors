@@ -23,10 +23,10 @@ This is a keyboard based game.
 
 ### Movement Keys
 
-* `w`: Up
-* `s`: Down
-* `a`: Left
-* `d`: Right
+* `w`: North
+* `s`: South
+* `a`: West
+* `d`: East
 
 You can move diagonally with combinations of the keys.
 

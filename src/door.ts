@@ -44,18 +44,18 @@ export type DoorPositionInfo = {
 }
 export type DoorPositions = Record<DoorPositionNames, DoorPositionInfo>
 export const DoorPositions: DoorPositions = {
-    TOPLEFT:      { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMLEFT' },
-    TOPCENTER:    { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMCENTER' },
-    TOPRIGHT:     { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.DOWN,  teleportsTo: 'BOTTOMRIGHT' },
-    BOTTOMLEFT:   { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.UP,    teleportsTo: 'TOPLEFT' },
-    BOTTOMCENTER: { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.UP,    teleportsTo: 'TOPCENTER' },
-    BOTTOMRIGHT:  { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.UP,    teleportsTo: 'TOPRIGHT' },
-    LEFTTOP:      { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.RIGHT, teleportsTo: 'RIGHTTOP' },
-    LEFTCENTER:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.RIGHT, teleportsTo: 'RIGHTCENTER' },
-    LEFTBOTTOM:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.RIGHT, teleportsTo: 'RIGHTBOTTOM' },
-    RIGHTTOP:     { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTTOP' },
-    RIGHTCENTER:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTCENTER' },
-    RIGHTBOTTOM:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.LEFT,  teleportsTo: 'LEFTBOTTOM' },
+    TOPLEFT:      { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMLEFT' },
+    TOPCENTER:    { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMCENTER' },
+    TOPRIGHT:     { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMRIGHT' },
+    BOTTOMLEFT:   { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPLEFT' },
+    BOTTOMCENTER: { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPCENTER' },
+    BOTTOMRIGHT:  { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPRIGHT' },
+    LEFTTOP:      { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTTOP' },
+    LEFTCENTER:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTCENTER' },
+    LEFTBOTTOM:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTBOTTOM' },
+    RIGHTTOP:     { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTTOP' },
+    RIGHTCENTER:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTCENTER' },
+    RIGHTBOTTOM:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTBOTTOM' },
 }
 
 export class Door {
