@@ -28,9 +28,8 @@ export class Scoreboard {
     }
 
     public score(points: number) {
-        const newScore = this.currentScore + points
-        if (newScore >= 0)
-            this.currentScore = newScore
+        // Score can't go below zero
+        this.currentScore = Math.max(0, this.currentScore + points)
 
         this.updateHighScore()
         this.updateBoard()
