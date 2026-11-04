@@ -24,7 +24,7 @@ export class GameGrid {
         this.canvas.width = config.width
         this.canvas.height = config.height
 
-        this.diagonal = Math.sqrt((config.width ^ 2) + (config.height ^ 2))
+        this.diagonal = Math.hypot(config.width, config.height)
 
         this.doors = []
         this.enemies = []
