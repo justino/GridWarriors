@@ -6,12 +6,14 @@ import { Unit } from "@/units/unit"
 
 export class HomingDisc extends Disc {
     private homing: boolean
+    private homingTimer: ReturnType<typeof setTimeout> | null
 
     constructor(unit: Unit) {
         super('Homing', config.homingDiscColor, unit)
 
         this.baseSpeed = config.homingDiscSpeed
         this.homing = false
+        this.homingTimer = null
     }
 
     update() {
@@ -39,11 +41,17 @@ export class HomingDisc extends Disc {
 
     thrown(direction: Vector) {
         // After one second of regular movement, start homing
-        setTimeout(this.startHoming.bind(this), 1000)
+        this.homingTimer = setTimeout(this.startHoming.bind(this), 1000)
         super.thrown(direction)
     }
 
     return() {
+        // Cancel any pending homing, so it can't carry over to a later throw
+        if (this.homingTimer) {
+            clearTimeout(this.homingTimer)
+            this.homingTimer = null
+        }
+
         this.homing = false
         super.return()
     }
