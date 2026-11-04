@@ -11,8 +11,6 @@ export class Sprite {
 
     protected velocity: Vector
 
-    public boundingBox: [number, number, number, number]
-
     constructor(gameGrid: GameGrid, name: string, width: number, height: number, color: string, location: Vector) {
         this.gameGrid = gameGrid
         this.name = name
@@ -21,8 +19,6 @@ export class Sprite {
         this.color = color
 
         this.location = Vector.clone(location)
-
-        this.boundingBox = this.buildBoundingBox()
 
         // Filled in by child class
         this.velocity = new Vector([0, 0])
@@ -38,7 +34,8 @@ export class Sprite {
         this.height = height
     }
 
-    buildBoundingBox(): [number, number, number, number] {
+    // Always built from the current location and size, so it can never be out of date
+    get boundingBox(): [number, number, number, number] {
         return [
             this.location.points[0] - Math.round(this.width / 2),
             this.location.points[1] - Math.round(this.height / 2),
@@ -101,8 +98,6 @@ export class Sprite {
     }
 
     drawSprite() {
-        this.boundingBox = this.buildBoundingBox()
-
         this.gameGrid.context.fillStyle = this.color
         this.gameGrid.context.fillRect(
             this.boundingBox[0], this.boundingBox[1],
