@@ -1,4 +1,7 @@
 export const config = {
+    targetFps: 60, // Simulation updates per second
+    maxFrameTime: 250, // Milliseconds of elapsed time processed per frame at most
+
     /// Grid
     width: 1200,
     height: 800,

@@ -57,17 +57,34 @@ export class GridWarriors {
     }
 
     private play() {
-        if (! this.playing) return
+        const step = 1000 / config.targetFps
+        let last = performance.now()
+        let accumulator = 0
 
-        if (this.paused) {
-            this.gameGrid.drawBackground()
-        }
-        else {
-            this.gameGrid.update()
-            this.gameGrid.draw()
+        const frame = (now: number) => {
+            if (! this.playing) return
+
+            // Clamp elapsed time so a long stall (e.g. a background tab) doesn't trigger a huge catch-up
+            accumulator += Math.min(now - last, config.maxFrameTime)
+            last = now
+
+            if (this.paused) {
+                accumulator = 0
+                this.gameGrid.drawBackground()
+            }
+            else {
+                // Simulation runs at a fixed rate, independent of the display refresh rate
+                while (accumulator >= step) {
+                    this.gameGrid.update()
+                    accumulator -= step
+                }
+                this.gameGrid.draw()
+            }
+
+            requestAnimationFrame(frame)
         }
 
-        requestAnimationFrame(this.play.bind(this))
+        requestAnimationFrame(frame)
     }
 
     private pause(e: KeyboardEvent) {
@@ -76,7 +93,6 @@ export class GridWarriors {
 
         e.stopPropagation()
         this.paused = !this.paused
-        console.log(this.paused ? 'Paused' : 'Unpaused')
     }
 
     private unitHit(e: CustomEvent<UnitHit>) {
