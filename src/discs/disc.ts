@@ -93,7 +93,7 @@ export class Disc extends Sprite {
         // We don't care about non-deadly discs
         if (this.status !== DiscStates.DEADLY) return
 
-        const collision = this.collision(unit)
+        const collision = this.isCollidedWith(unit)
 
         /* If the disc has already collided with the current unit
            ignore, we don't want to hit them again until we've stopped colliding

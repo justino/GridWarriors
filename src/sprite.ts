@@ -77,7 +77,7 @@ export class Sprite {
         return bounded
     }
 
-    collision(sprite: Sprite) {
+    isCollidedWith(sprite: Sprite) {
         // See if the 2 boxes intersect in any way
         this.gameGrid.context.beginPath()
         this.gameGrid.context.rect(

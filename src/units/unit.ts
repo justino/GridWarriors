@@ -152,7 +152,7 @@ export class Unit extends Sprite {
     catchDisc() {
         if (! this.disc) return
 
-        if (this.disc.status === DiscStates.RETURNING && this.collision(this.disc)) {
+        if (this.disc.status === DiscStates.RETURNING && this.isCollidedWith(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc')
             this.disc.status = DiscStates.HELD
             this.disc.primed = false
