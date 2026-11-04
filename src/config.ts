@@ -15,6 +15,9 @@ export const config = {
     enemyCount: 3,
     respawnInterval: 5, // Seconds
     minimumDistance: 250,
+    tiredChance: 5, // Percent, chance to rest each time a unit finishes a move
+    tiredMinTime: 1, // Seconds
+    tiredMaxTime: 4, // Seconds
 
     playerColor: 'rgba(255, 0, 0, 1)',
     playerSpeed: 2,

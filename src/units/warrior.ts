@@ -10,6 +10,7 @@ export class Warrior extends Unit {
         super(gameGrid, 'Warrior', config.warriorColor, location)
 
         this.baseSpeed = config.warriorSpeed
+        this.getsTired = true
 
         this.disc = new BeginnerDisc(this)
     }

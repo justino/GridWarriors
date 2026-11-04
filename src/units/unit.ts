@@ -34,6 +34,7 @@ export class Unit extends Sprite {
     public isPlayer: boolean
     protected canBlock: boolean
     protected regenerates: boolean
+    protected getsTired: boolean
     protected baseSpeed: number
     protected speedModifier: number
     protected throwFrequencyModifier: number
@@ -45,6 +46,7 @@ export class Unit extends Sprite {
 
     private regenerateTimer: number | null
     private hits: number
+    private restTicks: number
     public isBlocking: boolean
     public isTeleporting: boolean
     private teleportDoor: Door | null
@@ -58,6 +60,7 @@ export class Unit extends Sprite {
         this.isPlayer = false
         this.canBlock = false
         this.regenerates = false
+        this.getsTired = false
         this.baseSpeed = 1
         this.speedModifier = 1
         this.throwFrequencyModifier = 0
@@ -70,6 +73,7 @@ export class Unit extends Sprite {
         // Stateful
         this.regenerateTimer = null
         this.hits = 0
+        this.restTicks = 0
         this.isBlocking = false
         this.isTeleporting = false
         this.teleportDoor = null
@@ -94,21 +98,29 @@ export class Unit extends Sprite {
         // If we don't have a velocity set, do it now
         if (!this.velocity) this.setDestination()
 
-        // Move Unit towards destination
-        this.updateLocation()
-
-        // Are we at our destination
-        if (this.destination && this.touchLocation(this.destination)) {
-            // console.log(`Unit: ${this.name} got to destination, setting new destination`)
-            this.setDestination()
+        if (this.restTicks > 0) {
+            // Tired, stand still for a while
+            this.restTicks--
         }
+        else {
+            // Move Unit towards destination
+            this.updateLocation()
 
-        // Make sure Unit stays on the grid
-        const hitEdge = this.bindToGameGrid()
-        if (hitEdge[0] || hitEdge[1]) {
-            // Hit an edge, make a new destination
-            // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
-            this.setDestination()
+            // Are we at our destination
+            if (this.destination && this.touchLocation(this.destination)) {
+                // console.log(`Unit: ${this.name} got to destination, setting new destination`)
+                this.setDestination()
+                this.maybeRest()
+            }
+
+            // Make sure Unit stays on the grid
+            const hitEdge = this.bindToGameGrid()
+            if (hitEdge[0] || hitEdge[1]) {
+                // Hit an edge, make a new destination
+                // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
+                this.setDestination()
+                this.maybeRest()
+            }
         }
 
         // Maintain Disc
@@ -118,6 +130,15 @@ export class Unit extends Sprite {
         }
 
         this.resolveTeleportation()
+    }
+
+    maybeRest() {
+        if (! this.getsTired) return
+        if (Math.random() * 100 >= config.tiredChance) return
+
+        // Rest for a random time, counted in game updates so it stops while paused
+        const seconds = config.tiredMinTime + Math.random() * (config.tiredMaxTime - config.tiredMinTime)
+        this.restTicks = Math.round(seconds * config.targetFps)
     }
 
     teleportTo(door: Door) {
@@ -231,6 +252,8 @@ export class Unit extends Sprite {
 
         const dead = this.isDead()
         if (! dead) {
+            // Getting hit wakes a tired unit up
+            this.restTicks = 0
             this.speedModifier = 1 / (this.hits + 1)
             this.setDestination()
         }

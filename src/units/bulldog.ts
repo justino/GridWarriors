@@ -11,6 +11,7 @@ export class Bulldog extends Unit {
 
         this.baseSpeed = config.bulldogSpeed
         this.regenerates = true
+        this.getsTired = true
         this.maxHits = 2
         this.baseAccuracy = config.bulldogAccuracy
         this.disc = new BeginnerDisc(this)
