@@ -7,12 +7,15 @@ type KeyboardDiscKeys = "UPLEFT"   | "UP"   | "UPRIGHT"
 type KeyboardState = {
     pressed: { [key: string]: boolean }
     movement: Record<KeyboardMovementKeys, string>
-    BLOCK: string
+    BLOCK: string[]
+    THROW: string
     disc: Record<KeyboardDiscKeys, string>
     isDown: Function
     keyDown: Function
     keyUp: Function
     discKeyPressed: Function
+    throwKeyPressed: Function
+    blockKeyPressed: Function
     releaseDiscKey: Function
 }
 
@@ -28,7 +31,11 @@ export const KeyboardState: KeyboardState = {
         RIGHT: 'KeyD'
     },
 
-    BLOCK: 'Numpad5',
+    // Number pad, or B for keyboards without one
+    BLOCK: ['Numpad5', 'KeyB'],
+
+    // Throws in the direction the player is facing
+    THROW: 'Space',
 
     disc: {
         UP: 'Numpad8',
@@ -56,6 +63,13 @@ export const KeyboardState: KeyboardState = {
 
         return null
     },
+    throwKeyPressed: function() {
+        // Any key that throws (or returns) a disc
+        return this.isDown(this.THROW) || this.discKeyPressed() !== null
+    },
+    blockKeyPressed: function() {
+        return this.BLOCK.some((key: string) => this.isDown(key))
+    },
     releaseDiscKey: function(direction: string) {
         const key = this.disc[direction as KeyboardDiscKeys]
         this.keyUp(key)
@@ -63,4 +77,9 @@ export const KeyboardState: KeyboardState = {
 }
 
 addEventListener('keyup',   e => { KeyboardState.keyUp(e.code) })
-addEventListener('keydown', e => { KeyboardState.keyDown(e.code) })
+addEventListener('keydown', e => {
+    // Stop the spacebar from scrolling the page
+    if (e.code === KeyboardState.THROW) e.preventDefault()
+
+    KeyboardState.keyDown(e.code)
+})

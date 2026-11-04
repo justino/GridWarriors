@@ -18,6 +18,18 @@ export enum UnitFacings {
     DOWNRIGHT
 }
 
+// Direction for each facing, each axis is -1, 0 or 1 (normalize before use)
+const FacingDirections: Record<UnitFacings, [number, number]> = {
+    [UnitFacings.UP]:        [ 0, -1],
+    [UnitFacings.DOWN]:      [ 0,  1],
+    [UnitFacings.LEFT]:      [-1,  0],
+    [UnitFacings.RIGHT]:     [ 1,  0],
+    [UnitFacings.UPLEFT]:    [-1, -1],
+    [UnitFacings.UPRIGHT]:   [ 1, -1],
+    [UnitFacings.DOWNLEFT]:  [-1,  1],
+    [UnitFacings.DOWNRIGHT]: [ 1,  1]
+}
+
 export class Unit extends Sprite {
     public isPlayer: boolean
     protected canBlock: boolean
@@ -187,6 +199,10 @@ export class Unit extends Sprite {
         this.velocity = destinationForce
 
         this.setFacing(this.findFacing(this.velocity))
+    }
+
+    facingDirection() {
+        return new Vector([...FacingDirections[this.facing]])
     }
 
     findFacing(vector: Vector) {

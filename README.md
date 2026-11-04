@@ -32,7 +32,12 @@ You can move diagonally with combinations of the keys.
 
 ### Disc throwing
 
-Use the number pad to throw your disc.
+Press the spacebar to throw your disc in the direction you are facing.
+You face the direction you last moved, including diagonals.
+
+* `space`: Throw
+
+If you have a number pad, you can also use it to aim your throw in any of the eight directions without turning.
 
 * `8`: North
 * `2`: South
@@ -45,7 +50,7 @@ Use the number pad to throw your disc.
 
 ### Blocking (not yet functional)
 
-* `5`: Block
+* `b` or number pad `5`: Block
 
 ### Pausing
 
@@ -62,9 +67,9 @@ Your disc is your weapon. Throw it around the board and hit your enemies to kill
 
 Watch out though, your enemies have discs too!
 
-Use your control keys to move Adora around the board. Throw your deadly disc at enemies using the number pad.
+Use your control keys to move Adora around the board. Throw your deadly disc at enemies using the spacebar or the number pad.
 
-Recall your disc by pressing the number pad keys again.
+Recall your disc by releasing the throw key, then pressing the spacebar or any number pad throw key again.
 
 KILL EVERYTHING THAT MOVES
 

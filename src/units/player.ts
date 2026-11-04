@@ -62,30 +62,42 @@ export class Player extends Unit {
     }
 
     blocking() {
-        this.isBlocking = KeyboardState.isDown(KeyboardState.BLOCK)
+        this.isBlocking = KeyboardState.blockKeyPressed()
     }
 
     throwDisc() {
         if (this.disc?.status !== DiscStates.HELD) return
 
-        const direction = KeyboardState.discKeyPressed()
-        if (! direction) return
-
-        const velocity = new Vector([0, 0])
-
-        if (direction.includes('UP'))    velocity.points[1] = -1
-        if (direction.includes('DOWN'))  velocity.points[1] =  1
-        if (direction.includes('LEFT'))  velocity.points[0] = -1
-        if (direction.includes('RIGHT')) velocity.points[0] =  1
+        const velocity = this.throwDirection()
+        if (! velocity) return
 
         this.disc.thrown(velocity)
+    }
+
+    throwDirection() {
+        // Number pad aims the throw directly
+        const direction = KeyboardState.discKeyPressed()
+        if (direction) {
+            const velocity = new Vector([0, 0])
+
+            if (direction.includes('UP'))    velocity.points[1] = -1
+            if (direction.includes('DOWN'))  velocity.points[1] =  1
+            if (direction.includes('LEFT'))  velocity.points[0] = -1
+            if (direction.includes('RIGHT')) velocity.points[0] =  1
+
+            return velocity
+        }
+
+        // Throw button uses the direction the player is facing
+        if (KeyboardState.isDown(KeyboardState.THROW)) return this.facingDirection()
+
+        return null
     }
 
     returnDisc() {
         if (this.disc?.status !== DiscStates.DEADLY) return
 
-        const direction = KeyboardState.discKeyPressed()
-        if (! direction) {
+        if (! KeyboardState.throwKeyPressed()) {
             this.disc.returnable = true
             return
         }

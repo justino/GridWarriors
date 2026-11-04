@@ -11,7 +11,10 @@ export class Overlay {
 
     private setup() {
         document.querySelector('button.start')
-            ?.addEventListener('click', () => {
+            ?.addEventListener('click', (e) => {
+                // Drop focus so the spacebar (throw) can't press the button mid-game
+                (e.currentTarget as HTMLElement).blur()
+
                 this.hide()
                 dispatchEvent(new CustomEvent('GameStart'))
             })
