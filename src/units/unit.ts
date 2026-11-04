@@ -180,9 +180,7 @@ export class Unit extends Sprite {
         destinationForce.normalize()
         destinationForce.mul(this.baseSpeed * this.speedModifier)
 
-        this.velocity = new Vector([0, 0])
-        this.velocity.add(destinationForce)
-        this.velocity.limit(this.baseSpeed * this.speedModifier)
+        this.velocity = destinationForce
 
         this.setFacing(this.findFacing(this.velocity))
     }
