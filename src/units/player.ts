@@ -36,13 +36,17 @@ export class Player extends Unit {
         // Can't move while blocking
         if (this.isBlocking) { return }
 
+        // Build a direction from keyboard input, each axis is -1, 0 or 1
         const velocity = new Vector([0, 0])
 
-        // Move around based on keyboard input
-        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  velocity.points[1] += (this.baseSpeed * this.speedModifier)
-        if (KeyboardState.isDown(KeyboardState.movement.UP))    velocity.points[1] -= (this.baseSpeed * this.speedModifier)
-        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= (this.baseSpeed * this.speedModifier)
-        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += (this.baseSpeed * this.speedModifier)
+        if (KeyboardState.isDown(KeyboardState.movement.DOWN))  velocity.points[1] += 1
+        if (KeyboardState.isDown(KeyboardState.movement.UP))    velocity.points[1] -= 1
+        if (KeyboardState.isDown(KeyboardState.movement.LEFT))  velocity.points[0] -= 1
+        if (KeyboardState.isDown(KeyboardState.movement.RIGHT)) velocity.points[0] += 1
+
+        // Normalize so diagonal movement isn't faster, then scale to speed
+        velocity.normalize()
+        velocity.mul(this.baseSpeed * this.speedModifier)
 
         this.location.add(velocity)
         this.setFacing(this.findFacing(velocity))
