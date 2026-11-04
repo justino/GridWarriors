@@ -181,16 +181,12 @@ export class Unit extends Sprite {
     }
 
     setDestination() {
-        // Try to generate a new location on the grid that is at least ${config.minimumDistance}
-        // away from itself. This prevents odd jumpy behavior when the locations are too close.
-        // If we try 3 times, stop trying and go with it, don't want to get bogged down.
-        let attempts = 0
+        // Pick a random location on the grid that is at least ${config.minimumDistance} away.
+        // This prevents odd jumpy behavior when the locations are too close.
+        // Most of the grid is far enough away, so this rarely takes more than a couple of tries.
         do {
-            attempts++
-
-            // Random location on game grid
             this.destination = Vector.random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
-        } while (this.location.distance(this.destination) < config.minimumDistance || attempts <= 3)
+        } while (this.location.distance(this.destination) < config.minimumDistance)
 
         const destinationForce = Vector.subFactory(this.destination, this.location)
         destinationForce.normalize()
