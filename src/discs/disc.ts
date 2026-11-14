@@ -17,6 +17,7 @@ export class Disc extends Sprite {
     protected strength: number
     protected speedModifier: number
     protected baseSpeed: number
+    protected piercing: boolean // Piercing discs pass straight through a deflect arc
 
     public status: DiscStates
     public returnable: boolean
@@ -34,6 +35,7 @@ export class Disc extends Sprite {
         this.speedModifier = 0
 
         this.baseSpeed = 0
+        this.piercing = false
 
         // Stateful
         this.status = DiscStates.HELD
@@ -116,7 +118,7 @@ export class Disc extends Sprite {
         if (this.status !== DiscStates.DEADLY) return
 
         // A deflecting unit's arc reaches out past the unit, so it gets hit first
-        if (unit.inDeflectArc(this.location, this.discSize / 2) && this.deflected(unit)) return
+        if (! this.piercing && unit.inDeflectArc(this.location, this.discSize / 2) && this.deflected(unit)) return
 
         const collision = this.isCollidedWith(unit)
 
