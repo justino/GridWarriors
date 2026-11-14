@@ -13,12 +13,13 @@ export enum DiscStates {
 }
 
 // Which states a disc can change to from each state. Anything not listed isn't allowed,
-// e.g. a disc can only be thrown while held, and only caught while returning
+// e.g. a disc can only be thrown while held, and only caught while returning.
+// BOUNCING -> BOUNCING restarts the bounce (being deflected again resets its trip home)
 const DiscTransitions: Record<DiscStates, DiscStates[]> = {
     [DiscStates.HELD]:      [DiscStates.DEADLY],
     [DiscStates.DEADLY]:    [DiscStates.BOUNCING, DiscStates.RETURNING],
-    [DiscStates.BOUNCING]:  [DiscStates.RETURNING],
-    [DiscStates.RETURNING]: [DiscStates.HELD]
+    [DiscStates.BOUNCING]:  [DiscStates.BOUNCING, DiscStates.RETURNING],
+    [DiscStates.RETURNING]: [DiscStates.BOUNCING, DiscStates.HELD]
 }
 
 export class Disc extends Sprite {
@@ -92,7 +93,7 @@ export class Disc extends Sprite {
         this.velocity = velocity
     }
 
-    // DEADLY -> BOUNCING, heads back to its owner after returnTime milliseconds
+    // DEADLY, BOUNCING or RETURNING -> BOUNCING, heads back to its owner after returnTime milliseconds
     startBouncing(returnTime: number) {
         if (! this.changeState(DiscStates.BOUNCING)) return
 
@@ -170,8 +171,8 @@ export class Disc extends Sprite {
         // A corner is two walls, bounce off each
         for (const wall of walls) this.bounceOff(wall)
 
-        // The first wall hit starts the trip home, does nothing if already bouncing
-        this.startBouncing(config.discReturnTime)
+        // The first wall hit starts the trip home, hitting more walls doesn't restart it
+        if (this.state === DiscStates.DEADLY) this.startBouncing(config.discReturnTime)
     }
 
     // Bounce off a surface that faces in the direction of normal (normal must be normalized)
@@ -213,12 +214,24 @@ export class Disc extends Sprite {
         }
     }
 
-    checkCollide(unit: Unit) {
-        // We don't care about non-deadly discs
-        if (this.state !== DiscStates.DEADLY) return
+    // Bounce off a unit's deflect arc, any disc in flight can be deflected.
+    // Returns whether the disc was deflected.
+    checkDeflect(unit: Unit) {
+        if (this.state === DiscStates.HELD) return false
+        if (this.piercing) return false
+        if (unit === this.owner) return false
+        if (! unit.inDeflectArc(this.location, this.discSize / 2)) return false
 
+        return this.deflected(unit)
+    }
+
+    // Deflect off the unit, or hit it if we're deadly
+    checkCollide(unit: Unit) {
         // A deflecting unit's arc reaches out past the unit, so it gets hit first
-        if (! this.piercing && unit.inDeflectArc(this.location, this.discSize / 2) && this.deflected(unit)) return
+        if (this.checkDeflect(unit)) return
+
+        // Only deadly discs hit units
+        if (this.state !== DiscStates.DEADLY) return
 
         const collision = this.isCollidedWith(unit)
 

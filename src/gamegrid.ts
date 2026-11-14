@@ -87,16 +87,20 @@ export class GameGrid {
     update() {
         if (!this.player) return
 
-        // Check for hits/deaths by player
-        if (this.player?.disc?.status === DiscStates.DEADLY) {
-            for (const enemy of this.enemies) {
-                this.player.disc.checkCollide(enemy)
-            }
+        // Player's disc can hit enemies, or be deflected by them
+        for (const enemy of this.enemies) {
+            this.player.disc?.checkCollide(enemy)
         }
 
-        // Check for player hits/death
+        // Enemy discs can hit the player, or be deflected by the player or other enemies (no friendly fire)
         for (const enemy of this.enemies) {
-            enemy?.disc?.checkCollide(this.player)
+            // Player might have just been killed by another enemy's disc
+            if (! this.player) break
+
+            enemy.disc?.checkCollide(this.player)
+            for (const other of this.enemies) {
+                if (other !== enemy) enemy.disc?.checkDeflect(other)
+            }
         }
 
         // Player might not exist after collisions
