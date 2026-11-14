@@ -42,6 +42,7 @@ export class Unit extends Sprite {
     protected maxHits: number
     protected baseAccuracy: number
     protected accuracyModifier: number
+    protected useDoorChance: number
     public points: number
 
     private regenerateTimer: number | null
@@ -68,6 +69,7 @@ export class Unit extends Sprite {
         this.maxHits = 1
         this.baseAccuracy = config.warriorAccuracy
         this.accuracyModifier = 0
+        this.useDoorChance = 0
         this.points = 100
 
         // Stateful
@@ -202,12 +204,7 @@ export class Unit extends Sprite {
     }
 
     setDestination() {
-        // Pick a random location on the grid that is at least ${config.minimumDistance} away.
-        // This prevents odd jumpy behavior when the locations are too close.
-        // Most of the grid is far enough away, so this rarely takes more than a couple of tries.
-        do {
-            this.destination = Vector.random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
-        } while (this.location.distance(this.destination) < config.minimumDistance)
+        this.destination = this.doorDestination() ?? this.randomDestination()
 
         const destinationForce = Vector.subFactory(this.destination, this.location)
         destinationForce.normalize()
@@ -216,6 +213,31 @@ export class Unit extends Sprite {
         this.velocity = destinationForce
 
         this.setFacing(this.findFacing(this.velocity))
+    }
+
+    randomDestination() {
+        // Pick a random location on the grid that is at least ${config.minimumDistance} away.
+        // This prevents odd jumpy behavior when the locations are too close.
+        // Most of the grid is far enough away, so this rarely takes more than a couple of tries.
+        let destination: Vector
+        do {
+            destination = Vector.random2D(this.gameGrid.canvas.width, this.gameGrid.canvas.height)
+        } while (this.location.distance(destination) < config.minimumDistance)
+
+        return destination
+    }
+
+    doorDestination() {
+        if (Math.random() * 100 >= this.useDoorChance) return null
+
+        const doors = this.gameGrid.teleportDoors()
+        if (doors.length === 0) return null
+
+        return this.chooseDoor(doors)?.spawnLocation ?? null
+    }
+
+    chooseDoor(doors: Door[]): Door | null {
+        return doors[Math.floor(Math.random() * doors.length)]
     }
 
     facingDirection() {

@@ -170,24 +170,24 @@ export class Door {
             case DoorSides.TOP:
                 this.spawnLocation = new Vector([
                     this.location.points[0] + (this.width / 2),
-                    this.location.points[1]
+                    this.location.points[1] + (this.height / 2)
                 ])
                 break
             case DoorSides.BOTTOM:
                 this.spawnLocation = new Vector([
                     this.location.points[0] + (this.width / 2),
-                    this.location.points[1] + this.height - 1
+                    this.location.points[1] + (this.height / 2)
                 ])
                 break
             case DoorSides.LEFT:
                 this.spawnLocation = new Vector([
-                    this.location.points[0],
+                    this.location.points[0] + (this.width / 2),
                     this.location.points[1] + (this.height / 2)
                 ])
                 break
             case DoorSides.RIGHT:
                 this.spawnLocation = new Vector([
-                    this.location.points[0] + this.width - 1,
+                    this.location.points[0] + (this.width / 2),
                     this.location.points[1] + (this.height / 2)
                 ])
                 break
@@ -233,6 +233,11 @@ export class Door {
     reset() {
         this.state = DoorStates.CLOSED
         this.color = config.doorClosedColor
+    }
+
+    // A door is a working portal only when it and its partner are both jammed
+    canTeleport() {
+        return this.state === DoorStates.JAMMED && this.partnerDoor.state === DoorStates.JAMMED
     }
 
     isCollided(sprite: Sprite) {

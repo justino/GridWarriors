@@ -24,12 +24,15 @@ export const config = {
     warriorColor: 'rgba(97, 170, 200, 1)',
     warriorAccuracy: 85, // Percent
     warriorSpeed: 2,
+    warriorUseDoorChance: 0, // Pecent
     bulldogAccuracy: 90, // Percent
     bulldogColor: 'rgba(255, 0, 255, 1)',
     bulldogSpeed: 1.75,
+    bulldogUseDoorChance: 5, // Percent
     leaderAccuracy: 95, // Percent
     leaderColor: 'rgba(0, 127, 255, 1)',
     leaderSpeed: 3,
+    leaderUseDoorChance: 10, // Percent
 
     // Discs
     discReturnTime: 1000,  // Seconds

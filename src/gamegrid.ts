@@ -121,13 +121,15 @@ export class GameGrid {
         // Teleportation
         for (const unit of [...this.enemies, this.player]) {
             for (const door of this.doors) {
-                if (door.state === DoorStates.JAMMED && door.isCollided(unit) && ! unit?.isTeleporting) {
-                    if (door.partnerDoor.state !== DoorStates.JAMMED) break
-
+                if (door.canTeleport() && door.isCollided(unit) && ! unit?.isTeleporting) {
                     unit.teleportTo(door.partnerDoor)
                 }
             }
         }
+    }
+
+    teleportDoors() {
+        return this.doors.filter(door => door.canTeleport())
     }
 
     addEnemies(enemyUnits: EnemyTypes[], doorSide: DoorSideInfo) {

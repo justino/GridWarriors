@@ -11,6 +11,7 @@ export class Warrior extends Unit {
 
         this.baseSpeed = config.warriorSpeed
         this.getsTired = true
+        this.useDoorChance = config.warriorUseDoorChance
 
         this.disc = new BeginnerDisc(this)
     }

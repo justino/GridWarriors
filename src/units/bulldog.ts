@@ -15,6 +15,7 @@ export class Bulldog extends Unit {
         this.maxHits = 2
         this.baseAccuracy = config.bulldogAccuracy
         this.disc = new BeginnerDisc(this)
+        this.useDoorChance = config.bulldogUseDoorChance
         this.points = 500
     }
 }
