@@ -24,17 +24,17 @@ export const config = {
 
     playerColor: 'rgba(255, 0, 0, 1)',
     playerSpeed: 2,
-    warriorColor: 'rgba(97, 170, 200, 1)',
+    warriorColor: 'rgba(185, 240, 255, 1)', // Pale sky blue
     warriorAccuracy: 85, // Percent
     warriorSpeed: 2,
     warriorUseDoorChance: 0, // Pecent
     warriorDeflectChance: 25, // Percent, chance to deflect when the player's disc enters its deflect zone
     bulldogAccuracy: 90, // Percent
-    bulldogColor: 'rgba(255, 0, 255, 1)',
+    bulldogColor: 'rgba(255, 220, 255, 1)', // Pale pink
     bulldogSpeed: 1.75,
     bulldogUseDoorChance: 5, // Percent
     leaderAccuracy: 95, // Percent
-    leaderColor: 'rgba(0, 127, 255, 1)',
+    leaderColor: 'rgba(190, 255, 190, 1)', // Pale mint
     leaderSpeed: 3,
     leaderUseDoorChance: 10, // Percent
     leaderDeflectChance: 50, // Percent, chance to deflect when the player's disc enters its deflect zone
@@ -45,11 +45,11 @@ export const config = {
 
     playerDiscColor: 'rgba(255, 255, 0, 1)',
     playerDiscSpeed: 4,
-    beginnerDiscColor: 'rgba(0, 0, 128, 1)',
+    beginnerDiscColor: 'rgba(0, 0, 200, 1)', // Royal blue
     beginnerDiscSpeed: 4,
-    intermediateDiscColor: 'rgba(139, 69, 19, 1)',
+    intermediateDiscColor: 'rgba(0, 0, 0, 1)', // Black
     intermediateDiscSpeed: 4,
-    homingDiscColor: 'rgba(255, 255, 255, 1)',
+    homingDiscColor: 'rgba(145, 65, 172, 1)', // Purple (#9141ac)
     homingDiscSpeed: 2,
     homingDiscDelay: 1000, // Milliseconds of straight flight before a homing disc starts homing
     homingDiscPercent: 10, // Percentage for when a white disc appears
