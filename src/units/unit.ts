@@ -6,6 +6,7 @@ import { DiscStates } from "@/discs/disc"
 import { GameGrid } from "@/gamegrid"
 import { Disc } from "@/discs/disc"
 import { Door } from "@/door"
+import { msToTicks } from "@/time"
 
 export enum UnitFacings {
     NORTH,
@@ -75,10 +76,11 @@ export class Unit extends Sprite {
     protected deflectChance: number
     public points: number
 
-    private regenerateTimer: number | null
     private hits: number
     private state: UnitStates
-    private restTicks: number // Only used while RESTING
+    private ticksInState: number // Game updates since we entered the current state
+    private restLength: number // Only used while RESTING, how many updates to rest for
+    private throwTicks: number | null // Updates until our next throw, null when none is scheduled
     private deflectRolled: boolean // Already rolled to deflect the disc that's in our zone
     public isTeleporting: boolean
     private teleportDoor: Door | null
@@ -104,10 +106,11 @@ export class Unit extends Sprite {
         this.points = 100
 
         // Stateful
-        this.regenerateTimer = null
         this.hits = 0
         this.state = UnitStates.MOVING
-        this.restTicks = 0
+        this.ticksInState = 0
+        this.restLength = 0
+        this.throwTicks = null
         this.deflectRolled = false
         this.isTeleporting = false
         this.teleportDoor = null
@@ -136,6 +139,7 @@ export class Unit extends Sprite {
 
         this.deflecting()
 
+        this.ticksInState++
         switch (this.state) {
             case UnitStates.MOVING:
                 this.move()
@@ -168,6 +172,7 @@ export class Unit extends Sprite {
 
         this.exitState(this.state)
         this.state = state
+        this.ticksInState = 0
         this.enterState(state)
 
         return true
@@ -176,16 +181,13 @@ export class Unit extends Sprite {
     protected enterState(state: UnitStates) {
         switch (state) {
             case UnitStates.RESTING:
-                this.restTicks = this.restDuration()
+                this.restLength = this.restDuration()
                 break
         }
     }
 
     protected exitState(state: UnitStates) {
         switch (state) {
-            case UnitStates.RESTING:
-                this.restTicks = 0
-                break
             case UnitStates.DEFLECTING:
                 // Face where we're heading again
                 this.setFacing(this.findFacing(this.velocity))
@@ -216,8 +218,7 @@ export class Unit extends Sprite {
 
     // RESTING: stand still until rested
     rest() {
-        this.restTicks--
-        if (this.restTicks <= 0) this.changeState(UnitStates.MOVING)
+        if (this.ticksInState >= this.restLength) this.changeState(UnitStates.MOVING)
     }
 
     // DEFLECTING: stand still, keeping the deflect arc pointed at the player's disc
@@ -233,10 +234,9 @@ export class Unit extends Sprite {
         this.changeState(UnitStates.RESTING)
     }
 
-    // A random time to rest, counted in game updates so it stops while paused
+    // A random time to rest, in game updates
     restDuration() {
-        const seconds = config.tiredMinTime + Math.random() * (config.tiredMaxTime - config.tiredMinTime)
-        return Math.round(seconds * config.targetFps)
+        return msToTicks(config.tiredMinTime + Math.random() * (config.tiredMaxTime - config.tiredMinTime))
     }
 
     teleportTo(door: Door) {
@@ -256,26 +256,43 @@ export class Unit extends Sprite {
         if (! this.disc) return
         if (! this.gameGrid.player) return
 
-        if (this.disc.status === DiscStates.HELD && !this.disc.primed) {
-            this.disc.primed = true
-
-            const distance = this.location.distance(this.gameGrid.player.location)
-            const modifier = distance / this.gameGrid.diagonal
-            const time = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier
-
-            window.setTimeout(this.throwDisc.bind(this), time * 1000)
+        // Disc is out, schedule the next throw once we have it back
+        if (this.disc.status !== DiscStates.HELD) {
+            this.throwTicks = null
+            return
         }
+
+        if (this.throwTicks === null) {
+            this.throwTicks = this.throwDelay()
+            return
+        }
+
+        this.throwTicks--
+        if (this.throwTicks > 0) return
+
+        // Can't throw while deflecting, wait a new delay instead
+        if (this.isDeflecting) {
+            this.throwTicks = this.throwDelay()
+            return
+        }
+
+        this.throwDisc()
+    }
+
+    // A random time until our next throw, in game updates. Further from the player waits a little longer.
+    throwDelay() {
+        if (! this.gameGrid.player) return 0
+
+        const distance = this.location.distance(this.gameGrid.player.location)
+        const modifier = distance / this.gameGrid.diagonal
+        const seconds = Math.ceil(Math.floor(Math.random() * 6 + 1) + modifier) + this.throwFrequencyModifier
+
+        return msToTicks(seconds * 1000)
     }
 
     throwDisc() {
         if (! this.gameGrid.player) return
         if (! this.disc) return
-
-        // Can't throw while deflecting, unprime so a new throw gets scheduled
-        if (this.state === UnitStates.DEFLECTING) {
-            this.disc.primed = false
-            return
-        }
 
         // Aim at player
         const aimFor = Vector.clone(this.gameGrid.player.location)

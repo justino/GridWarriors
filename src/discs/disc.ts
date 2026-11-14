@@ -3,6 +3,7 @@ import { config } from "@/config"
 import { Sprite } from "@/sprite"
 import { Vector } from "@/vector"
 import { Unit } from "@/units/unit"
+import { msToTicks } from "@/time"
 
 export enum DiscStates {
     HELD,
@@ -29,9 +30,9 @@ export class Disc extends Sprite {
     protected piercing: boolean // Piercing discs pass straight through a deflect arc
 
     private state: DiscStates
-    public primed: boolean // Only used while HELD, the owner has scheduled a throw
+    protected ticksInState: number // Game updates since we entered the current state
     private collided: Unit | null // Only used while DEADLY
-    private returnTimer: ReturnType<typeof setTimeout> | null // Only used while BOUNCING
+    private bounceLength: number // Only used while BOUNCING, how many updates before heading home
 
     constructor(name: string, color: string, unit: Unit) {
         const discSize = config.unitSize / 4
@@ -47,9 +48,9 @@ export class Disc extends Sprite {
 
         // Stateful
         this.state = DiscStates.HELD
-        this.primed = false
+        this.ticksInState = 0
         this.collided = null
-        this.returnTimer = null
+        this.bounceLength = 0
     }
 
     get status() {
@@ -61,8 +62,8 @@ export class Disc extends Sprite {
     protected changeState(state: DiscStates) {
         if (! DiscTransitions[this.state].includes(state)) return false
 
-        this.exitState(this.state)
         this.state = state
+        this.ticksInState = 0
         this.enterState(state)
 
         return true
@@ -70,26 +71,11 @@ export class Disc extends Sprite {
 
     protected enterState(state: DiscStates) {
         switch (state) {
-            case DiscStates.HELD:
-                this.primed = false
-                break
             case DiscStates.DEADLY:
                 this.collided = null
                 break
             case DiscStates.RETURNING:
                 this.moveToOwner()
-                break
-        }
-    }
-
-    protected exitState(state: DiscStates) {
-        switch (state) {
-            case DiscStates.BOUNCING:
-                // Cancel the pending return, so it can't fire on a later throw
-                if (this.returnTimer) {
-                    clearTimeout(this.returnTimer)
-                    this.returnTimer = null
-                }
                 break
         }
     }
@@ -106,11 +92,11 @@ export class Disc extends Sprite {
         this.velocity = velocity
     }
 
-    // DEADLY -> BOUNCING, heads back to its owner after returnTime
+    // DEADLY -> BOUNCING, heads back to its owner after returnTime milliseconds
     startBouncing(returnTime: number) {
         if (! this.changeState(DiscStates.BOUNCING)) return
 
-        this.returnTimer = setTimeout(this.return.bind(this), returnTime)
+        this.bounceLength = msToTicks(returnTime)
     }
 
     // DEADLY or BOUNCING -> RETURNING
@@ -124,6 +110,7 @@ export class Disc extends Sprite {
     }
 
     update() {
+        this.ticksInState++
         switch (this.state) {
             case DiscStates.HELD:
                 this.followOwner()
@@ -132,7 +119,7 @@ export class Disc extends Sprite {
                 this.moveDeadly()
                 break
             case DiscStates.BOUNCING:
-                this.moveStraight()
+                this.bounce()
                 break
             case DiscStates.RETURNING:
                 this.moveToOwner()
@@ -147,6 +134,16 @@ export class Disc extends Sprite {
 
     // DEADLY: straight lines, discs with special movement override this
     moveDeadly() {
+        this.moveStraight()
+    }
+
+    // BOUNCING: straight lines until it's time to head home
+    bounce() {
+        if (this.ticksInState >= this.bounceLength) {
+            this.return()
+            return
+        }
+
         this.moveStraight()
     }
 

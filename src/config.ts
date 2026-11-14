@@ -15,13 +15,12 @@ export const config = {
     deflectZoneMultiplier: 2, // Enemies decide to deflect when a disc gets within this many times the arc radius
     deflectArcAngle: 90, // Degrees, total width of the arc, centered on the unit's facing
     deflectArcColor: 'rgba(255, 165, 0, 0.35)',
-    regenerationTime: 6, // Seconds
     enemyCount: 3,
     respawnInterval: 5, // Seconds
     minimumDistance: 250,
     tiredChance: 5, // Percent, chance to rest each time a unit finishes a move
-    tiredMinTime: 1, // Seconds
-    tiredMaxTime: 4, // Seconds
+    tiredMinTime: 1000, // Milliseconds
+    tiredMaxTime: 4000, // Milliseconds
 
     playerColor: 'rgba(255, 0, 0, 1)',
     playerSpeed: 2,
@@ -41,7 +40,7 @@ export const config = {
     leaderDeflectChance: 50, // Percent, chance to deflect when the player's disc enters its deflect zone
 
     // Discs
-    discReturnTime: 1000,  // Seconds
+    discReturnTime: 1000, // Milliseconds, a bouncing disc heads home after this long
     discDeflectedReturnMultiplier: 1.5, // A deflected disc takes this much longer to return than a wall bounce
 
     playerDiscColor: 'rgba(255, 255, 0, 1)',
@@ -52,6 +51,7 @@ export const config = {
     intermediateDiscSpeed: 4,
     homingDiscColor: 'rgba(255, 255, 255, 1)',
     homingDiscSpeed: 2,
+    homingDiscDelay: 1000, // Milliseconds of straight flight before a homing disc starts homing
     homingDiscPercent: 10, // Percentage for when a white disc appears
 
     // Doors
