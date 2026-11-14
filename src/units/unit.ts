@@ -161,9 +161,9 @@ export class Unit extends Sprite {
         return this.state === UnitStates.DEFLECTING
     }
 
-    // The only way to change state. Returns false if the change isn't allowed from the current state.
+    // The only way to change state. Returns whether the state changed,
+    // it won't if the change isn't allowed from the current state.
     changeState(state: UnitStates) {
-        if (this.state === state) return true
         if (! UnitTransitions[this.state].includes(state)) return false
 
         this.exitState(this.state)
@@ -295,9 +295,7 @@ export class Unit extends Sprite {
 
         if (this.disc.status === DiscStates.RETURNING && this.isCollidedWith(this.disc)) {
             //console.log('Unit: ' + this.name + ' caught disc')
-            this.disc.status = DiscStates.HELD
-            this.disc.primed = false
-            this.disc.returnable = false
+            this.disc.caught()
         }
     }
 

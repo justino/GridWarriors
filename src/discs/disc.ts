@@ -11,6 +11,15 @@ export enum DiscStates {
     RETURNING
 }
 
+// Which states a disc can change to from each state. Anything not listed isn't allowed,
+// e.g. a disc can only be thrown while held, and only caught while returning
+const DiscTransitions: Record<DiscStates, DiscStates[]> = {
+    [DiscStates.HELD]:      [DiscStates.DEADLY],
+    [DiscStates.DEADLY]:    [DiscStates.BOUNCING, DiscStates.RETURNING],
+    [DiscStates.BOUNCING]:  [DiscStates.RETURNING],
+    [DiscStates.RETURNING]: [DiscStates.HELD]
+}
+
 export class Disc extends Sprite {
     private discSize: number
     protected owner: Unit
@@ -19,11 +28,11 @@ export class Disc extends Sprite {
     protected baseSpeed: number
     protected piercing: boolean // Piercing discs pass straight through a deflect arc
 
-    public status: DiscStates
-    public returnable: boolean
-    public primed: boolean
-    private collided: Unit | null
-    private returnTimer: ReturnType<typeof setTimeout> | null
+    private state: DiscStates
+    public primed: boolean // Only used while HELD, the owner has scheduled a throw
+    public returnable: boolean // Only used while DEADLY, the player can recall the disc
+    private collided: Unit | null // Only used while DEADLY
+    private returnTimer: ReturnType<typeof setTimeout> | null // Only used while BOUNCING
 
     constructor(name: string, color: string, unit: Unit) {
         const discSize = config.unitSize / 4
@@ -38,29 +47,126 @@ export class Disc extends Sprite {
         this.piercing = false
 
         // Stateful
-        this.status = DiscStates.HELD
-        this.returnable = false
+        this.state = DiscStates.HELD
         this.primed = false
+        this.returnable = false
         this.collided = null
         this.returnTimer = null
     }
 
-    update() {
-        switch (this.status) {
+    get status() {
+        return this.state
+    }
+
+    // The only way to change state. Returns whether the state changed,
+    // it won't if the change isn't allowed from the current state.
+    protected changeState(state: DiscStates) {
+        if (! DiscTransitions[this.state].includes(state)) return false
+
+        this.exitState(this.state)
+        this.state = state
+        this.enterState(state)
+
+        return true
+    }
+
+    protected enterState(state: DiscStates) {
+        switch (state) {
             case DiscStates.HELD:
-                // Follow owner around
-                this.location = Vector.clone(this.owner.location)
-                break
-            case DiscStates.RETURNING:
-                this.return()
+                this.primed = false
                 break
             case DiscStates.DEADLY:
-            case DiscStates.BOUNCING:
-                // Basic Straight Lines
-                this.location.add(this.velocity)
-                this.checkBounce()
+                this.returnable = false
+                this.collided = null
+                break
+            case DiscStates.RETURNING:
+                this.moveToOwner()
                 break
         }
+    }
+
+    protected exitState(state: DiscStates) {
+        switch (state) {
+            case DiscStates.BOUNCING:
+                // Cancel the pending return, so it can't fire on a later throw
+                if (this.returnTimer) {
+                    clearTimeout(this.returnTimer)
+                    this.returnTimer = null
+                }
+                break
+        }
+    }
+
+    // HELD -> DEADLY
+    thrown(direction: Vector) {
+        if (! this.changeState(DiscStates.DEADLY)) return
+
+        // Normalize so diagonal throws aren't faster, then scale to speed
+        const velocity = Vector.clone(direction)
+        velocity.normalize()
+        velocity.mul(this.baseSpeed + this.speedModifier)
+
+        this.velocity = velocity
+    }
+
+    // DEADLY -> BOUNCING, heads back to its owner after returnTime
+    startBouncing(returnTime: number) {
+        if (! this.changeState(DiscStates.BOUNCING)) return
+
+        this.returnTimer = setTimeout(this.return.bind(this), returnTime)
+    }
+
+    // DEADLY or BOUNCING -> RETURNING
+    return() {
+        this.changeState(DiscStates.RETURNING)
+    }
+
+    // RETURNING -> HELD
+    caught() {
+        this.changeState(DiscStates.HELD)
+    }
+
+    update() {
+        switch (this.state) {
+            case DiscStates.HELD:
+                this.followOwner()
+                break
+            case DiscStates.DEADLY:
+                this.moveDeadly()
+                break
+            case DiscStates.BOUNCING:
+                this.moveStraight()
+                break
+            case DiscStates.RETURNING:
+                this.moveToOwner()
+                break
+        }
+    }
+
+    // HELD: follow owner around
+    followOwner() {
+        this.location = Vector.clone(this.owner.location)
+    }
+
+    // DEADLY: straight lines, discs with special movement override this
+    moveDeadly() {
+        this.moveStraight()
+    }
+
+    // Basic straight lines, bouncing off the walls
+    moveStraight() {
+        this.location.add(this.velocity)
+        this.checkBounce()
+    }
+
+    // RETURNING: head back to the owner
+    moveToOwner() {
+        const ownerForce = Vector.subFactory(this.owner.location, this.location)
+        ownerForce.normalize()
+        ownerForce.mul(this.baseSpeed + this.speedModifier)
+
+        this.velocity = ownerForce
+        this.location.add(this.velocity)
     }
 
     checkBounce() {
@@ -69,13 +175,9 @@ export class Disc extends Sprite {
             if (bounced[0]) this.bounceX()
             if (bounced[1]) this.bounceY()
 
-            if (this.status !== DiscStates.BOUNCING) this.startBouncing(config.discReturnTime)
+            // The first wall hit starts the trip home, does nothing if already bouncing
+            this.startBouncing(config.discReturnTime)
         }
-    }
-
-    startBouncing(returnTime: number) {
-        this.status = DiscStates.BOUNCING
-        this.returnTimer = setTimeout(this.return.bind(this), returnTime)
     }
 
     // Hit a deflecting unit's arc, bounce off it like a curved wall centered on the unit
@@ -97,7 +199,7 @@ export class Disc extends Sprite {
     }
 
     draw() {
-        switch (this.status) {
+        switch (this.state) {
             case DiscStates.HELD:
             case DiscStates.BOUNCING:
             case DiscStates.RETURNING:
@@ -115,7 +217,7 @@ export class Disc extends Sprite {
 
     checkCollide(unit: Unit) {
         // We don't care about non-deadly discs
-        if (this.status !== DiscStates.DEADLY) return
+        if (this.state !== DiscStates.DEADLY) return
 
         // A deflecting unit's arc reaches out past the unit, so it gets hit first
         if (! this.piercing && unit.inDeflectArc(this.location, this.discSize / 2) && this.deflected(unit)) return
@@ -147,35 +249,6 @@ export class Disc extends Sprite {
                 }
             }))
         }
-    }
-
-    thrown(direction: Vector) {
-        this.status = DiscStates.DEADLY
-
-        // Normalize so diagonal throws aren't faster, then scale to speed
-        const velocity = Vector.clone(direction)
-        velocity.normalize()
-        velocity.mul(this.baseSpeed + this.speedModifier)
-
-        this.velocity = velocity
-    }
-
-    return() {
-        // Cancel any pending bounce return, so it can't fire on a later throw
-        if (this.returnTimer) {
-            clearTimeout(this.returnTimer)
-            this.returnTimer = null
-        }
-
-        this.status = DiscStates.RETURNING
-        this.returnable = false
-
-        const ownerForce = Vector.subFactory(this.owner.location, this.location)
-        ownerForce.normalize()
-        ownerForce.mul(this.baseSpeed + this.speedModifier)
-
-        this.velocity = ownerForce
-        this.location.add(this.velocity)
     }
 
     bounceX() {

@@ -16,45 +16,33 @@ export class HomingDisc extends Disc {
         this.homingTimer = null
     }
 
-    update() {
-        switch (this.status) {
-            case DiscStates.HELD:
-                // Follow owner around
-                this.location = Vector.clone(this.owner.location)
-                break
-            case DiscStates.RETURNING:
-                this.return()
-                break
-            case DiscStates.DEADLY:
-                if (this.homing) {
-                    this.homeInOnPlayer()
-                    this.checkBounce()
-                    break
-                }
-            case DiscStates.BOUNCING:
-                // Basic Straight Lines
-                this.location.add(this.velocity)
-                this.checkBounce()
-                break
-        }
-    }
+    protected enterState(state: DiscStates) {
+        super.enterState(state)
 
-    thrown(direction: Vector) {
         // After one second of regular movement, start homing
-        this.homingTimer = setTimeout(this.startHoming.bind(this), 1000)
-        super.thrown(direction)
+        if (state === DiscStates.DEADLY) this.homingTimer = setTimeout(this.startHoming.bind(this), 1000)
     }
 
-    return() {
-        this.stopHoming()
-        super.return()
+    protected exitState(state: DiscStates) {
+        super.exitState(state)
+
+        // Homing only happens while deadly, so a bounce, deflect, hit or recall all stop it
+        if (state === DiscStates.DEADLY) this.stopHoming()
     }
 
-    deflected(unit: Unit) {
-        const bounced = super.deflected(unit)
-        if (bounced) this.stopHoming()
+    // DEADLY: straight lines until homing kicks in
+    moveDeadly() {
+        if (! this.homing) {
+            super.moveDeadly()
+            return
+        }
 
-        return bounced
+        this.homeInOnPlayer()
+        this.checkBounce()
+    }
+
+    startHoming() {
+        this.homing = true
     }
 
     stopHoming() {
@@ -65,10 +53,6 @@ export class HomingDisc extends Disc {
         }
 
         this.homing = false
-    }
-
-    startHoming() {
-        this.homing = true
     }
 
     homeInOnPlayer() {
