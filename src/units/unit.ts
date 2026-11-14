@@ -18,6 +18,21 @@ export enum UnitFacings {
     SOUTHEAST
 }
 
+// What a unit is doing, a unit is only ever in one of these
+export enum UnitStates {
+    MOVING,
+    RESTING,
+    DEFLECTING
+}
+
+// Which states a unit can change to from each state. Anything not listed isn't allowed,
+// e.g. a resting unit can't start deflecting, and a deflecting unit can't start resting
+const UnitTransitions: Record<UnitStates, UnitStates[]> = {
+    [UnitStates.MOVING]:     [UnitStates.RESTING, UnitStates.DEFLECTING],
+    [UnitStates.RESTING]:    [UnitStates.MOVING],
+    [UnitStates.DEFLECTING]: [UnitStates.MOVING]
+}
+
 // Direction for each facing, each axis is -1, 0 or 1 (normalize before use)
 const FacingDirections: Record<UnitFacings, [number, number]> = {
     [UnitFacings.NORTH]:     [ 0, -1],
@@ -47,7 +62,6 @@ const FacingOrder: UnitFacings[] = [
 
 export class Unit extends Sprite {
     public isPlayer: boolean
-    protected canDeflect: boolean
     protected regenerates: boolean
     protected getsTired: boolean
     protected baseSpeed: number
@@ -63,10 +77,9 @@ export class Unit extends Sprite {
 
     private regenerateTimer: number | null
     private hits: number
-    private restTicks: number
-    public isDeflecting: boolean
-    private willDeflect: boolean
-    private deflectRolled: boolean
+    private state: UnitStates
+    private restTicks: number // Only used while RESTING
+    private deflectRolled: boolean // Already rolled to deflect the disc that's in our zone
     public isTeleporting: boolean
     private teleportDoor: Door | null
     private facing: UnitFacings
@@ -77,7 +90,6 @@ export class Unit extends Sprite {
         super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
         this.isPlayer = false
-        this.canDeflect = false
         this.regenerates = false
         this.getsTired = false
         this.baseSpeed = 1
@@ -94,9 +106,8 @@ export class Unit extends Sprite {
         // Stateful
         this.regenerateTimer = null
         this.hits = 0
+        this.state = UnitStates.MOVING
         this.restTicks = 0
-        this.isDeflecting = false
-        this.willDeflect = false
         this.deflectRolled = false
         this.isTeleporting = false
         this.teleportDoor = null
@@ -125,32 +136,16 @@ export class Unit extends Sprite {
 
         this.deflecting()
 
-        if (this.isDeflecting) {
-            // Stand still while deflecting, deflecting() keeps us facing the disc
-        }
-        else if (this.restTicks > 0) {
-            // Tired, stand still for a while
-            this.restTicks--
-        }
-        else {
-            // Move Unit towards destination
-            this.updateLocation()
-
-            // Are we at our destination
-            if (this.destination && this.touchLocation(this.destination)) {
-                // console.log(`Unit: ${this.name} got to destination, setting new destination`)
-                this.setDestination()
-                this.maybeRest()
-            }
-
-            // Make sure Unit stays on the grid
-            const hitEdge = this.bindToGameGrid()
-            if (hitEdge[0] || hitEdge[1]) {
-                // Hit an edge, make a new destination
-                // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
-                this.setDestination()
-                this.maybeRest()
-            }
+        switch (this.state) {
+            case UnitStates.MOVING:
+                this.move()
+                break
+            case UnitStates.RESTING:
+                this.rest()
+                break
+            case UnitStates.DEFLECTING:
+                this.faceDisc()
+                break
         }
 
         // Maintain Disc
@@ -162,14 +157,86 @@ export class Unit extends Sprite {
         this.resolveTeleportation()
     }
 
+    get isDeflecting() {
+        return this.state === UnitStates.DEFLECTING
+    }
+
+    // The only way to change state. Returns false if the change isn't allowed from the current state.
+    changeState(state: UnitStates) {
+        if (this.state === state) return true
+        if (! UnitTransitions[this.state].includes(state)) return false
+
+        this.exitState(this.state)
+        this.state = state
+        this.enterState(state)
+
+        return true
+    }
+
+    protected enterState(state: UnitStates) {
+        switch (state) {
+            case UnitStates.RESTING:
+                this.restTicks = this.restDuration()
+                break
+        }
+    }
+
+    protected exitState(state: UnitStates) {
+        switch (state) {
+            case UnitStates.RESTING:
+                this.restTicks = 0
+                break
+            case UnitStates.DEFLECTING:
+                // Face where we're heading again
+                this.setFacing(this.findFacing(this.velocity))
+                break
+        }
+    }
+
+    // MOVING: head towards our destination
+    move() {
+        this.updateLocation()
+
+        // Are we at our destination
+        if (this.destination && this.touchLocation(this.destination)) {
+            // console.log(`Unit: ${this.name} got to destination, setting new destination`)
+            this.setDestination()
+            this.maybeRest()
+        }
+
+        // Make sure Unit stays on the grid
+        const hitEdge = this.bindToGameGrid()
+        if (hitEdge[0] || hitEdge[1]) {
+            // Hit an edge, make a new destination
+            // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
+            this.setDestination()
+            this.maybeRest()
+        }
+    }
+
+    // RESTING: stand still until rested
+    rest() {
+        this.restTicks--
+        if (this.restTicks <= 0) this.changeState(UnitStates.MOVING)
+    }
+
+    // DEFLECTING: stand still, keeping the deflect arc pointed at the player's disc
+    faceDisc() {
+        const playerDisc = this.gameGrid.player?.disc
+        if (playerDisc) this.setFacing(this.findFacing(Vector.subFactory(playerDisc.location, this.location)))
+    }
+
     maybeRest() {
         if (! this.getsTired) return
-        if (this.isDeflecting) return // Too busy to rest
         if (Math.random() * 100 >= config.tiredChance) return
 
-        // Rest for a random time, counted in game updates so it stops while paused
+        this.changeState(UnitStates.RESTING)
+    }
+
+    // A random time to rest, counted in game updates so it stops while paused
+    restDuration() {
         const seconds = config.tiredMinTime + Math.random() * (config.tiredMaxTime - config.tiredMinTime)
-        this.restTicks = Math.round(seconds * config.targetFps)
+        return Math.round(seconds * config.targetFps)
     }
 
     teleportTo(door: Door) {
@@ -205,7 +272,7 @@ export class Unit extends Sprite {
         if (! this.disc) return
 
         // Can't throw while deflecting, unprime so a new throw gets scheduled
-        if (this.isDeflecting) {
+        if (this.state === UnitStates.DEFLECTING) {
             this.disc.primed = false
             return
         }
@@ -237,36 +304,28 @@ export class Unit extends Sprite {
     // When a deadly player disc enters the zone around this unit, roll once to see if it deflects.
     // If it does, it stands still facing the disc until the disc leaves the zone.
     deflecting() {
-        const wasDeflecting = this.isDeflecting
         const playerDisc = this.gameGrid.player?.disc
         const zoneRadius = config.deflectArcRadius * config.deflectZoneMultiplier
         const inZone = playerDisc ? this.location.distance(playerDisc.location) <= zoneRadius : false
 
-        // Can't deflect while resting or without a disc in hand
-        const ableToDeflect = this.restTicks === 0 && this.disc?.status === DiscStates.HELD
-
         if (! inZone) {
-            // Disc left (or isn't in) the zone, reset for the next time it comes in
+            // Disc left (or isn't in) the zone, stop deflecting and reset for the next time it comes in
             this.deflectRolled = false
-            this.willDeflect = false
+            if (this.state === UnitStates.DEFLECTING) this.changeState(UnitStates.MOVING)
+            return
         }
-        // Only roll once we're able to deflect, that way catching our disc or waking up
+
+        if (this.deflectRolled) return
+        if (playerDisc?.status !== DiscStates.DEADLY) return
+
+        // Can't deflect without a disc in hand, and only MOVING units can start deflecting,
+        // so don't roll until then, that way catching our disc or waking up
         // while the player's disc is in the zone still gets its chance
-        else if (! this.deflectRolled && playerDisc?.status === DiscStates.DEADLY && ableToDeflect) {
-            this.deflectRolled = true
-            this.willDeflect = Math.random() * 100 < this.deflectChance
-        }
+        if (this.disc?.status !== DiscStates.HELD) return
+        if (this.state !== UnitStates.MOVING) return
 
-        // Throwing our own disc mid-deflect ends it
-        this.isDeflecting = this.willDeflect && ableToDeflect
-
-        if (this.isDeflecting && playerDisc) {
-            this.setFacing(this.findFacing(Vector.subFactory(playerDisc.location, this.location)))
-        }
-        else if (wasDeflecting) {
-            // Done deflecting, face where we're heading again
-            this.setFacing(this.findFacing(this.velocity))
-        }
+        this.deflectRolled = true
+        if (Math.random() * 100 < this.deflectChance) this.changeState(UnitStates.DEFLECTING)
     }
 
     setDestination() {
@@ -359,7 +418,7 @@ export class Unit extends Sprite {
         const dead = this.isDead()
         if (! dead) {
             // Getting hit wakes a tired unit up
-            this.restTicks = 0
+            if (this.state === UnitStates.RESTING) this.changeState(UnitStates.MOVING)
             this.speedModifier = 1 / (this.hits + 1)
             this.setDestination()
         }

@@ -1,6 +1,6 @@
 import { config } from "@/config"
 
-import { Unit } from "@/units/unit"
+import { Unit, UnitStates } from "@/units/unit"
 import { DiscStates } from "@/discs/disc"
 import { PlayerDisc } from "@/discs/player"
 import { Vector } from "@/vector"
@@ -14,7 +14,6 @@ export class Player extends Unit {
         this.gameGrid = gameGrid
 
         this.isPlayer = true
-        this.canDeflect = true
         this.regenerates = true
         this.maxHits = 3
         this.baseSpeed = config.playerSpeed
@@ -63,14 +62,10 @@ export class Player extends Unit {
         this.returnDisc()
     }
 
+    // Deflect while the key is held, as long as we have our disc in hand
     deflecting() {
-        // Can't deflect without a disc in hand
-        if (this.disc?.status !== DiscStates.HELD) {
-            this.isDeflecting = false
-            return
-        }
-
-        this.isDeflecting = KeyboardState.deflectKeyPressed()
+        const deflect = this.disc?.status === DiscStates.HELD && KeyboardState.deflectKeyPressed()
+        this.changeState(deflect ? UnitStates.DEFLECTING : UnitStates.MOVING)
     }
 
     throwDisc() {
@@ -112,6 +107,9 @@ export class Player extends Unit {
 
         if (this.disc.returnable) this.disc.return()
     }
+
+    // The player's facing comes from the keyboard, so nothing to undo when leaving a state
+    protected exitState() { }
 
     setDestination() { } // null operation for player
 }
