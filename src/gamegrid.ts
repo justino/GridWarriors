@@ -2,7 +2,7 @@ import { config } from "@/config"
 
 import { Player, Enemy, EnemyTypes, Unit } from "@/units/index"
 import { DiscStates } from "@/discs/disc"
-import { Door, DoorPositionNames, DoorPositions, DoorStates, DoorSideInfo } from "@/door"
+import { Door, DoorPairs, DoorPositions, DoorStates, DoorSideInfo } from "@/door"
 import { Vector } from "@/vector"
 
 export class GameGrid {
@@ -43,9 +43,12 @@ export class GameGrid {
             this,
             new Vector([this.canvas.width / 2, this.canvas.height / 2])
         )
-        for (const position in DoorPositions) {
-            const info = DoorPositions[position as DoorPositionNames]
-            this.doors.push(new Door(this, info))
+        for (const [position1, position2] of DoorPairs) {
+            const door1 = new Door(this, DoorPositions[position1])
+            const door2 = new Door(this, DoorPositions[position2])
+            door1.partnerDoor = door2
+            door2.partnerDoor = door1
+            this.doors.push(door1, door2)
         }
     }
 
@@ -119,11 +122,9 @@ export class GameGrid {
         for (const unit of [...this.enemies, this.player]) {
             for (const door of this.doors) {
                 if (door.state === DoorStates.JAMMED && door.isCollided(unit) && ! unit?.isTeleporting) {
-                    const teleportsTo = DoorPositions[door.position.teleportsTo]
-                    const teleportDoor = this.doors.find(door => door.position === teleportsTo)
-                    if (teleportDoor?.state !== DoorStates.JAMMED) break
+                    if (door.partnerDoor.state !== DoorStates.JAMMED) break
 
-                    unit.teleportTo(teleportDoor)
+                    unit.teleportTo(door.partnerDoor)
                 }
             }
         }

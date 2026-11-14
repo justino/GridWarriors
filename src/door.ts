@@ -39,24 +39,33 @@ export type DoorPositionNames = "TOPLEFT"    | "TOPCENTER"    | "TOPRIGHT"
 export type DoorPositionInfo = {
     side: DoorStateInfo,
     orientation: DoorOrientationInfo,
-    facing: UnitFacings,
-    teleportsTo: DoorPositionNames
+    facing: UnitFacings
 }
 export type DoorPositions = Record<DoorPositionNames, DoorPositionInfo>
 export const DoorPositions: DoorPositions = {
-    TOPLEFT:      { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMLEFT' },
-    TOPCENTER:    { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMCENTER' },
-    TOPRIGHT:     { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH, teleportsTo: 'BOTTOMRIGHT' },
-    BOTTOMLEFT:   { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPLEFT' },
-    BOTTOMCENTER: { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPCENTER' },
-    BOTTOMRIGHT:  { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH, teleportsTo: 'TOPRIGHT' },
-    LEFTTOP:      { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTTOP' },
-    LEFTCENTER:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTCENTER' },
-    LEFTBOTTOM:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST,  teleportsTo: 'RIGHTBOTTOM' },
-    RIGHTTOP:     { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTTOP' },
-    RIGHTCENTER:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTCENTER' },
-    RIGHTBOTTOM:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST,  teleportsTo: 'LEFTBOTTOM' },
+    TOPLEFT:      { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH },
+    TOPCENTER:    { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH },
+    TOPRIGHT:     { side: DoorSides.TOP,    orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.SOUTH },
+    BOTTOMLEFT:   { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH },
+    BOTTOMCENTER: { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH },
+    BOTTOMRIGHT:  { side: DoorSides.BOTTOM, orientation: DoorOrientations.HORIZONTAL, facing: UnitFacings.NORTH },
+    LEFTTOP:      { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST },
+    LEFTCENTER:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST },
+    LEFTBOTTOM:   { side: DoorSides.LEFT,   orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.EAST },
+    RIGHTTOP:     { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST },
+    RIGHTCENTER:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST },
+    RIGHTBOTTOM:  { side: DoorSides.RIGHT,  orientation: DoorOrientations.VERTICAL,   facing: UnitFacings.WEST },
 }
+
+// Each pair of doors teleports to each other
+export const DoorPairs: [DoorPositionNames, DoorPositionNames][] = [
+    ['TOPLEFT',    'BOTTOMLEFT'],
+    ['TOPCENTER',  'BOTTOMCENTER'],
+    ['TOPRIGHT',   'BOTTOMRIGHT'],
+    ['LEFTTOP',    'RIGHTTOP'],
+    ['LEFTCENTER', 'RIGHTCENTER'],
+    ['LEFTBOTTOM', 'RIGHTBOTTOM']
+]
 
 export class Door {
     private gameGrid: GameGrid
@@ -73,6 +82,9 @@ export class Door {
     public state: DoorStateInfo
 
     public spawnLocation: Vector
+
+    // Set by GameGrid right after the pair is built, since both doors need to exist first
+    public partnerDoor!: Door
 
     constructor(gameGrid: GameGrid, position: DoorPositionInfo) {
         this.gameGrid = gameGrid
