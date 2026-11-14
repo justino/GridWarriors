@@ -4,6 +4,7 @@ import { GameGrid } from "@/gamegrid"
 import { Scoreboard } from "@/scoreboard"
 import { Overlay } from "@/overlay"
 import { WaveManager } from "@/wave"
+import { KeyboardState } from "@/keyboard"
 
 import { Unit } from "@/units/unit"
 
@@ -52,6 +53,9 @@ export class GridWarriors {
         this.waveManager.reset()
         this.waveManager.trigger(config.gameStartTime)
 
+        // Don't act on keys pressed before the game started
+        KeyboardState.clearPresses()
+
         this.playing = true
         this.play()
     }
@@ -70,12 +74,15 @@ export class GridWarriors {
 
             if (this.paused) {
                 accumulator = 0
+                // Drop presses made while paused, so they don't act the moment we unpause
+                KeyboardState.clearPresses()
                 this.gameGrid.drawBackground()
             }
             else {
                 // Simulation runs at a fixed rate, independent of the display refresh rate
                 while (accumulator >= step) {
                     this.gameGrid.update()
+                    KeyboardState.clearPresses()
                     accumulator -= step
                 }
                 this.gameGrid.draw()

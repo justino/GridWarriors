@@ -30,7 +30,6 @@ export class Disc extends Sprite {
 
     private state: DiscStates
     public primed: boolean // Only used while HELD, the owner has scheduled a throw
-    public returnable: boolean // Only used while DEADLY, the player can recall the disc
     private collided: Unit | null // Only used while DEADLY
     private returnTimer: ReturnType<typeof setTimeout> | null // Only used while BOUNCING
 
@@ -49,7 +48,6 @@ export class Disc extends Sprite {
         // Stateful
         this.state = DiscStates.HELD
         this.primed = false
-        this.returnable = false
         this.collided = null
         this.returnTimer = null
     }
@@ -76,7 +74,6 @@ export class Disc extends Sprite {
                 this.primed = false
                 break
             case DiscStates.DEADLY:
-                this.returnable = false
                 this.collided = null
                 break
             case DiscStates.RETURNING:

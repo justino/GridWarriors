@@ -58,13 +58,21 @@ export class Player extends Unit {
 
     updateDiscStatus() {
         this.deflecting()
-        this.throwDisc()
-        this.returnDisc()
+
+        // A press either throws or recalls, never both in the same update
+        switch (this.disc?.status) {
+            case DiscStates.HELD:
+                this.throwDisc()
+                break
+            case DiscStates.DEADLY:
+                this.returnDisc()
+                break
+        }
     }
 
     // Deflect while the key is held, as long as we have our disc in hand
     deflecting() {
-        const deflect = this.disc?.status === DiscStates.HELD && KeyboardState.deflectKeyPressed()
+        const deflect = this.disc?.status === DiscStates.HELD && KeyboardState.deflectKeyDown()
         this.changeState(deflect ? UnitStates.DEFLECTING : UnitStates.MOVING)
     }
 
@@ -79,7 +87,7 @@ export class Player extends Unit {
 
     throwDirection() {
         // Number pad aims the throw directly
-        const direction = KeyboardState.discKeyPressed()
+        const direction = KeyboardState.discKeyWasPressed()
         if (direction) {
             const velocity = new Vector([0, 0])
 
@@ -92,7 +100,7 @@ export class Player extends Unit {
         }
 
         // Throw button uses the direction the player is facing
-        if (KeyboardState.isDown(KeyboardState.THROW)) return this.facingDirection()
+        if (KeyboardState.wasPressed(KeyboardState.THROW)) return this.facingDirection()
 
         return null
     }
@@ -100,12 +108,7 @@ export class Player extends Unit {
     returnDisc() {
         if (this.disc?.status !== DiscStates.DEADLY) return
 
-        if (! KeyboardState.throwKeyPressed()) {
-            this.disc.returnable = true
-            return
-        }
-
-        if (this.disc.returnable) this.disc.return()
+        if (KeyboardState.throwKeyWasPressed()) this.disc.return()
     }
 
     // The player's facing comes from the keyboard, so nothing to undo when leaving a state
