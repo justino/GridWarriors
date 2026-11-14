@@ -5,6 +5,7 @@ import { Vector } from "@/vector"
 import { GameGrid } from "@/gamegrid"
 import { IntermediateDisc } from "@/discs/intermediate"
 import { HomingDisc } from "@/discs/homing"
+import { SpeedDisc } from "@/discs/speed"
 import { Door } from "@/door"
 
 export class Leader extends Unit {
@@ -18,8 +19,12 @@ export class Leader extends Unit {
         this.deflectChance = config.leaderDeflectChance
         this.points = 1000
 
-        if (Math.random() * 100 <= config.homingDiscPercent)
+        // One roll so the chances don't overlap: homing, then speed, otherwise intermediate
+        const roll = Math.random() * 100
+        if (roll < config.homingDiscPercent)
             this.disc = new HomingDisc(this)
+        else if (roll < config.homingDiscPercent + config.speedDiscPercentLeader)
+            this.disc = new SpeedDisc(this)
         else
             this.disc = new IntermediateDisc(this)
     }

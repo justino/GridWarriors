@@ -49,6 +49,10 @@ export const config = {
     beginnerDiscSpeed: 4,
     intermediateDiscColor: 'rgba(0, 0, 0, 1)', // Black
     intermediateDiscSpeed: 4,
+    speedDiscColor: 'rgba(150, 0, 0, 1)', // Crimson
+    speedDiscSpeed: 6,
+    speedDiscPercentBulldog: 15, // Percent, chance a bulldog gets a speed disc
+    speedDiscPercentLeader: 25, // Percent, chance a leader gets a speed disc
     homingDiscColor: 'rgba(145, 65, 172, 1)', // Purple (#9141ac)
     homingDiscSpeed: 2,
     homingDiscDelay: 1000, // Milliseconds of straight flight before a homing disc starts homing
