@@ -7,7 +7,7 @@ type KeyboardDiscKeys = "NORTHWEST" | "NORTH" | "NORTHEAST"
 type KeyboardState = {
     pressed: { [key: string]: boolean }
     movement: Record<KeyboardMovementKeys, string>
-    BLOCK: string[]
+    DEFLECT: string[]
     THROW: string
     disc: Record<KeyboardDiscKeys, string>
     isDown: Function
@@ -15,7 +15,7 @@ type KeyboardState = {
     keyUp: Function
     discKeyPressed: Function
     throwKeyPressed: Function
-    blockKeyPressed: Function
+    deflectKeyPressed: Function
     releaseDiscKey: Function
 }
 
@@ -32,7 +32,7 @@ export const KeyboardState: KeyboardState = {
     },
 
     // Number pad, or B for keyboards without one
-    BLOCK: ['Numpad5', 'KeyB'],
+    DEFLECT: ['Numpad5', 'KeyB'],
 
     // Throws in the direction the player is facing
     THROW: 'Space',
@@ -67,8 +67,8 @@ export const KeyboardState: KeyboardState = {
         // Any key that throws (or returns) a disc
         return this.isDown(this.THROW) || this.discKeyPressed() !== null
     },
-    blockKeyPressed: function() {
-        return this.BLOCK.some((key: string) => this.isDown(key))
+    deflectKeyPressed: function() {
+        return this.DEFLECT.some((key: string) => this.isDown(key))
     },
     releaseDiscKey: function(direction: string) {
         const key = this.disc[direction as KeyboardDiscKeys]

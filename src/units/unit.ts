@@ -30,9 +30,24 @@ const FacingDirections: Record<UnitFacings, [number, number]> = {
     [UnitFacings.SOUTHEAST]: [ 1,  1]
 }
 
+// The deflect arc extends this far either side of the unit's facing
+const DeflectArcHalfAngle = config.deflectArcAngle / 2
+
+// Facings in 45 degree steps, counter-clockwise starting from 0 degrees (east)
+const FacingOrder: UnitFacings[] = [
+    UnitFacings.EAST,
+    UnitFacings.NORTHEAST,
+    UnitFacings.NORTH,
+    UnitFacings.NORTHWEST,
+    UnitFacings.WEST,
+    UnitFacings.SOUTHWEST,
+    UnitFacings.SOUTH,
+    UnitFacings.SOUTHEAST
+]
+
 export class Unit extends Sprite {
     public isPlayer: boolean
-    protected canBlock: boolean
+    protected canDeflect: boolean
     protected regenerates: boolean
     protected getsTired: boolean
     protected baseSpeed: number
@@ -48,7 +63,7 @@ export class Unit extends Sprite {
     private regenerateTimer: number | null
     private hits: number
     private restTicks: number
-    public isBlocking: boolean
+    public isDeflecting: boolean
     public isTeleporting: boolean
     private teleportDoor: Door | null
     private facing: UnitFacings
@@ -59,7 +74,7 @@ export class Unit extends Sprite {
         super(gameGrid, name, config.unitSize, config.unitSize, color, location)
 
         this.isPlayer = false
-        this.canBlock = false
+        this.canDeflect = false
         this.regenerates = false
         this.getsTired = false
         this.baseSpeed = 1
@@ -76,7 +91,7 @@ export class Unit extends Sprite {
         this.regenerateTimer = null
         this.hits = 0
         this.restTicks = 0
-        this.isBlocking = false
+        this.isDeflecting = false
         this.isTeleporting = false
         this.teleportDoor = null
         this.facing = UnitFacings.SOUTH
@@ -85,6 +100,8 @@ export class Unit extends Sprite {
     }
 
     draw() {
+        if (this.isDeflecting) this.drawDeflectArc()
+
         this.drawSprite()
 
         // Draw units disc too
@@ -199,7 +216,7 @@ export class Unit extends Sprite {
         }
     }
 
-    blocking() {
+    deflecting() {
 
     }
 
@@ -245,20 +262,38 @@ export class Unit extends Sprite {
     }
 
     findFacing(vector: Vector) {
-        // Facings in 45 degree steps, counter-clockwise starting from 0 degrees (right)
-        const facings = [
-            UnitFacings.EAST,
-            UnitFacings.NORTHEAST,
-            UnitFacings.NORTH,
-            UnitFacings.NORTHWEST,
-            UnitFacings.WEST,
-            UnitFacings.SOUTHWEST,
-            UnitFacings.SOUTH,
-            UnitFacings.SOUTHEAST
-        ]
-
         // Each facing covers 22.5 degrees either side of its direction
-        return facings[Math.round(vector.angle() / 45) % facings.length]
+        return FacingOrder[Math.round(vector.angle() / 45) % FacingOrder.length]
+    }
+
+    facingAngle() {
+        return FacingOrder.indexOf(this.facing) * 45
+    }
+
+    // Is a location (padded by the size of whatever is there) inside this unit's deflect arc
+    inDeflectArc(location: Vector, padding: number) {
+        if (! this.isDeflecting) return false
+
+        const offset = Vector.subFactory(location, this.location)
+        if (offset.magnitude() > config.deflectArcRadius + padding) return false
+
+        // Difference between the two angles, wrapped to -180..180
+        const angleFromFacing = ((offset.angle() - this.facingAngle()) + 540) % 360 - 180
+        return Math.abs(angleFromFacing) <= DeflectArcHalfAngle
+    }
+
+    drawDeflectArc() {
+        // Canvas angles run clockwise, ours run counter-clockwise, so flip the sign
+        const start = -(this.facingAngle() + DeflectArcHalfAngle) * Math.PI / 180
+        const end = -(this.facingAngle() - DeflectArcHalfAngle) * Math.PI / 180
+
+        const context = this.gameGrid.context
+        context.fillStyle = config.deflectArcColor
+        context.beginPath()
+        context.moveTo(...this.location.points)
+        context.arc(...this.location.points, config.deflectArcRadius, start, end)
+        context.closePath()
+        context.fill()
     }
 
     setFacing(facing: UnitFacings) {

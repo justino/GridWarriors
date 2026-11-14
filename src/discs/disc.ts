@@ -67,11 +67,31 @@ export class Disc extends Sprite {
             if (bounced[0]) this.bounceX()
             if (bounced[1]) this.bounceY()
 
-            if (this.status !== DiscStates.BOUNCING) {
-                this.status = DiscStates.BOUNCING
-                this.returnTimer = setTimeout(this.return.bind(this), config.discReturnTime)
-            }
+            if (this.status !== DiscStates.BOUNCING) this.startBouncing(config.discReturnTime)
         }
+    }
+
+    startBouncing(returnTime: number) {
+        this.status = DiscStates.BOUNCING
+        this.returnTimer = setTimeout(this.return.bind(this), returnTime)
+    }
+
+    // Hit a deflecting unit's arc, bounce off it like a curved wall centered on the unit
+    // Returns false if the disc is already heading away from the unit, so it's left alone
+    deflected(unit: Unit) {
+        // The arc's surface faces straight out from the unit at the point the disc hits it
+        const normal = Vector.subFactory(this.location, unit.location)
+        normal.normalize()
+
+        const towardsArc = this.velocity.dot(normal)
+        if (towardsArc >= 0) return false
+
+        // Reflect the velocity off the surface
+        normal.mul(2 * towardsArc)
+        this.velocity.sub(normal)
+
+        this.startBouncing(config.discReturnTime * config.discDeflectedReturnMultiplier)
+        return true
     }
 
     draw() {
@@ -94,6 +114,9 @@ export class Disc extends Sprite {
     checkCollide(unit: Unit) {
         // We don't care about non-deadly discs
         if (this.status !== DiscStates.DEADLY) return
+
+        // A deflecting unit's arc reaches out past the unit, so it gets hit first
+        if (unit.inDeflectArc(this.location, this.discSize / 2) && this.deflected(unit)) return
 
         const collision = this.isCollidedWith(unit)
 

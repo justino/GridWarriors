@@ -54,6 +54,15 @@ export class Vector {
         return Math.sqrt(x)
     }
 
+    dot(vector: Vector) {
+        let total = 0
+        for (let i = 0; i < this.dimensions; i++) {
+            total += this.points[i] * vector.points[i]
+        }
+
+        return total
+    }
+
     normalize() {
         const mag = this.magnitude()
 

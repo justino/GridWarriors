@@ -46,6 +46,18 @@ export class HomingDisc extends Disc {
     }
 
     return() {
+        this.stopHoming()
+        super.return()
+    }
+
+    deflected(unit: Unit) {
+        const bounced = super.deflected(unit)
+        if (bounced) this.stopHoming()
+
+        return bounced
+    }
+
+    stopHoming() {
         // Cancel any pending homing, so it can't carry over to a later throw
         if (this.homingTimer) {
             clearTimeout(this.homingTimer)
@@ -53,7 +65,6 @@ export class HomingDisc extends Disc {
         }
 
         this.homing = false
-        super.return()
     }
 
     startHoming() {

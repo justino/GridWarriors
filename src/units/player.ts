@@ -14,7 +14,7 @@ export class Player extends Unit {
         this.gameGrid = gameGrid
 
         this.isPlayer = true
-        this.canBlock = true
+        this.canDeflect = true
         this.regenerates = true
         this.maxHits = 3
         this.baseSpeed = config.playerSpeed
@@ -33,9 +33,6 @@ export class Player extends Unit {
     }
 
     updateLocation() {
-        // Can't move while blocking
-        if (this.isBlocking) { return }
-
         // Build a direction from keyboard input, each axis is -1, 0 or 1
         const velocity = new Vector([0, 0])
 
@@ -47,22 +44,33 @@ export class Player extends Unit {
         // No movement (no keys, or opposing keys cancel out), keep the current location and facing
         if (velocity.magnitude() === 0) return
 
+        // Movement keys always turn the player, so they can aim their deflection
+        this.setFacing(this.findFacing(velocity))
+
+        // Can't move while deflecting
+        if (this.isDeflecting) return
+
         // Normalize so diagonal movement isn't faster, then scale to speed
         velocity.normalize()
         velocity.mul(this.baseSpeed * this.speedModifier)
 
         this.location.add(velocity)
-        this.setFacing(this.findFacing(velocity))
     }
 
     updateDiscStatus() {
-        this.blocking()
+        this.deflecting()
         this.throwDisc()
         this.returnDisc()
     }
 
-    blocking() {
-        this.isBlocking = KeyboardState.blockKeyPressed()
+    deflecting() {
+        // Can't deflect without a disc in hand
+        if (this.disc?.status !== DiscStates.HELD) {
+            this.isDeflecting = false
+            return
+        }
+
+        this.isDeflecting = KeyboardState.deflectKeyPressed()
     }
 
     throwDisc() {

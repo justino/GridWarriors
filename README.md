@@ -48,9 +48,12 @@ If you have a number pad, you can also use it to aim your throw in any of the ei
 * `1`: South West
 * `3`: South East
 
-### Blocking (not yet functional)
+### Deflecting
 
-* `b` or number pad `5`: Block
+Hold to deflect, release to stop. While deflecting you can't move, but the movement keys still turn you to aim the deflector arc.
+Enemy discs that hit the arc bounce off it. You need your disc in hand to deflect.
+
+* `b` or number pad `5`: Deflect
 
 ### Pausing
 

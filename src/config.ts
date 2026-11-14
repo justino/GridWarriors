@@ -11,6 +11,9 @@ export const config = {
 
     // Units
     unitSize: 32, // Should be divisible by 2
+    deflectArcRadius: 40, // Pixels, from the center of the unit
+    deflectArcAngle: 90, // Degrees, total width of the arc, centered on the unit's facing
+    deflectArcColor: 'rgba(255, 165, 0, 0.35)',
     regenerationTime: 6, // Seconds
     enemyCount: 3,
     respawnInterval: 5, // Seconds
@@ -36,6 +39,7 @@ export const config = {
 
     // Discs
     discReturnTime: 1000,  // Seconds
+    discDeflectedReturnMultiplier: 1.5, // A deflected disc takes this much longer to return than a wall bounce
 
     playerDiscColor: 'rgba(255, 255, 0, 1)',
     playerDiscSpeed: 4,

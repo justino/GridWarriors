@@ -20,7 +20,6 @@ export class Sprite {
 
         this.location = Vector.clone(location)
 
-        // Filled in by child class
         this.velocity = new Vector([0, 0])
 
         console.log('Sprite: ' + this.name + ' Rezzed')
