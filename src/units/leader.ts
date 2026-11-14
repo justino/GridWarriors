@@ -15,6 +15,7 @@ export class Leader extends Unit {
         this.throwFrequencyModifier = -2
         this.baseAccuracy = config.leaderAccuracy
         this.useDoorChance = config.leaderUseDoorChance
+        this.deflectChance = config.leaderDeflectChance
         this.points = 1000
 
         if (Math.random() * 100 <= config.homingDiscPercent)

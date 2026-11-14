@@ -12,6 +12,7 @@ export const config = {
     // Units
     unitSize: 32, // Should be divisible by 2
     deflectArcRadius: 40, // Pixels, from the center of the unit
+    deflectZoneMultiplier: 2, // Enemies decide to deflect when a disc gets within this many times the arc radius
     deflectArcAngle: 90, // Degrees, total width of the arc, centered on the unit's facing
     deflectArcColor: 'rgba(255, 165, 0, 0.35)',
     regenerationTime: 6, // Seconds
@@ -28,6 +29,7 @@ export const config = {
     warriorAccuracy: 85, // Percent
     warriorSpeed: 2,
     warriorUseDoorChance: 0, // Pecent
+    warriorDeflectChance: 25, // Percent, chance to deflect when the player's disc enters its deflect zone
     bulldogAccuracy: 90, // Percent
     bulldogColor: 'rgba(255, 0, 255, 1)',
     bulldogSpeed: 1.75,
@@ -36,6 +38,7 @@ export const config = {
     leaderColor: 'rgba(0, 127, 255, 1)',
     leaderSpeed: 3,
     leaderUseDoorChance: 10, // Percent
+    leaderDeflectChance: 50, // Percent, chance to deflect when the player's disc enters its deflect zone
 
     // Discs
     discReturnTime: 1000,  // Seconds

@@ -58,12 +58,15 @@ export class Unit extends Sprite {
     protected baseAccuracy: number
     protected accuracyModifier: number
     protected useDoorChance: number
+    protected deflectChance: number
     public points: number
 
     private regenerateTimer: number | null
     private hits: number
     private restTicks: number
     public isDeflecting: boolean
+    private willDeflect: boolean
+    private deflectRolled: boolean
     public isTeleporting: boolean
     private teleportDoor: Door | null
     private facing: UnitFacings
@@ -85,6 +88,7 @@ export class Unit extends Sprite {
         this.baseAccuracy = config.warriorAccuracy
         this.accuracyModifier = 0
         this.useDoorChance = 0
+        this.deflectChance = 0
         this.points = 100
 
         // Stateful
@@ -92,6 +96,8 @@ export class Unit extends Sprite {
         this.hits = 0
         this.restTicks = 0
         this.isDeflecting = false
+        this.willDeflect = false
+        this.deflectRolled = false
         this.isTeleporting = false
         this.teleportDoor = null
         this.facing = UnitFacings.SOUTH
@@ -117,7 +123,12 @@ export class Unit extends Sprite {
         // If we don't have a velocity set, do it now
         if (!this.velocity) this.setDestination()
 
-        if (this.restTicks > 0) {
+        this.deflecting()
+
+        if (this.isDeflecting) {
+            // Stand still while deflecting, deflecting() keeps us facing the disc
+        }
+        else if (this.restTicks > 0) {
             // Tired, stand still for a while
             this.restTicks--
         }
@@ -153,6 +164,7 @@ export class Unit extends Sprite {
 
     maybeRest() {
         if (! this.getsTired) return
+        if (this.isDeflecting) return // Too busy to rest
         if (Math.random() * 100 >= config.tiredChance) return
 
         // Rest for a random time, counted in game updates so it stops while paused
@@ -192,6 +204,12 @@ export class Unit extends Sprite {
         if (! this.gameGrid.player) return
         if (! this.disc) return
 
+        // Can't throw while deflecting, unprime so a new throw gets scheduled
+        if (this.isDeflecting) {
+            this.disc.primed = false
+            return
+        }
+
         // Aim at player
         const aimFor = Vector.clone(this.gameGrid.player.location)
 
@@ -216,8 +234,39 @@ export class Unit extends Sprite {
         }
     }
 
+    // When a deadly player disc enters the zone around this unit, roll once to see if it deflects.
+    // If it does, it stands still facing the disc until the disc leaves the zone.
     deflecting() {
+        const wasDeflecting = this.isDeflecting
+        const playerDisc = this.gameGrid.player?.disc
+        const zoneRadius = config.deflectArcRadius * config.deflectZoneMultiplier
+        const inZone = playerDisc ? this.location.distance(playerDisc.location) <= zoneRadius : false
 
+        // Can't deflect while resting or without a disc in hand
+        const ableToDeflect = this.restTicks === 0 && this.disc?.status === DiscStates.HELD
+
+        if (! inZone) {
+            // Disc left (or isn't in) the zone, reset for the next time it comes in
+            this.deflectRolled = false
+            this.willDeflect = false
+        }
+        // Only roll once we're able to deflect, that way catching our disc or waking up
+        // while the player's disc is in the zone still gets its chance
+        else if (! this.deflectRolled && playerDisc?.status === DiscStates.DEADLY && ableToDeflect) {
+            this.deflectRolled = true
+            this.willDeflect = Math.random() * 100 < this.deflectChance
+        }
+
+        // Throwing our own disc mid-deflect ends it
+        this.isDeflecting = this.willDeflect && ableToDeflect
+
+        if (this.isDeflecting && playerDisc) {
+            this.setFacing(this.findFacing(Vector.subFactory(playerDisc.location, this.location)))
+        }
+        else if (wasDeflecting) {
+            // Done deflecting, face where we're heading again
+            this.setFacing(this.findFacing(this.velocity))
+        }
     }
 
     setDestination() {
