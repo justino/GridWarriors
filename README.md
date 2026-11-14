@@ -2,11 +2,7 @@
 
 WORK IN PROGRESS - WILL PROBABLY NEVER BE FINISHED
 
-This is a "clone" of an old Intellivison game I loved.
-
-Features:
-* Terrible graphics
-* Awful gameplay
+This started out as a "clone" of an old Intellivision game I love. However, it's grown up a bit and now has taken on a life of it's own.
 
 **NOTE** This game will **not** play on Mobile devices, it requires a keyboard to play.
 
@@ -86,5 +82,12 @@ Get hit though, and you'll lose points.
 
 * Warrior: normal speed, bad disc accuracy, kill with one hit
 * Bulldog: slow speed, better accuracy, kill with 2 hits, regenerates
-* Leader: fast speed, best accuracy, harder hitting. Watch out, they have 2 different kinds of discs
+* Leader: fast speed, best accuracy
 * Guard: (not in game yet)
+
+## Disc Types
+
+* Beginner: Causes 1 damage
+* Intermediate: Causes 2 damage
+* Speed: Causes 1 damage and is fast
+* Homing: Causes 1 damage but is slow and will home in on the player no matter where they go
