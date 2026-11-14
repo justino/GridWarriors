@@ -3,20 +3,33 @@ import { config } from "@/config"
 import { GameGrid } from "@/gamegrid"
 import { Warrior, Bulldog, Leader } from "@/units/index"
 import { DoorSides, DoorSideNames } from "@/door"
+import { msToTicks } from "@/time"
 
 export class WaveManager {
     private gameGrid: GameGrid
-    private timer: NodeJS.Timeout | undefined
+    private spawnTicks: number | null // Updates until the next spawn, null when none is scheduled
     private count: number
 
     constructor(gameGrid: GameGrid) {
         this.gameGrid = gameGrid
+        this.spawnTicks = null
         this.count = 0
     }
 
     reset() {
-        this.end()
+        this.cancel()
         this.count = 0
+    }
+
+    // Called every game update by the game loop, counts down to the next spawn
+    update() {
+        if (this.spawnTicks === null) return
+
+        this.spawnTicks--
+        if (this.spawnTicks > 0) return
+
+        this.spawnTicks = null
+        this.next()
     }
 
     next() {
@@ -30,18 +43,15 @@ export class WaveManager {
         this.spawnUnits(unitsToSpawn)
     }
 
-    end() {
-        if (this.timer) {
-            clearTimeout(this.timer)
-            this.timer = undefined
-        }
+    // Cancel any pending spawn
+    cancel() {
+        this.spawnTicks = null
     }
 
+    // Spawn the next wave after interval milliseconds, replacing any pending spawn
     trigger(interval: number) {
-        this.end()
-
-        this.timer = setTimeout(this.next.bind(this), interval * 1000)
-        console.log(`Wave triggered - ${interval}s`)
+        this.spawnTicks = msToTicks(interval)
+        console.log(`Wave triggered - ${interval}ms`)
 
         if (this.isCleared()) {
             // Wave cleared, extra points

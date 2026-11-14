@@ -81,6 +81,7 @@ export class GridWarriors {
             else {
                 // Simulation runs at a fixed rate, independent of the display refresh rate
                 while (accumulator >= step) {
+                    this.waveManager.update()
                     this.gameGrid.update()
                     KeyboardState.clearPresses()
                     accumulator -= step

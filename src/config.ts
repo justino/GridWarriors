@@ -7,7 +7,7 @@ export const config = {
     height: 800,
     gridColor: 'rgba(130, 130, 130, 1)',
     gridLinesColor: 'rgba(169, 169, 169, 1)',
-    gameStartTime: 2, // Seconds
+    gameStartTime: 2000, // Milliseconds before the first wave
 
     // Units
     unitSize: 32, // Should be divisible by 2
@@ -16,7 +16,7 @@ export const config = {
     deflectArcAngle: 90, // Degrees, total width of the arc, centered on the unit's facing
     deflectArcColor: 'rgba(255, 165, 0, 0.35)',
     enemyCount: 3,
-    respawnInterval: 5, // Seconds
+    respawnInterval: 5000, // Milliseconds after an enemy dies before the grid is topped back up
     minimumDistance: 250,
     tiredChance: 5, // Percent, chance to rest each time a unit finishes a move
     tiredMinTime: 1000, // Milliseconds
