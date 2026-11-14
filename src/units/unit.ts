@@ -205,8 +205,8 @@ export class Unit extends Sprite {
         }
 
         // Make sure Unit stays on the grid
-        const hitEdge = this.bindToGameGrid()
-        if (hitEdge[0] || hitEdge[1]) {
+        const walls = this.bindToGameGrid()
+        if (walls.length > 0) {
             // Hit an edge, make a new destination
             // console.log(`Unit: ${this.name} hit an edge, setting new destination`)
             this.setDestination()

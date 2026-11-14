@@ -43,34 +43,36 @@ export class Sprite {
         ]
     }
 
+    // Keep the sprite inside the grid. Returns the walls it hit, each as the direction
+    // that wall faces (into the grid), empty if it didn't hit any
     bindToGameGrid() {
-        const bounded = [0, 0]
+        const walls: Vector[] = []
 
         // Top
         if (this.boundingBox[1] < 0) {
-            bounded[1] = 1 // Y-axis
+            walls.push(new Vector([0, 1]))
             this.location.points[1] = 0 + Math.round(this.height / 2)
         }
 
         // Bottom
         if (this.boundingBox[3] > this.gameGrid.canvas.height) {
-            bounded[1] = 1 // Y-axis
+            walls.push(new Vector([0, -1]))
             this.location.points[1] = this.gameGrid.canvas.height - Math.round(this.height / 2)
         }
 
         // Left
         if (this.boundingBox[0] < 0) {
-            bounded[0] = 1 // X-axis
+            walls.push(new Vector([1, 0]))
             this.location.points[0] = 0 + Math.round(this.width / 2)
         }
 
         // Right
         if (this.boundingBox[2] > this.gameGrid.canvas.width) {
-            bounded[0] = 1 // X-axis
+            walls.push(new Vector([-1, 0]))
             this.location.points[0] = this.gameGrid.canvas.width - Math.round(this.width / 2)
         }
 
-        return bounded
+        return walls
     }
 
     isCollidedWith(sprite: Sprite) {

@@ -63,6 +63,13 @@ export class Vector {
         return total
     }
 
+    // Reflect off a surface that faces in the direction of normal (normal must be normalized)
+    reflect(normal: Vector) {
+        const projection = Vector.clone(normal)
+        projection.mul(2 * this.dot(normal))
+        this.sub(projection)
+    }
+
     normalize() {
         const mag = this.magnitude()
 

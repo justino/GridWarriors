@@ -170,14 +170,23 @@ export class Disc extends Sprite {
     }
 
     checkBounce() {
-        const bounced = this.bindToGameGrid()
-        if (bounced[0] || bounced[1]) {
-            if (bounced[0]) this.bounceX()
-            if (bounced[1]) this.bounceY()
+        const walls = this.bindToGameGrid()
+        if (walls.length === 0) return
 
-            // The first wall hit starts the trip home, does nothing if already bouncing
-            this.startBouncing(config.discReturnTime)
-        }
+        // A corner is two walls, bounce off each
+        for (const wall of walls) this.bounceOff(wall)
+
+        // The first wall hit starts the trip home, does nothing if already bouncing
+        this.startBouncing(config.discReturnTime)
+    }
+
+    // Bounce off a surface that faces in the direction of normal (normal must be normalized)
+    // Returns false if the disc is already heading away from it, so it's left alone
+    bounceOff(normal: Vector) {
+        if (this.velocity.dot(normal) >= 0) return false
+
+        this.velocity.reflect(normal)
+        return true
     }
 
     // Hit a deflecting unit's arc, bounce off it like a curved wall centered on the unit
@@ -187,12 +196,7 @@ export class Disc extends Sprite {
         const normal = Vector.subFactory(this.location, unit.location)
         normal.normalize()
 
-        const towardsArc = this.velocity.dot(normal)
-        if (towardsArc >= 0) return false
-
-        // Reflect the velocity off the surface
-        normal.mul(2 * towardsArc)
-        this.velocity.sub(normal)
+        if (! this.bounceOff(normal)) return false
 
         this.startBouncing(config.discReturnTime * config.discDeflectedReturnMultiplier)
         return true
@@ -249,13 +253,5 @@ export class Disc extends Sprite {
                 }
             }))
         }
-    }
-
-    bounceX() {
-        this.velocity.points[0] *= -1
-    }
-
-    bounceY() {
-        this.velocity.points[1] *= -1
     }
 }
