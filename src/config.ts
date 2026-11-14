@@ -52,7 +52,9 @@ export const config = {
     homingDiscColor: 'rgba(145, 65, 172, 1)', // Purple (#9141ac)
     homingDiscSpeed: 2,
     homingDiscDelay: 1000, // Milliseconds of straight flight before a homing disc starts homing
-    homingDiscPercent: 10, // Percentage for when a white disc appears
+    homingDiscBlinkColor: 'rgba(255, 255, 255, 1)', // Alternates with homingDiscColor while deadly
+    homingDiscBlinkInterval: 150, // Milliseconds between color swaps while deadly
+    homingDiscPercent: 10, // Percent, chance a leader gets a homing disc
 
     // Doors
     doorThickness: 6,
