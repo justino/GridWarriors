@@ -3,12 +3,14 @@ import { Player } from "@/units/player"
 import { Warrior } from "@/units/warrior"
 import { Bulldog } from "@/units/bulldog"
 import { Leader } from "@/units/leader"
+import { Closer } from "@/units/closer"
 
 export { Unit }
 export { Player }
 export { Warrior }
 export { Bulldog }
 export { Leader }
+export { Closer }
 
-export type Enemy = Warrior | Bulldog | Leader
-export type EnemyTypes = typeof Warrior | typeof Bulldog | typeof Leader
+export type Enemy = Warrior | Bulldog | Leader | Closer
+export type EnemyTypes = typeof Warrior | typeof Bulldog | typeof Leader | typeof Closer

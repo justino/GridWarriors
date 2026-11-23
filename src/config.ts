@@ -38,6 +38,12 @@ export const config = {
     leaderSpeed: 3,
     leaderUseDoorChance: 10, // Percent
     leaderDeflectChance: 50, // Percent, chance to deflect when the player's disc enters its deflect zone
+    closerColor: 'rgba(255, 235, 150, 1)', // Pale gold
+    closerThrobColor: 'rgba(255, 255, 255, 1)', // Throbs between closerColor and this
+    closerThrobInterval: 600, // Milliseconds for one full throb, gold to white and back
+    closerSpeed: 4,
+    closerDeflectChance: 25, // Percent, chance to deflect when the player's disc enters its deflect zone
+    closerChance: 75, // Percent, chance it can spawn in a wave (only if the player has teleported since the last one)
 
     // Discs
     discReturnTime: 1000, // Milliseconds, a bouncing disc heads home after this long
@@ -62,6 +68,7 @@ export const config = {
 
     // Doors
     doorThickness: 6,
+    welcomeMatDistance: 10, // Pixels between the door and the edge of a unit standing on its welcome mat
     doorClosedColor: 'rgba(0, 0, 0, 1)',
     doorOpenColor: 'rgba(0, 128, 0, 1)',
     doorJammedColor: 'rgba(126, 0, 0, 1)',

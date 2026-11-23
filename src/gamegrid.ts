@@ -12,6 +12,7 @@ export class GameGrid {
     private doors: Door[]
     public enemies: Enemy[]
     public player: Player | null
+    public playerTeleported: boolean
 
     constructor() {
         console.log("Grid: Rezzing")
@@ -29,11 +30,13 @@ export class GameGrid {
         this.doors = []
         this.enemies = []
         this.player = null
+        this.playerTeleported = false
     }
 
     reset() {
         this.enemies = []
         this.player = null
+        this.playerTeleported = false
         this.doors = []
     }
 
@@ -110,8 +113,14 @@ export class GameGrid {
         for (const unit of [...this.enemies, this.player]) {
             for (const door of this.doors) {
                 // Did units disc hit a door
-                if (door.state === DoorStates.OPEN && unit?.disc?.status === DiscStates.DEADLY && door.isCollided(unit.disc)) {
-                    unit?.isPlayer ? door.jam() : door.close()
+                if (unit?.disc?.status !== DiscStates.DEADLY || ! door.isCollided(unit.disc)) continue
+
+                if (door.status === DoorStates.OPEN) {
+                    unit.isPlayer ? door.jam() : door.close()
+                }
+                else if (door.status === DoorStates.JAMMED && unit.disc.unjams) {
+                    door.unjam()
+                    unit.disc.return()
                 }
             }
         }
@@ -127,6 +136,7 @@ export class GameGrid {
             for (const door of this.doors) {
                 if (door.canTeleport() && door.isCollided(unit) && ! unit?.isTeleporting) {
                     unit.teleportTo(door.partnerDoor)
+                    if (unit.isPlayer) this.playerTeleported = true
                 }
             }
         }
@@ -134,6 +144,10 @@ export class GameGrid {
 
     teleportDoors() {
         return this.doors.filter(door => door.canTeleport())
+    }
+
+    jammedDoors() {
+        return this.doors.filter(door => door.isJammed)
     }
 
     addEnemies(enemyUnits: EnemyTypes[], doorSide: DoorSideInfo) {

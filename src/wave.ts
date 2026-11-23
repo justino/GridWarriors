@@ -1,7 +1,7 @@
 import { config } from "@/config"
 
 import { GameGrid } from "@/gamegrid"
-import { Warrior, Bulldog, Leader } from "@/units/index"
+import { Warrior, Bulldog, Leader, Closer } from "@/units/index"
 import { DoorSides, DoorSideNames } from "@/door"
 import { msToTicks } from "@/time"
 
@@ -50,14 +50,19 @@ export class WaveManager {
 
     // Spawn the next wave after interval milliseconds, replacing any pending spawn
     trigger(interval: number) {
-        this.spawnTicks = msToTicks(interval)
-        console.log(`Wave triggered - ${interval}ms`)
+        this.schedule(interval)
 
         if (this.isCleared()) {
             // Wave cleared, extra points
             dispatchEvent(new CustomEvent('Score', { detail: { points: 250 } }))
             console.log("Wave Cleared")
         }
+    }
+
+    // Spawn the next wave after interval milliseconds, without checking for a cleared wave
+    schedule(interval: number) {
+        this.spawnTicks = msToTicks(interval)
+        console.log(`Wave triggered - ${interval}ms`)
     }
 
     eligibleUnits() {
@@ -67,6 +72,8 @@ export class WaveManager {
             units.push(Leader)
         if (this.count > 5)
             units.push(Bulldog)
+        if (this.closerEligible())
+            units.push(Closer)
         units.push(Warrior)
 
         return units
@@ -79,15 +86,31 @@ export class WaveManager {
     }
 
     spawnUnits(count = 1) {
-        const eligibleUnits = this.eligibleUnits()
+        let eligibleUnits = this.eligibleUnits()
         const side = this.randomSide()
         const newUnits = []
 
         for (let i = 0; i < count; i++) {
-            newUnits.push(eligibleUnits[Math.floor(Math.random() * eligibleUnits.length)])
+            const unit = eligibleUnits[Math.floor(Math.random() * eligibleUnits.length)]
+            newUnits.push(unit)
+
+            // Only ever one Closer at a time
+            if (unit === Closer) eligibleUnits = eligibleUnits.filter(eligible => eligible !== Closer)
         }
 
+        // The player has to teleport again before the next Closer can show up
+        if (newUnits.includes(Closer)) this.gameGrid.playerTeleported = false
+
         this.gameGrid.addEnemies(newUnits, side)
+    }
+
+    // Only once the player has teleported since the last Closer, and then only on a roll
+    closerEligible() {
+        if (! this.gameGrid.playerTeleported) return false
+        if (this.gameGrid.enemies.some(enemy => enemy instanceof Closer)) return false
+
+        const roll = Math.random() * 100
+        return roll < config.closerChance
     }
 
     isCleared() {

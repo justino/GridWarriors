@@ -10,4 +10,16 @@
   * Unit derez
   * Door jammed
 
-Occassionally, enemies will target a jammed door to be closed.
+* Stats
+  * Per Game, and lifetime (stored in localStorage)
+  * Kills
+  * Hits
+  * Wave clears
+  * Discs deflected
+  * Games played
+
+* Custom key mapping
+  * UI for mapping keys
+  * Stored in localStorage
+  * Merged with default keys
+

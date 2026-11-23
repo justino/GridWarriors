@@ -40,6 +40,7 @@ export class GridWarriors {
         addEventListener('GameOver', this.gameOver.bind(this))
         addEventListener('UnitHit', this.unitHit.bind(this) as EventListener)
         addEventListener('Score', this.score.bind(this) as EventListener)
+        addEventListener('UnitLeft', this.unitLeft.bind(this) as EventListener)
 
         this.overlay.show()
     }
@@ -112,6 +113,12 @@ export class GridWarriors {
         this.enemyhit(winner, loser)
     }
 
+    // An enemy left the board on its own, no points and no wave cleared bonus
+    private unitLeft(e: CustomEvent<Unit>) {
+        this.gameGrid.removeEnemy(e.detail)
+        this.waveManager.schedule(config.respawnInterval)
+    }
+
     private score(e: CustomEvent<Score>) {
         this.scoreBoard.score(e.detail.points)
     }
@@ -151,7 +158,7 @@ export class GridWarriors {
         dispatchEvent(
             new CustomEvent<Score>('Score', {
                 detail: {
-                    points: winner.points
+                    points: loser.points
                 }
             })
         )

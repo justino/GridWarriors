@@ -25,15 +25,16 @@ const DiscTransitions: Record<DiscStates, DiscStates[]> = {
 export class Disc extends Sprite {
     private discSize: number
     protected owner: Unit
-    protected strength: number
+    public strength: number
     protected speedModifier: number
     protected baseSpeed: number
     protected piercing: boolean // Piercing discs pass straight through a deflect arc
+    public unjams: boolean
 
     private state: DiscStates
     protected ticksInState: number // Game updates since we entered the current state
-    private collided: Unit | null // Only used while DEADLY
-    private bounceLength: number // Only used while BOUNCING, how many updates before heading home
+    private collided: Unit | null
+    private bounceLength: number // How many game updates until returns
 
     constructor(name: string, color: string, unit: Unit) {
         const discSize = config.unitSize / 4
@@ -46,6 +47,7 @@ export class Disc extends Sprite {
 
         this.baseSpeed = 0
         this.piercing = false
+        this.unjams = false
 
         // Stateful
         this.state = DiscStates.HELD
@@ -168,15 +170,13 @@ export class Disc extends Sprite {
         const walls = this.bindToGameGrid()
         if (walls.length === 0) return
 
-        // A corner is two walls, bounce off each
         for (const wall of walls) this.bounceOff(wall)
 
-        // The first wall hit starts the trip home, hitting more walls doesn't restart it
         if (this.state === DiscStates.DEADLY) this.startBouncing(config.discReturnTime)
     }
 
     // Bounce off a surface that faces in the direction of normal (normal must be normalized)
-    // Returns false if the disc is already heading away from it, so it's left alone
+    // Returns false if the disc is already heading away from it
     bounceOff(normal: Vector) {
         if (this.velocity.dot(normal) >= 0) return false
 
@@ -230,8 +230,9 @@ export class Disc extends Sprite {
         // A deflecting unit's arc reaches out past the unit, so it gets hit first
         if (this.checkDeflect(unit)) return
 
-        // Only deadly discs hit units
+        // Only deadly discs hit units, and a disc with no strength can't hurt anyone
         if (this.state !== DiscStates.DEADLY) return
+        if (this.strength === 0) return
 
         const collision = this.isCollidedWith(unit)
 

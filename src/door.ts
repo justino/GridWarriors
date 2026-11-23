@@ -79,9 +79,10 @@ export class Door {
     private width: number
     private height: number
 
-    public state: DoorStateInfo
+    private state: DoorStateInfo // Only changed through open(), jam(), close() and unjam()
 
     public spawnLocation: Vector
+    public welcomeMatLocation: Vector // Just out in front of the door, inside the grid
 
     // Set by GameGrid right after the pair is built, since both doors need to exist first
     public partnerDoor!: Door
@@ -101,6 +102,7 @@ export class Door {
         this.state = DoorStates.CLOSED
 
         this.spawnLocation = new Vector([0, 0])
+        this.welcomeMatLocation = new Vector([0, 0])
 
         this.setup()
     }
@@ -193,6 +195,22 @@ export class Door {
                 break
         }
 
+        const welcomeMatOffset = doorThickness / 2 + config.unitSize / 2 + config.welcomeMatDistance
+        switch(this.position.side) {
+            case DoorSides.TOP:
+                this.welcomeMatLocation = new Vector([this.spawnLocation.points[0], this.spawnLocation.points[1] + welcomeMatOffset])
+                break
+            case DoorSides.BOTTOM:
+                this.welcomeMatLocation = new Vector([this.spawnLocation.points[0], this.spawnLocation.points[1] - welcomeMatOffset])
+                break
+            case DoorSides.LEFT:
+                this.welcomeMatLocation = new Vector([this.spawnLocation.points[0] + welcomeMatOffset, this.spawnLocation.points[1]])
+                break
+            case DoorSides.RIGHT:
+                this.welcomeMatLocation = new Vector([this.spawnLocation.points[0] - welcomeMatOffset, this.spawnLocation.points[1]])
+                break
+        }
+
         this.rect = [
             this.location.points[0],
             this.location.points[1],
@@ -224,15 +242,30 @@ export class Door {
         dispatchEvent(new CustomEvent("Score", { detail: { points: 100 } }))
     }
 
+    // Anyone can close an open door, a jammed door stays jammed
     close() {
         if (this.state !== DoorStates.OPEN) return
 
-        this.reset()
+        this.setClosed()
     }
 
-    reset() {
+    unjam() {
+        if (this.state !== DoorStates.JAMMED) return
+
+        this.setClosed()
+    }
+
+    private setClosed() {
         this.state = DoorStates.CLOSED
         this.color = config.doorClosedColor
+    }
+
+    get status() {
+        return this.state
+    }
+
+    get isJammed() {
+        return this.state === DoorStates.JAMMED
     }
 
     // A door is a working portal only when it and its partner are both jammed
